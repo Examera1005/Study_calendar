@@ -46,6 +46,7 @@ export function SignIn() {
               name="email"
               type="email"
               placeholder="you@example.com"
+              autoComplete="email"
               required
             />
           </div>
@@ -57,6 +58,7 @@ export function SignIn() {
               name="password"
               type="password"
               placeholder="Min. 8 characters"
+              autoComplete={isSignUp ? "new-password" : "current-password"}
               required
               minLength={8}
             />
