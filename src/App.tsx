@@ -16,9 +16,9 @@ import type { Id } from "../convex/_generated/dataModel";
 import { applyThemeCustomizations } from "./utils/colorUtils";
 import { AnalyticsView } from "./pages/AnalyticsView";
 import { playAlertSound } from "./utils/statsUtils";
+import { PomodoroView } from "./pages/PomodoroView";
 
-
-export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "subjects" | "settings" | "friends" | "analytics";
+export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "subjects" | "settings" | "friends" | "analytics" | "pomodoro";
 
 export default function App() {
   const [view, setView] = useState<View>(() => {
@@ -28,6 +28,60 @@ export default function App() {
 
   const subjects = useQuery(api.subjects.list);
   const createLog = useMutation(api.dailyLogs.create);
+
+  // ==================== STOPWATCH STATES ====================
+  const [stopwatchActive, setStopwatchActive] = useState(false);
+  const [stopwatchStartTime, setStopwatchStartTime] = useState<number | null>(null);
+  const [stopwatchElapsed, setStopwatchElapsed] = useState(0);
+
+  // Restore stopwatch on mount
+  useEffect(() => {
+    const active = localStorage.getItem("studyTimerActive") === "true";
+    const start = localStorage.getItem("studyTimerStart");
+    if (active && start) {
+      setStopwatchActive(true);
+      const startMs = Number(start);
+      setStopwatchStartTime(startMs);
+      setStopwatchElapsed(Math.floor((Date.now() - startMs) / 1000));
+    }
+  }, []);
+
+  // Tick stopwatch
+  useEffect(() => {
+    let interval: any = null;
+    if (stopwatchActive && stopwatchStartTime !== null) {
+      interval = setInterval(() => {
+        const secs = Math.floor((Date.now() - stopwatchStartTime) / 1000);
+        setStopwatchElapsed(secs);
+      }, 1000);
+    } else {
+      setStopwatchElapsed(0);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [stopwatchActive, stopwatchStartTime]);
+
+  const startStopwatch = () => {
+    const now = Date.now();
+    localStorage.setItem("studyTimerActive", "true");
+    localStorage.setItem("studyTimerStart", String(now));
+    setStopwatchStartTime(now);
+    setStopwatchActive(true);
+    setStopwatchElapsed(0);
+  };
+
+  const stopStopwatch = () => {
+    const mins = Math.max(1, Math.round(stopwatchElapsed / 60));
+    setSessionMinutes(mins);
+    setShowSaveTimerModal(true);
+    
+    // Reset state
+    localStorage.removeItem("studyTimerActive");
+    localStorage.removeItem("studyTimerStart");
+    setStopwatchActive(false);
+    setStopwatchStartTime(null);
+  };
 
   // Pomodoro Timer States
   const [pomodoroStatus, setPomodoroStatus] = useState<"idle" | "running" | "paused">(() => {
@@ -199,17 +253,10 @@ export default function App() {
             setView={setView}
             theme={theme}
             toggleTheme={toggleTheme}
-            pomodoroStatus={pomodoroStatus}
-            pomodoroMode={pomodoroMode}
-            timeLeft={timeLeft}
-            workDuration={workDuration}
-            breakDuration={breakDuration}
-            setWorkDuration={setWorkDuration}
-            setBreakDuration={setBreakDuration}
-            startPomodoro={startPomodoro}
-            pausePomodoro={pausePomodoro}
-            resetPomodoro={resetPomodoro}
-            stopAndLogWork={stopAndLogWork}
+            timerActive={stopwatchActive}
+            elapsedSeconds={stopwatchElapsed}
+            startTimer={startStopwatch}
+            stopTimer={stopStopwatch}
           />
           <main className="main-content">
             {view === "dashboard" && (
@@ -242,6 +289,21 @@ export default function App() {
             {view === "settings" && <SettingsView theme={theme} setTheme={setTheme} />}
             {view === "friends" && <FriendsView />}
             {view === "analytics" && <AnalyticsView />}
+            {view === "pomodoro" && (
+              <PomodoroView
+                pomodoroStatus={pomodoroStatus}
+                pomodoroMode={pomodoroMode}
+                timeLeft={timeLeft}
+                workDuration={workDuration}
+                breakDuration={breakDuration}
+                setWorkDuration={setWorkDuration}
+                setBreakDuration={setBreakDuration}
+                startPomodoro={startPomodoro}
+                pausePomodoro={pausePomodoro}
+                resetPomodoro={resetPomodoro}
+                stopAndLogWork={stopAndLogWork}
+              />
+            )}
           </main>
         </div>
       </Authenticated>
