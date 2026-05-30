@@ -17,20 +17,80 @@ export function Sidebar({
   setView,
   theme,
   toggleTheme,
+  timerActive,
+  elapsedSeconds,
+  startTimer,
+  stopTimer,
 }: {
   view: View;
   setView: (v: View) => void;
   theme: "light" | "dark";
   toggleTheme: () => void;
+  timerActive: boolean;
+  elapsedSeconds: number;
+  startTimer: () => void;
+  stopTimer: () => void;
 }) {
   const { signOut } = useAuthActions();
   const [showLegal, setShowLegal] = useState<"privacy" | "terms" | null>(null);
+
+  const formatTime = (totalSecs: number) => {
+    const hrs = Math.floor(totalSecs / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    const secs = totalSecs % 60;
+    return [
+      hrs > 0 ? String(hrs).padStart(2, "0") : null,
+      String(mins).padStart(2, "0"),
+      String(secs).padStart(2, "0"),
+    ].filter(Boolean).join(":");
+  };
 
   return (
     <aside className="sidebar" id="sidebar">
       <div className="sidebar-brand">
         <h2>📚 Study Calendar</h2>
         <span>Stay organized, ace your exams</span>
+      </div>
+
+      {/* Study Session Widget */}
+      <div style={{
+        margin: "0 12px 12px",
+        padding: "12px",
+        background: timerActive ? "rgba(59, 130, 246, 0.1)" : "var(--bg-elevated)",
+        border: timerActive ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
+        borderRadius: "var(--radius-lg)",
+        textAlign: "center",
+        transition: "all var(--transition-normal)"
+      }}>
+        {timerActive ? (
+          <div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
+              <span className="pulse-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--danger)" }} />
+              <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--danger)" }}>STUDYING LIVE</span>
+            </div>
+            <div style={{ fontSize: "1.35rem", fontWeight: 800, fontFamily: "monospace", margin: "6px 0", color: "var(--text-primary)" }}>
+              {formatTime(elapsedSeconds)}
+            </div>
+            <button
+              className="btn btn-danger btn-sm btn-full"
+              onClick={stopTimer}
+              style={{ marginTop: 8 }}
+            >
+              ⏹ Stop & Log
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 8 }}>Ready to focus?</div>
+            <button
+              className="btn btn-primary btn-sm btn-full"
+              onClick={startTimer}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+            >
+              ⏱️ Start Study Session
+            </button>
+          </div>
+        )}
       </div>
 
       <nav className="sidebar-nav">
