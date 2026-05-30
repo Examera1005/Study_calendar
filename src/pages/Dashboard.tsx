@@ -3,6 +3,7 @@ import { api } from "../../convex/_generated/api";
 import { format } from "date-fns";
 import type { View } from "../App";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
+import { useState } from "react";
 
 export function Dashboard({
   setView,
@@ -19,8 +20,93 @@ export function Dashboard({
   const todayLogs = useQuery(api.dailyLogs.getByDate, { date: today });
   const todayEvents = useQuery(api.events.getByDate, { date: today });
   const subjects = useQuery(api.subjects.list);
+  const allLogs = useQuery(api.dailyLogs.list);
 
   const getSubject = (id: string) => subjects?.find((s) => s._id === id);
+
+  const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
+
+  const chartData = (() => {
+    if (!allLogs) return [];
+    
+    const days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return format(d, "yyyy-MM-dd");
+    });
+    
+    return days.map((dateStr) => {
+      const logs = allLogs.filter((l) => l.date === dateStr);
+      const subjectMap: Record<string, number> = {};
+      let total = 0;
+      
+      logs.forEach((l) => {
+        const subId = l.subjectId || "uncategorized";
+        const dur = l.duration ?? 0;
+        subjectMap[subId] = (subjectMap[subId] || 0) + dur;
+        total += dur;
+      });
+      
+      return {
+        date: dateStr,
+        label: format(new Date(dateStr + "T00:00:00"), "EEE"),
+        subjects: subjectMap,
+        total,
+      };
+    });
+  })();
+
+  const maxTime = Math.max(...chartData.map((d) => d.total), 60);
+
+  const weeklyTotals = (() => {
+    if (!chartData) return {};
+    const totals: Record<string, number> = {};
+    chartData.forEach((day) => {
+      Object.entries(day.subjects).forEach(([subId, mins]) => {
+        totals[subId] = (totals[subId] || 0) + mins;
+      });
+    });
+    return totals;
+  })();
+
+  const subjectBreakdown = (() => {
+    if (!allLogs) return [];
+    
+    const timeMap: Record<string, number> = {};
+    let totalLoggedTime = 0;
+    
+    allLogs.forEach((log) => {
+      const subId = log.subjectId || "uncategorized";
+      const duration = log.duration ?? 0;
+      timeMap[subId] = (timeMap[subId] || 0) + duration;
+      totalLoggedTime += duration;
+    });
+    
+    const breakdown = (subjects || []).map((subj) => {
+      const minutes = timeMap[subj._id] || 0;
+      return {
+        name: subj.name,
+        icon: subj.icon,
+        color: subj.color,
+        minutes,
+        percentage: totalLoggedTime > 0 ? (minutes / totalLoggedTime) * 100 : 0,
+      };
+    });
+    
+    if (timeMap["uncategorized"]) {
+      breakdown.push({
+        name: "Uncategorized",
+        icon: "📝",
+        color: "var(--text-muted)",
+        minutes: timeMap["uncategorized"],
+        percentage: totalLoggedTime > 0 ? (timeMap["uncategorized"] / totalLoggedTime) * 100 : 0,
+      });
+    }
+    
+    return breakdown
+      .filter((item) => item.minutes > 0)
+      .sort((a, b) => b.minutes - a.minutes);
+  })();
 
   const daysUntil = (dateStr: string) => {
     const d = Math.ceil(
@@ -78,6 +164,205 @@ export function Dashboard({
           </div>
           <div className="stat-label">Study Time Today</div>
         </div>
+      </div>
+
+      {/* Weekly Study Activity Chart */}
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div className="card-header">
+          <h3>📈 Weekly Study Activity</h3>
+          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Last 7 Days</span>
+        </div>
+        
+        {chartData.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">📈</div>
+            <p>No study logs recorded for the past week</p>
+          </div>
+        ) : (
+          <div className="chart-container-layout" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 24, alignItems: "center" }}>
+            {/* Left: SVG Chart */}
+            <div style={{ position: "relative", width: "100%", height: "100%" }}>
+              <svg viewBox="0 0 500 200" width="100%" height="100%">
+                {/* Y Axis grid lines and labels */}
+                {[0, 0.25, 0.5, 0.75, 1].map((pct) => {
+                  const yVal = 20 + (1 - pct) * 150;
+                  const value = Math.round(pct * maxTime);
+                  return (
+                    <g key={pct}>
+                      <line x1="50" y1={yVal} x2="480" y2={yVal} stroke="var(--border-subtle)" strokeDasharray="3,3" />
+                      <text x="42" y={yVal + 3} textAnchor="end" fontSize="0.65rem" fill="var(--text-muted)" fontWeight="500">
+                        {value >= 60 
+                          ? `${Math.floor(value / 60)}h${value % 60 > 0 ? ` ${value % 60}m` : ""}`
+                          : `${value}m`}
+                      </text>
+                    </g>
+                  );
+                })}
+
+                {/* Bars */}
+                {chartData.map((dayData, i) => {
+                  const barWidth = 20;
+                  const chartWidth = 430;
+                  const numDays = 7;
+                  const xPos = 50 + i * (chartWidth / numDays) + (chartWidth / numDays - barWidth) / 2;
+
+                  // Render stacked segments
+                  let currentY = 170; // chart baseline (paddingTop: 20 + chartHeight: 150 = 170)
+                  const sortedKeys = Object.keys(dayData.subjects).sort();
+                  const isHovered = hoveredDayIndex === i;
+
+                  return (
+                    <g key={dayData.date}>
+                      {/* Stacked rects */}
+                      {sortedKeys.map((subId) => {
+                        const duration = dayData.subjects[subId];
+                        if (duration <= 0) return null;
+                        const segHeight = (duration / maxTime) * 150;
+                        const subj = subId !== "uncategorized" ? getSubject(subId) : null;
+                        const color = subj?.color ?? "var(--text-muted)";
+                        const rectY = currentY - segHeight;
+                        currentY = rectY;
+
+                        return (
+                          <rect
+                            key={subId}
+                            x={xPos}
+                            y={rectY}
+                            width={barWidth}
+                            height={segHeight}
+                            fill={color}
+                            opacity={hoveredDayIndex !== null && !isHovered ? 0.35 : 1}
+                            style={{ transition: "opacity var(--transition-fast)" }}
+                          />
+                        );
+                      })}
+
+                      {/* X axis weekday label */}
+                      <text
+                        x={xPos + barWidth / 2}
+                        y="188"
+                        textAnchor="middle"
+                        fontSize="0.7rem"
+                        fontWeight={isHovered ? "700" : "500"}
+                        fill={isHovered ? "var(--accent-primary)" : "var(--text-secondary)"}
+                        style={{ transition: "fill var(--transition-fast)" }}
+                      >
+                        {dayData.label}
+                      </text>
+
+                      {/* Highlight column background on hover */}
+                      {isHovered && (
+                        <rect
+                          x={xPos - 6}
+                          y="20"
+                          width={barWidth + 12}
+                          height="150"
+                          fill="var(--accent-primary)"
+                          opacity="0.05"
+                          pointerEvents="none"
+                        />
+                      )}
+
+                      {/* Hover detector overlay */}
+                      <rect
+                        x={50 + i * (chartWidth / numDays)}
+                        y="20"
+                        width={chartWidth / numDays}
+                        height="150"
+                        fill="transparent"
+                        style={{ cursor: "pointer" }}
+                        onMouseEnter={() => setHoveredDayIndex(i)}
+                        onMouseLeave={() => setHoveredDayIndex(null)}
+                      />
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+
+            {/* Right: Dynamic Tooltip / Legend */}
+            <div style={{
+              background: "var(--bg-secondary)",
+              padding: "16px",
+              borderRadius: "var(--radius-md)",
+              border: "1px solid var(--border-subtle)",
+              minHeight: "160px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}>
+              {hoveredDayIndex !== null ? (
+                // Day Breakdown Detail
+                <div>
+                  <h4 style={{ fontSize: "0.85rem", fontWeight: 700, marginBottom: 8, color: "var(--text-primary)" }}>
+                    {format(new Date(chartData[hoveredDayIndex].date + "T00:00:00"), "EEEE, MMM d")}
+                  </h4>
+                  {chartData[hoveredDayIndex].total === 0 ? (
+                    <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>No study time logged on this day.</p>
+                  ) : (
+                    <div>
+                      <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 12 }}>
+                        Total: {chartData[hoveredDayIndex].total >= 60 
+                          ? `${Math.floor(chartData[hoveredDayIndex].total / 60)}h${chartData[hoveredDayIndex].total % 60 > 0 ? ` ${chartData[hoveredDayIndex].total % 60}m` : ""}`
+                          : `${chartData[hoveredDayIndex].total}m`}
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {Object.entries(chartData[hoveredDayIndex].subjects).map(([subId, mins]) => {
+                          if (mins <= 0) return null;
+                          const subj = subId !== "uncategorized" ? getSubject(subId) : null;
+                          return (
+                            <div key={subId} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <span style={{ width: 8, height: 8, borderRadius: "50%", background: subj?.color ?? "var(--text-muted)" }} />
+                                <span style={{ color: "var(--text-secondary)" }}>{subj?.name ?? "Uncategorized"}</span>
+                              </div>
+                              <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{mins}m</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Weekly Legend / Summary
+                <div>
+                  <h4 style={{ fontSize: "0.85rem", fontWeight: 700, marginBottom: 8, color: "var(--text-primary)" }}>
+                    Weekly Study Summary
+                  </h4>
+                  {Object.keys(weeklyTotals).length === 0 ? (
+                    <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Hover over a bar to inspect daily study details.</p>
+                  ) : (
+                    <div>
+                      <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 10 }}>
+                        Hover over columns to view specific days.
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {Object.entries(weeklyTotals).map(([subId, mins]) => {
+                          if (mins <= 0) return null;
+                          const subj = subId !== "uncategorized" ? getSubject(subId) : null;
+                          return (
+                            <div key={subId} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <span style={{ width: 8, height: 8, borderRadius: "50%", background: subj?.color ?? "var(--text-muted)" }} />
+                                <span style={{ color: "var(--text-secondary)" }}>{subj?.name ?? "Uncategorized"}</span>
+                              </div>
+                              <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+                                {mins >= 60 
+                                  ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? ` ${mins % 60}m` : ""}`
+                                  : `${mins}m`}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="card-grid">
@@ -231,6 +516,40 @@ export function Dashboard({
                 </div>
               );
             })
+          )}
+        </div>
+
+        {/* Study Time by Subject */}
+        <div className="card">
+          <div className="card-header">
+            <h3>📊 Study Time by Subject</h3>
+          </div>
+          {subjectBreakdown.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">📊</div>
+              <p>No study logs recorded yet</p>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {subjectBreakdown.map((item) => (
+                <div key={item.name} className="subject-time-row">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, fontSize: "0.82rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span>{item.icon}</span>
+                      <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{item.name}</span>
+                    </div>
+                    <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>
+                      {item.minutes >= 60 
+                        ? `${Math.floor(item.minutes / 60)}h${item.minutes % 60 > 0 ? ` ${item.minutes % 60}m` : ""}`
+                        : `${item.minutes}m`}
+                    </span>
+                  </div>
+                  <div style={{ height: 6, background: "var(--bg-secondary)", borderRadius: 3, overflow: "hidden", display: "flex" }}>
+                    <div style={{ height: "100%", width: `${item.percentage}%`, background: item.color, borderRadius: 3 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

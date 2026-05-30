@@ -18,7 +18,9 @@ export function TasksView({
   const toggleTask = useMutation(api.tasks.toggleComplete);
   const createTask = useMutation(api.tasks.create);
   const removeTask = useMutation(api.tasks.remove);
+  const updateTask = useMutation(api.tasks.update);
   const [showAdd, setShowAdd] = useState(false);
+  const [editingTask, setEditingTask] = useState<any | null>(null);
 
   const getSubject = (id: string) => subjects?.find((s) => s._id === id);
 
@@ -102,7 +104,8 @@ export function TasksView({
                     />
                   )}
                 </div>
-                <div className="item-actions">
+                 <div className="item-actions" style={{ display: "flex", gap: 4 }}>
+                  <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingTask(task)}>✏️</button>
                   <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeTask({ id: task._id })}>🗑</button>
                 </div>
               </div>
@@ -157,6 +160,62 @@ export function TasksView({
             <div className="modal-actions">
               <button type="button" className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>
               <button type="submit" className="btn btn-primary">Add Task</button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {editingTask && (
+        <Modal title="Edit Task" onClose={() => setEditingTask(null)}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget);
+              void updateTask({
+                id: editingTask._id,
+                title: fd.get("title") as string,
+                description: (fd.get("description") as string) || undefined,
+                priority: (fd.get("priority") as "low" | "medium" | "high") ?? "medium",
+                subjectId: fd.get("subjectId") ? (fd.get("subjectId") as Id<"subjects">) : undefined,
+                date: fd.get("date") as string,
+              });
+              setEditingTask(null);
+            }}
+          >
+            <div className="form-group">
+              <label>Title</label>
+              <input name="title" defaultValue={editingTask.title} required />
+            </div>
+            <div className="form-group">
+              <label>Description</label>
+              <textarea name="description" defaultValue={editingTask.description} />
+            </div>
+            <div className="form-group">
+              <label>Date</label>
+              <input name="date" type="date" defaultValue={editingTask.date} required />
+            </div>
+            <div className="form-group">
+              <label>Priority</label>
+              <select name="priority" defaultValue={editingTask.priority}>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            {subjects && subjects.length > 0 && (
+              <div className="form-group">
+                <label>Subject</label>
+                <select name="subjectId" defaultValue={editingTask.subjectId || ""}>
+                  <option value="">None</option>
+                  {subjects.map((s) => (
+                    <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div className="modal-actions">
+              <button type="button" className="btn btn-secondary" onClick={() => setEditingTask(null)}>Cancel</button>
+              <button type="submit" className="btn btn-primary">Save Changes</button>
             </div>
           </form>
         </Modal>

@@ -69,3 +69,35 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const getByDateRange = query({
+  args: { startDate: v.string(), endDate: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    return await ctx.db
+      .query("dailyLogs")
+      .withIndex("by_userId_and_date", (q) =>
+        q
+          .eq("userId", identity.tokenIdentifier)
+          .gte("date", args.startDate)
+          .lte("date", args.endDate),
+      )
+      .collect();
+  },
+});
+
+export const list = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    return await ctx.db
+      .query("dailyLogs")
+      .withIndex("by_userId_and_date", (q) =>
+        q.eq("userId", identity.tokenIdentifier)
+      )
+      .collect();
+  },
+});
+

@@ -40,6 +40,10 @@ export function CalendarView({
     startDate: startStr,
     endDate: endStr,
   });
+  const rangeLogs = useQuery(api.dailyLogs.getByDateRange, {
+    startDate: startStr,
+    endDate: endStr,
+  });
   const tasks = useQuery(api.tasks.getByDate, { date: selectedDate });
   const dayLogs = useQuery(api.dailyLogs.getByDate, { date: selectedDate });
   const dayEvents = useQuery(api.events.getByDate, { date: selectedDate });
@@ -57,6 +61,11 @@ export function CalendarView({
   const removeTask = useMutation(api.tasks.remove);
   const removeEvent = useMutation(api.events.remove);
   const removeLog = useMutation(api.dailyLogs.remove);
+  const updateTask = useMutation(api.tasks.update);
+  const updateLog = useMutation(api.dailyLogs.update);
+  
+  const [editingTask, setEditingTask] = useState<any | null>(null);
+  const [editingLog, setEditingLog] = useState<any | null>(null);
 
   const getSubject = (id: string) => subjects?.find((s) => s._id === id);
 
@@ -64,8 +73,9 @@ export function CalendarView({
   const dayData: Record<
     string,
     {
-      dots: { color: string; type: "exam" | "event" }[];
-      items: { title: string; color: string; icon?: string; type: "exam" | "event" }[];
+      dots: { color: string; type: "exam" | "event" | "log" }[];
+      items: { title: string; color: string; icon?: string; type: "exam" | "event" | "log" }[];
+      totalStudyMinutes?: number;
     }
   > = {};
 
@@ -91,6 +101,25 @@ export function CalendarView({
       color,
       icon: "📅",
       type: "event",
+    });
+  });
+
+  rangeLogs?.forEach((log) => {
+    if (!dayData[log.date]) {
+      dayData[log.date] = { dots: [], items: [], totalStudyMinutes: 0 };
+    }
+    const subj = log.subjectId ? getSubject(log.subjectId) : null;
+    const color = subj?.color ?? "var(--text-muted)";
+    const icon = subj?.icon ?? "⏱️";
+
+    dayData[log.date].totalStudyMinutes = (dayData[log.date].totalStudyMinutes || 0) + (log.duration ?? 0);
+
+    dayData[log.date].dots.push({ color, type: "log" });
+    dayData[log.date].items.push({
+      title: `${subj ? `${subj.name}: ` : ""}${log.content} (${log.duration ? `${log.duration}m` : "no time"})`,
+      color,
+      icon,
+      type: "log",
     });
   });
 
@@ -147,11 +176,20 @@ export function CalendarView({
               className={`calendar-day${!isSameMonth(day, currentMonth) ? " other-month" : ""}${isToday(day) ? " today" : ""}${isSelected ? " selected" : ""}`}
               onClick={() => setSelectedDate(dateStr)}
             >
-              <div className="day-number">
-                {isToday(day) ? (
-                  <span>{format(day, "d")}</span>
-                ) : (
-                  format(day, "d")
+              <div className="day-header">
+                <div className="day-number">
+                  {isToday(day) ? (
+                    <span>{format(day, "d")}</span>
+                  ) : (
+                    format(day, "d")
+                  )}
+                </div>
+                {data?.totalStudyMinutes && data.totalStudyMinutes > 0 && (
+                  <div className="day-study-badge" title="Total study duration today">
+                    ⏱️ {data.totalStudyMinutes >= 60 
+                      ? `${Math.floor(data.totalStudyMinutes / 60)}h${data.totalStudyMinutes % 60 > 0 ? ` ${data.totalStudyMinutes % 60}m` : ""}`
+                      : `${data.totalStudyMinutes}m`}
+                  </div>
                 )}
               </div>
               {data && (
@@ -246,7 +284,8 @@ export function CalendarView({
                   <div className="task-title">{task.title}</div>
                   {task.description && <div className="task-desc">{task.description}</div>}
                 </div>
-                <div className="item-actions">
+                <div className="item-actions" style={{ display: "flex", gap: 4 }}>
+                  <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingTask(task)}>✏️</button>
                   <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeTask({ id: task._id })}>🗑</button>
                 </div>
               </div>
@@ -291,7 +330,8 @@ export function CalendarView({
                       {log.duration && <span className="duration-badge">⏱ {log.duration}min</span>}
                     </div>
                   </div>
-                  <div className="item-actions">
+                  <div className="item-actions" style={{ display: "flex", gap: 4 }}>
+                    <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingLog(log)}>✏️</button>
                     <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeLog({ id: log._id })}>🗑</button>
                   </div>
                 </div>
@@ -434,6 +474,104 @@ export function CalendarView({
             <div className="modal-actions">
               <button type="button" className="btn btn-secondary" onClick={() => setShowLogModal(false)}>Cancel</button>
               <button type="submit" className="btn btn-primary">Add Entry</button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {editingTask && (
+        <Modal title="Edit Task" onClose={() => setEditingTask(null)}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget);
+              void updateTask({
+                id: editingTask._id,
+                title: fd.get("title") as string,
+                description: (fd.get("description") as string) || undefined,
+                priority: (fd.get("priority") as "low" | "medium" | "high") ?? "medium",
+                subjectId: fd.get("subjectId") ? (fd.get("subjectId") as Id<"subjects">) : undefined,
+                date: fd.get("date") as string,
+              });
+              setEditingTask(null);
+            }}
+          >
+            <div className="form-group">
+              <label>Title</label>
+              <input name="title" defaultValue={editingTask.title} required />
+            </div>
+            <div className="form-group">
+              <label>Description</label>
+              <textarea name="description" defaultValue={editingTask.description} />
+            </div>
+            <div className="form-group">
+              <label>Date</label>
+              <input name="date" type="date" defaultValue={editingTask.date} required />
+            </div>
+            <div className="form-group">
+              <label>Priority</label>
+              <select name="priority" defaultValue={editingTask.priority}>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            {subjects && subjects.length > 0 && (
+              <div className="form-group">
+                <label>Subject</label>
+                <select name="subjectId" defaultValue={editingTask.subjectId || ""}>
+                  <option value="">None</option>
+                  {subjects.map((s) => (
+                    <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div className="modal-actions">
+              <button type="button" className="btn btn-secondary" onClick={() => setEditingTask(null)}>Cancel</button>
+              <button type="submit" className="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {editingLog && (
+        <Modal title="Edit Study Log" onClose={() => setEditingLog(null)}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget);
+              void updateLog({
+                id: editingLog._id,
+                content: fd.get("content") as string,
+                duration: fd.get("duration") ? Number(fd.get("duration")) : undefined,
+                subjectId: fd.get("subjectId") ? (fd.get("subjectId") as Id<"subjects">) : undefined,
+              });
+              setEditingLog(null);
+            }}
+          >
+            <div className="form-group">
+              <label>What did you study?</label>
+              <textarea name="content" defaultValue={editingLog.content} required />
+            </div>
+            <div className="form-group">
+              <label>Duration (minutes)</label>
+              <input name="duration" type="number" min="1" defaultValue={editingLog.duration} />
+            </div>
+            {subjects && subjects.length > 0 && (
+              <div className="form-group">
+                <label>Subject</label>
+                <select name="subjectId" defaultValue={editingLog.subjectId || ""}>
+                  <option value="">None</option>
+                  {subjects.map((s) => (
+                    <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <div className="modal-actions">
+              <button type="button" className="btn btn-secondary" onClick={() => setEditingLog(null)}>Cancel</button>
+              <button type="submit" className="btn btn-primary">Save Changes</button>
             </div>
           </form>
         </Modal>

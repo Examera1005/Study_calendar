@@ -58,7 +58,7 @@ export function SignIn() {
               name="password"
               type="password"
               placeholder="Min. 8 characters"
-              autoComplete={isSignUp ? "new-password" : "current-password"}
+              autoComplete={step === "signUp" ? "new-password" : "current-password"}
               required
               minLength={8}
             />

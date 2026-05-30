@@ -12,7 +12,14 @@ import { SettingsView } from "./pages/SettingsView";
 export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "settings";
 
 export default function App() {
-  const [view, setView] = useState<View>("dashboard");
+  const [view, setView] = useState<View>(() => {
+    const saved = localStorage.getItem("currentView");
+    return (saved as View) || "dashboard";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("currentView", view);
+  }, [view]);
   const [selectedDate, setSelectedDate] = useState<string>(
     new Date().toISOString().split("T")[0],
   );
