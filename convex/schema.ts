@@ -93,5 +93,13 @@ export default defineSchema({
   })
     .index("by_conversation", ["senderId", "receiverId"])
     .index("by_receiverId", ["receiverId"]),
+
+  blocks: defineTable({
+    userId: v.string(),
+    blockedUserId: v.string(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_and_blockedUserId", ["userId", "blockedUserId"])
+    .index("by_blockedUserId", ["blockedUserId"]),
 });
 

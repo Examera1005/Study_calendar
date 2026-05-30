@@ -57,6 +57,7 @@ export function FriendsView() {
   const respondRequest = useMutation(friendsApi.respondToFriendRequest);
   const sendMessage = useMutation(friendsApi.sendMessage);
   const importExam = useMutation(friendsApi.importFriendExam);
+  const blockUser = useMutation(friendsApi.blockUser);
 
   // Tabs: "leaderboard" | "chat" | "manage"
   const [activeTab, setActiveTab] = useState<"leaderboard" | "chat" | "manage">("leaderboard");
@@ -223,6 +224,20 @@ export function FriendsView() {
       setTimeout(() => setImportSuccessId(null), 2500);
     } catch (err: any) {
       alert("Import failed: " + err.message);
+    }
+  };
+
+  // Block friend
+  const handleBlockFriend = async (blockedUserId: string, username: string) => {
+    if (confirm(`Are you sure you want to block ${username}?`)) {
+      try {
+        await blockUser({ blockedUserId });
+        if (activeChatFriend?.userId === blockedUserId) {
+          setActiveChatFriend(null);
+        }
+      } catch (err: any) {
+        alert("Failed to block: " + err.message);
+      }
     }
   };
 
@@ -610,6 +625,12 @@ export function FriendsView() {
                         }}
                       >
                         💬 Chat
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleBlockFriend(friend.userId, friend.username)}
+                      >
+                        🚫 Block
                       </button>
                     </div>
                   </div>

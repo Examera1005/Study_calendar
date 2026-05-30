@@ -8,12 +8,13 @@ import { ExamsView } from "./pages/ExamsView";
 import { TasksView } from "./pages/TasksView";
 import { DailyLogView } from "./pages/DailyLogView";
 import { SettingsView } from "./pages/SettingsView";
+import { SubjectsView } from "./pages/SubjectsView";
 import { FriendsView } from "./pages/FriendsView";
 import { api } from "../convex/_generated/api";
 import { Modal } from "./components/ui/Modal";
 import type { Id } from "../convex/_generated/dataModel";
 
-export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "settings" | "friends";
+export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "subjects" | "settings" | "friends";
 
 export default function App() {
   const [view, setView] = useState<View>(() => {
@@ -151,7 +152,8 @@ export default function App() {
                 setSelectedDate={setSelectedDate}
               />
             )}
-            {view === "settings" && <SettingsView />}
+            {view === "subjects" && <SubjectsView />}
+            {view === "settings" && <SettingsView theme={theme} setTheme={setTheme} />}
             {view === "friends" && <FriendsView />}
           </main>
         </div>

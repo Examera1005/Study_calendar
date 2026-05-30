@@ -2,9 +2,29 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
 
+// Helper to check if two users have blocked each other
+async function hasBlock(ctx: any, user1: string, user2: string) {
+  const b1 = await ctx.db
+    .query("blocks")
+    .withIndex("by_userId_and_blockedUserId", (q: any) =>
+      q.eq("userId", user1).eq("blockedUserId", user2)
+    )
+    .first();
+  const b2 = await ctx.db
+    .query("blocks")
+    .withIndex("by_userId_and_blockedUserId", (q: any) =>
+      q.eq("userId", user2).eq("blockedUserId", user1)
+    )
+    .first();
+  return !!(b1 || b2);
+}
+
 // Helper to assert two users are accepted friends
 async function assertIsFriends(ctx: any, user1: string, user2: string) {
   if (user1 === user2) return true;
+  if (await hasBlock(ctx, user1, user2)) {
+    throw new Error("Blocked.");
+  }
   const friendship = await ctx.db
     .query("friendships")
     .withIndex("by_user1_and_user2", (q: any) =>
@@ -98,12 +118,18 @@ export const searchProfile = query({
       search = "@" + search;
     }
 
-    // Since Convex doesn't have prefix full text queries easily, we query some profiles
-    // and filter them. We bound this for performance.
     const all = await ctx.db.query("userProfiles").take(100);
-    return all.filter(
-      (p) => p.userId !== identity.tokenIdentifier && p.username.includes(search)
-    );
+    const results = [];
+    for (const p of all) {
+      if (p.userId === identity.tokenIdentifier) continue;
+      if (!p.username.includes(search)) continue;
+      // Filter out if blocked
+      const blocked = await hasBlock(ctx, identity.tokenIdentifier, p.userId);
+      if (!blocked) {
+        results.push(p);
+      }
+    }
+    return results;
   },
 });
 
@@ -129,6 +155,11 @@ export const sendFriendRequest = mutation({
 
     if (targetProfile.userId === identity.tokenIdentifier) {
       throw new Error("You cannot add yourself.");
+    }
+
+    // Check if blocked
+    if (await hasBlock(ctx, identity.tokenIdentifier, targetProfile.userId)) {
+      throw new Error("Cannot send friend request: user is blocked.");
     }
 
     // Check if friendship already exists
@@ -183,6 +214,12 @@ export const getFriendships = query({
 
     for (const f of allFriendships) {
       const otherUserId = f.user1 === identity.tokenIdentifier ? f.user2 : f.user1;
+      
+      // Filter out if blocked
+      if (await hasBlock(ctx, identity.tokenIdentifier, otherUserId)) {
+        continue;
+      }
+
       const otherProfile = await ctx.db
         .query("userProfiles")
         .withIndex("by_userId", (q) => q.eq("userId", otherUserId))
@@ -476,5 +513,122 @@ export const sendMessage = mutation({
       senderEncryptedBody: args.senderEncryptedBody,
       timestamp: Date.now(),
     });
+  },
+});
+
+export const checkUsernameAvailable = query({
+  args: { username: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return false;
+
+    let search = args.username.trim().toLowerCase();
+    if (!search.startsWith("@")) {
+      search = "@" + search;
+    }
+    const cleanUsername = search.replace(/[^a-z0-9_@]/g, "");
+    if (cleanUsername.length < 3) return false;
+
+    const existing = await ctx.db
+      .query("userProfiles")
+      .withIndex("by_username", (q) => q.eq("username", cleanUsername))
+      .unique();
+
+    if (!existing) return true;
+    return existing.userId === identity.tokenIdentifier;
+  },
+});
+
+export const blockUser = mutation({
+  args: { blockedUserId: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    if (identity.tokenIdentifier === args.blockedUserId) {
+      throw new Error("Cannot block yourself");
+    }
+
+    // Check if already blocked
+    const existing = await ctx.db
+      .query("blocks")
+      .withIndex("by_userId_and_blockedUserId", (q) =>
+        q.eq("userId", identity.tokenIdentifier).eq("blockedUserId", args.blockedUserId)
+      )
+      .first();
+
+    if (!existing) {
+      await ctx.db.insert("blocks", {
+        userId: identity.tokenIdentifier,
+        blockedUserId: args.blockedUserId,
+      });
+    }
+
+    // Delete friendships if they exist
+    const f1 = await ctx.db
+      .query("friendships")
+      .withIndex("by_user1_and_user2", (q) =>
+        q.eq("user1", identity.tokenIdentifier).eq("user2", args.blockedUserId)
+      )
+      .first();
+    if (f1) await ctx.db.delete(f1._id);
+
+    const f2 = await ctx.db
+      .query("friendships")
+      .withIndex("by_user1_and_user2", (q) =>
+        q.eq("user1", args.blockedUserId).eq("user2", identity.tokenIdentifier)
+      )
+      .first();
+    if (f2) await ctx.db.delete(f2._id);
+
+    return true;
+  },
+});
+
+export const unblockUser = mutation({
+  args: { blockedUserId: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not authenticated");
+
+    const block = await ctx.db
+      .query("blocks")
+      .withIndex("by_userId_and_blockedUserId", (q) =>
+        q.eq("userId", identity.tokenIdentifier).eq("blockedUserId", args.blockedUserId)
+      )
+      .first();
+
+    if (block) {
+      await ctx.db.delete(block._id);
+    }
+    return true;
+  },
+});
+
+export const getBlockedUsers = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+
+    const blocks = await ctx.db
+      .query("blocks")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+      .collect();
+
+    const results = [];
+    for (const b of blocks) {
+      const profile = await ctx.db
+        .query("userProfiles")
+        .withIndex("by_userId", (q) => q.eq("userId", b.blockedUserId))
+        .unique();
+      if (profile) {
+        results.push({
+          userId: profile.userId,
+          username: profile.username,
+        });
+      }
+    }
+    return results;
   },
 });
