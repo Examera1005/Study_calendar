@@ -37,10 +37,10 @@ export default defineSchema({
     duration: v.optional(v.number()),
   }).index("by_userId_and_date", ["userId", "date"]),
 
-  // Tasks (to-do items)
+  // Tasks (to-do items) — "daily" tasks are tied to a date, "general" are backlog items
   tasks: defineTable({
     userId: v.string(),
-    date: v.string(),
+    date: v.optional(v.string()),
     title: v.string(),
     description: v.optional(v.string()),
     completed: v.boolean(),
@@ -50,9 +50,11 @@ export default defineSchema({
       v.literal("high"),
     ),
     subjectId: v.optional(v.id("subjects")),
+    taskType: v.optional(v.union(v.literal("daily"), v.literal("general"))),
   })
     .index("by_userId_and_date", ["userId", "date"])
-    .index("by_userId", ["userId"]),
+    .index("by_userId", ["userId"])
+    .index("by_userId_and_taskType", ["userId", "taskType"]),
 
   // Events (time-blocked calendar events)
   events: defineTable({

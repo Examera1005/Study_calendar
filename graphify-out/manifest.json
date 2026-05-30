@@ -1,0 +1,387 @@
+{
+  "/home/thelio/Github/Study_calendar/tsconfig.app.json": {
+    "mtime": 1780126474.0918853,
+    "ast_hash": "133fd6eb305e0bb22193445bddcace34",
+    "semantic_hash": "133fd6eb305e0bb22193445bddcace34"
+  },
+  "/home/thelio/Github/Study_calendar/skills-lock.json": {
+    "mtime": 1780125103.522039,
+    "ast_hash": "0fb1b4cf9c8ce6af3ddb013a5a801630",
+    "semantic_hash": "0fb1b4cf9c8ce6af3ddb013a5a801630"
+  },
+  "/home/thelio/Github/Study_calendar/tsconfig.json": {
+    "mtime": 1780126484.4338841,
+    "ast_hash": "be5ecee0f4bf01887a7449b5265f4615",
+    "semantic_hash": "be5ecee0f4bf01887a7449b5265f4615"
+  },
+  "/home/thelio/Github/Study_calendar/vite.config.ts": {
+    "mtime": 1780125654.1401956,
+    "ast_hash": "ee80d09370b6bfb1ad86efd9a737e411",
+    "semantic_hash": "ee80d09370b6bfb1ad86efd9a737e411"
+  },
+  "/home/thelio/Github/Study_calendar/package.json": {
+    "mtime": 1780130507.967811,
+    "ast_hash": "f8216855019a9b9e35203874dcab158f",
+    "semantic_hash": "f8216855019a9b9e35203874dcab158f"
+  },
+  "/home/thelio/Github/Study_calendar/.sisyphus/run-continuation/ses_188438837ffelx2z4SuN2209no.json": {
+    "mtime": 1780125403.1404672,
+    "ast_hash": "0c062a2cf9adf38b5218509fd0bae23d",
+    "semantic_hash": "0c062a2cf9adf38b5218509fd0bae23d"
+  },
+  "/home/thelio/Github/Study_calendar/convex/auth.config.ts": {
+    "mtime": 1780126156.3999436,
+    "ast_hash": "f39da5dea541ca9becbe77db9f756864",
+    "semantic_hash": "f39da5dea541ca9becbe77db9f756864"
+  },
+  "/home/thelio/Github/Study_calendar/convex/http.ts": {
+    "mtime": 1780125638.5544155,
+    "ast_hash": "9aedce2db3ff137981cc7f6b6b8ac13b",
+    "semantic_hash": "9aedce2db3ff137981cc7f6b6b8ac13b"
+  },
+  "/home/thelio/Github/Study_calendar/convex/schema.ts": {
+    "mtime": 1780153206.1713762,
+    "ast_hash": "82d13ae109375270face32ff332ac2b6",
+    "semantic_hash": "82d13ae109375270face32ff332ac2b6"
+  },
+  "/home/thelio/Github/Study_calendar/convex/tsconfig.json": {
+    "mtime": 1780125097.442906,
+    "ast_hash": "b4aff9f76abb56464900e5b3ab6b4c87",
+    "semantic_hash": "b4aff9f76abb56464900e5b3ab6b4c87"
+  },
+  "/home/thelio/Github/Study_calendar/convex/dailyLogs.ts": {
+    "mtime": 1780142644.1690083,
+    "ast_hash": "810ad016745ad5895d75cc53ad89542a",
+    "semantic_hash": "810ad016745ad5895d75cc53ad89542a"
+  },
+  "/home/thelio/Github/Study_calendar/convex/friends.ts": {
+    "mtime": 1780147574.0801167,
+    "ast_hash": "1de8302404e1595d9225790b130346ff",
+    "semantic_hash": "1de8302404e1595d9225790b130346ff"
+  },
+  "/home/thelio/Github/Study_calendar/convex/subjects.ts": {
+    "mtime": 1780129204.7669687,
+    "ast_hash": "686758add70c73f798e7015c3e9d29c0",
+    "semantic_hash": "686758add70c73f798e7015c3e9d29c0"
+  },
+  "/home/thelio/Github/Study_calendar/convex/exams.ts": {
+    "mtime": 1780125722.0101435,
+    "ast_hash": "2ddb1d3db8adc2cff6f632de9828629d",
+    "semantic_hash": "2ddb1d3db8adc2cff6f632de9828629d"
+  },
+  "/home/thelio/Github/Study_calendar/convex/events.ts": {
+    "mtime": 1780125735.437134,
+    "ast_hash": "adb997fa7c16cad34cb4ee98996f50a0",
+    "semantic_hash": "adb997fa7c16cad34cb4ee98996f50a0"
+  },
+  "/home/thelio/Github/Study_calendar/convex/auth.ts": {
+    "mtime": 1780125652.1221972,
+    "ast_hash": "d6a07e67e0d0d838b4e5895a7f16b11e",
+    "semantic_hash": "d6a07e67e0d0d838b4e5895a7f16b11e"
+  },
+  "/home/thelio/Github/Study_calendar/convex/tasks.ts": {
+    "mtime": 1780153393.2494068,
+    "ast_hash": "2523cf4cf8e461a5a9d9b29abca79e1c",
+    "semantic_hash": "2523cf4cf8e461a5a9d9b29abca79e1c"
+  },
+  "/home/thelio/Github/Study_calendar/convex/_generated/dataModel.d.ts": {
+    "mtime": 1780125704.0771565,
+    "ast_hash": "af87bff09394971f8debeb5b8e9f8a70",
+    "semantic_hash": "af87bff09394971f8debeb5b8e9f8a70"
+  },
+  "/home/thelio/Github/Study_calendar/convex/_generated/server.d.ts": {
+    "mtime": 1780125104.758036,
+    "ast_hash": "a6d3e29e1cd98c6a0ebcf82d5074009e",
+    "semantic_hash": "a6d3e29e1cd98c6a0ebcf82d5074009e"
+  },
+  "/home/thelio/Github/Study_calendar/convex/_generated/api.js": {
+    "mtime": 1780125104.2193959,
+    "ast_hash": "ea14005171d3e17b1b28a7139ad36d62",
+    "semantic_hash": "ea14005171d3e17b1b28a7139ad36d62"
+  },
+  "/home/thelio/Github/Study_calendar/convex/_generated/api.d.ts": {
+    "mtime": 1780146384.9402387,
+    "ast_hash": "dfd04305b319ebf101dc14a63175fb37",
+    "semantic_hash": "dfd04305b319ebf101dc14a63175fb37"
+  },
+  "/home/thelio/Github/Study_calendar/convex/_generated/server.js": {
+    "mtime": 1780125104.7530358,
+    "ast_hash": "cfc7a4ed084119abac0e51d79f525f4f",
+    "semantic_hash": "cfc7a4ed084119abac0e51d79f525f4f"
+  },
+  "/home/thelio/Github/Study_calendar/convex/_generated/ai/ai-files.state.json": {
+    "mtime": 1780125103.874038,
+    "ast_hash": "fbb66975fd2f1bbcb5fe53cbef6c76eb",
+    "semantic_hash": "fbb66975fd2f1bbcb5fe53cbef6c76eb"
+  },
+  "/home/thelio/Github/Study_calendar/src/App.tsx": {
+    "mtime": 1780147620.9801607,
+    "ast_hash": "9ceb66a11346e195652717afe7daa7d7",
+    "semantic_hash": "9ceb66a11346e195652717afe7daa7d7"
+  },
+  "/home/thelio/Github/Study_calendar/src/main.tsx": {
+    "mtime": 1780129689.0549266,
+    "ast_hash": "438f0da6729c837b59478ad30db73abf",
+    "semantic_hash": "438f0da6729c837b59478ad30db73abf"
+  },
+  "/home/thelio/Github/Study_calendar/src/vite-env.d.ts": {
+    "mtime": 1780125667.4641848,
+    "ast_hash": "0352474ba2918efe13895edbc3780d94",
+    "semantic_hash": "0352474ba2918efe13895edbc3780d94"
+  },
+  "/home/thelio/Github/Study_calendar/src/components/auth/SignIn.tsx": {
+    "mtime": 1780142708.629951,
+    "ast_hash": "5e362e0ac9849270176383209b5e757a",
+    "semantic_hash": "5e362e0ac9849270176383209b5e757a"
+  },
+  "/home/thelio/Github/Study_calendar/src/components/layout/Sidebar.tsx": {
+    "mtime": 1780147625.8121655,
+    "ast_hash": "361c596eba82cb168fe6abfe691e3a55",
+    "semantic_hash": "361c596eba82cb168fe6abfe691e3a55"
+  },
+  "/home/thelio/Github/Study_calendar/src/components/ui/Modal.tsx": {
+    "mtime": 1780125952.9800136,
+    "ast_hash": "b3cdbb05b5587278bea80606d32c73ae",
+    "semantic_hash": "b3cdbb05b5587278bea80606d32c73ae"
+  },
+  "/home/thelio/Github/Study_calendar/src/components/ui/ColorPicker.tsx": {
+    "mtime": 1780125954.986013,
+    "ast_hash": "0de24812bc31b0bb5c22af07f451f8da",
+    "semantic_hash": "0de24812bc31b0bb5c22af07f451f8da"
+  },
+  "/home/thelio/Github/Study_calendar/src/components/ui/SubjectBadge.tsx": {
+    "mtime": 1780128057.4009,
+    "ast_hash": "af936f4c85481186a74ca6b07831303e",
+    "semantic_hash": "af936f4c85481186a74ca6b07831303e"
+  },
+  "/home/thelio/Github/Study_calendar/src/pages/SettingsView.tsx": {
+    "mtime": 1780147654.4641945,
+    "ast_hash": "727be45316c8f1baffa396b11e285358",
+    "semantic_hash": "727be45316c8f1baffa396b11e285358"
+  },
+  "/home/thelio/Github/Study_calendar/src/pages/FriendsView.tsx": {
+    "mtime": 1780147611.5611517,
+    "ast_hash": "7a829d1441034d31268a7303cc6f9b89",
+    "semantic_hash": "7a829d1441034d31268a7303cc6f9b89"
+  },
+  "/home/thelio/Github/Study_calendar/src/pages/Dashboard.tsx": {
+    "mtime": 1780153305.9559643,
+    "ast_hash": "8ff398a708b32ef67d66a46e22bc2989",
+    "semantic_hash": "8ff398a708b32ef67d66a46e22bc2989"
+  },
+  "/home/thelio/Github/Study_calendar/src/pages/SubjectsView.tsx": {
+    "mtime": 1780147591.3911326,
+    "ast_hash": "68fa6d50c839c0d5a07022508b618740",
+    "semantic_hash": "68fa6d50c839c0d5a07022508b618740"
+  },
+  "/home/thelio/Github/Study_calendar/src/pages/ExamsView.tsx": {
+    "mtime": 1780128453.8589232,
+    "ast_hash": "421b1f30c233c397ceaa60b00fef4dfa",
+    "semantic_hash": "421b1f30c233c397ceaa60b00fef4dfa"
+  },
+  "/home/thelio/Github/Study_calendar/src/pages/TasksView.tsx": {
+    "mtime": 1780153363.355888,
+    "ast_hash": "eb8b1fefdc4ebb0c2bb53094bab6286b",
+    "semantic_hash": "eb8b1fefdc4ebb0c2bb53094bab6286b"
+  },
+  "/home/thelio/Github/Study_calendar/src/pages/CalendarView.tsx": {
+    "mtime": 1780153426.3439329,
+    "ast_hash": "b503465f8e670c2acbf0d6d24111da47",
+    "semantic_hash": "b503465f8e670c2acbf0d6d24111da47"
+  },
+  "/home/thelio/Github/Study_calendar/src/pages/DailyLogView.tsx": {
+    "mtime": 1780143780.7321696,
+    "ast_hash": "e764e781ba4e0e27423b836ff3248eb7",
+    "semantic_hash": "e764e781ba4e0e27423b836ff3248eb7"
+  },
+  "/home/thelio/Github/Study_calendar/src/utils/crypto.ts": {
+    "mtime": 1780146393.2002513,
+    "ast_hash": "d8ab0e70bed96383d67b28406e7998f7",
+    "semantic_hash": "d8ab0e70bed96383d67b28406e7998f7"
+  },
+  "/home/thelio/Github/Study_calendar/pnpm-workspace.yaml": {
+    "mtime": 1780125038.4522157,
+    "ast_hash": "7bb23c19c0343fac40d375bacca550d0",
+    "semantic_hash": "7bb23c19c0343fac40d375bacca550d0"
+  },
+  "/home/thelio/Github/Study_calendar/index.html": {
+    "mtime": 1780125665.4561863,
+    "ast_hash": "7bd77b044b4bc98bc6782e0fb3f082d1",
+    "semantic_hash": "7bd77b044b4bc98bc6782e0fb3f082d1"
+  },
+  "/home/thelio/Github/Study_calendar/CLAUDE.md": {
+    "mtime": 1780125100.2975914,
+    "ast_hash": "34281e9ffd842238948717ac9c01f392",
+    "semantic_hash": "34281e9ffd842238948717ac9c01f392"
+  },
+  "/home/thelio/Github/Study_calendar/AGENTS.md": {
+    "mtime": 1780125100.2970507,
+    "ast_hash": "34281e9ffd842238948717ac9c01f392",
+    "semantic_hash": "34281e9ffd842238948717ac9c01f392"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-quickstart/SKILL.md": {
+    "mtime": 1780125103.5032332,
+    "ast_hash": "6e611fcde8ac05c4c810dcd7fd5068a2",
+    "semantic_hash": "6e611fcde8ac05c4c810dcd7fd5068a2"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-quickstart/agents/openai.yaml": {
+    "mtime": 1780125103.5033007,
+    "ast_hash": "488d168fd73397e3f8d84cc2191214bb",
+    "semantic_hash": "488d168fd73397e3f8d84cc2191214bb"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-performance-audit/SKILL.md": {
+    "mtime": 1780125103.5002859,
+    "ast_hash": "a87f528412cb9f4b9d1a2cae6b77392e",
+    "semantic_hash": "a87f528412cb9f4b9d1a2cae6b77392e"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-performance-audit/references/subscription-cost.md": {
+    "mtime": 1780125103.5007255,
+    "ast_hash": "6af1c1c1b47d36d2b69002111ce372df",
+    "semantic_hash": "6af1c1c1b47d36d2b69002111ce372df"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-performance-audit/references/hot-path-rules.md": {
+    "mtime": 1780125103.5006971,
+    "ast_hash": "8015a530db1586dc684daa40d37c9c5e",
+    "semantic_hash": "8015a530db1586dc684daa40d37c9c5e"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-performance-audit/references/function-budget.md": {
+    "mtime": 1780125103.5006807,
+    "ast_hash": "7d3345eaa4cadd3706cb7d0c245e91ed",
+    "semantic_hash": "7d3345eaa4cadd3706cb7d0c245e91ed"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-performance-audit/references/occ-conflicts.md": {
+    "mtime": 1780125103.5006807,
+    "ast_hash": "67910e750e26c1d431d8d46e50eca490",
+    "semantic_hash": "67910e750e26c1d431d8d46e50eca490"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-performance-audit/agents/openai.yaml": {
+    "mtime": 1780125103.5006518,
+    "ast_hash": "fcceae233d93de638332d7419443bedf",
+    "semantic_hash": "fcceae233d93de638332d7419443bedf"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex/SKILL.md": {
+    "mtime": 1780125103.487664,
+    "ast_hash": "a79b3d59cd110f16134585800b876874",
+    "semantic_hash": "a79b3d59cd110f16134585800b876874"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-migration-helper/SKILL.md": {
+    "mtime": 1780125103.4972339,
+    "ast_hash": "b36253cd6208c2c9cb605fbbb8346fd9",
+    "semantic_hash": "b36253cd6208c2c9cb605fbbb8346fd9"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-migration-helper/references/migrations-component.md": {
+    "mtime": 1780125103.4973953,
+    "ast_hash": "aa0dba7e8b4336da2a8b92d7e10ab95c",
+    "semantic_hash": "aa0dba7e8b4336da2a8b92d7e10ab95c"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-migration-helper/references/migration-patterns.md": {
+    "mtime": 1780125103.4973676,
+    "ast_hash": "600a39ee758284cb13184a7c34fb0a9d",
+    "semantic_hash": "600a39ee758284cb13184a7c34fb0a9d"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-migration-helper/agents/openai.yaml": {
+    "mtime": 1780125103.4973562,
+    "ast_hash": "2e6fb6113c711b485feae55627659d19",
+    "semantic_hash": "2e6fb6113c711b485feae55627659d19"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-create-component/SKILL.md": {
+    "mtime": 1780125103.4922853,
+    "ast_hash": "ec825ce9174c3c08775e6189be9c8b80",
+    "semantic_hash": "ec825ce9174c3c08775e6189be9c8b80"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-create-component/references/local-components.md": {
+    "mtime": 1780125103.4931548,
+    "ast_hash": "fa7ca7ad7cb3a6599c0ed76ca7da1cf3",
+    "semantic_hash": "fa7ca7ad7cb3a6599c0ed76ca7da1cf3"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-create-component/references/advanced-patterns.md": {
+    "mtime": 1780125103.4931548,
+    "ast_hash": "c521b78d48ce8ae0bd9613766063e463",
+    "semantic_hash": "c521b78d48ce8ae0bd9613766063e463"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-create-component/references/packaged-components.md": {
+    "mtime": 1780125103.4932258,
+    "ast_hash": "f2572e9e30a334c4ca4e96a54f16108b",
+    "semantic_hash": "f2572e9e30a334c4ca4e96a54f16108b"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-create-component/references/hybrid-components.md": {
+    "mtime": 1780125103.4931803,
+    "ast_hash": "927a09d1ec50cffbcbe90c0d3b7145f7",
+    "semantic_hash": "927a09d1ec50cffbcbe90c0d3b7145f7"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-create-component/agents/openai.yaml": {
+    "mtime": 1780125103.4931097,
+    "ast_hash": "0a7ae3f14ed8bbb7a59c8838d8e58bbc",
+    "semantic_hash": "0a7ae3f14ed8bbb7a59c8838d8e58bbc"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-setup-auth/SKILL.md": {
+    "mtime": 1780125103.506911,
+    "ast_hash": "06366db7119b25ddf68175979166d1a7",
+    "semantic_hash": "06366db7119b25ddf68175979166d1a7"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-setup-auth/references/convex-auth.md": {
+    "mtime": 1780125103.5071554,
+    "ast_hash": "6bf92f2d2db0304c5cb3d45751e9e082",
+    "semantic_hash": "6bf92f2d2db0304c5cb3d45751e9e082"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-setup-auth/references/workos-authkit.md": {
+    "mtime": 1780125103.507196,
+    "ast_hash": "43b20ab3d92d60ae7785ed73a024ad26",
+    "semantic_hash": "43b20ab3d92d60ae7785ed73a024ad26"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-setup-auth/references/auth0.md": {
+    "mtime": 1780125103.507145,
+    "ast_hash": "65d097addc858433fe10e97882528ae1",
+    "semantic_hash": "65d097addc858433fe10e97882528ae1"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-setup-auth/references/clerk.md": {
+    "mtime": 1780125103.5071554,
+    "ast_hash": "692b879bedc8bc5787e1813cd04cf711",
+    "semantic_hash": "692b879bedc8bc5787e1813cd04cf711"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-setup-auth/agents/openai.yaml": {
+    "mtime": 1780125103.5071044,
+    "ast_hash": "6085f6499e386748452563303ad8d075",
+    "semantic_hash": "6085f6499e386748452563303ad8d075"
+  },
+  "/home/thelio/Github/Study_calendar/convex/README.md": {
+    "mtime": 1780125097.4254062,
+    "ast_hash": "3a0f15b8c7f1cc532958811e1ce6d311",
+    "semantic_hash": "3a0f15b8c7f1cc532958811e1ce6d311"
+  },
+  "/home/thelio/Github/Study_calendar/convex/_generated/ai/guidelines.md": {
+    "mtime": 1780125100.2950473,
+    "ast_hash": "e1d69cf237f235d870171f1c50306b82",
+    "semantic_hash": "e1d69cf237f235d870171f1c50306b82"
+  },
+  "/home/thelio/Github/Study_calendar/public/robots.txt": {
+    "mtime": 1780143920.555242,
+    "ast_hash": "fd05b190525e47ff0d90d20a24980cb9",
+    "semantic_hash": "fd05b190525e47ff0d90d20a24980cb9"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-quickstart/assets/icon.svg": {
+    "mtime": 1780125103.5033422,
+    "ast_hash": "ee6d5a57c359c31069c6543131eecfb0",
+    "semantic_hash": "ee6d5a57c359c31069c6543131eecfb0"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-performance-audit/assets/icon.svg": {
+    "mtime": 1780125103.5006518,
+    "ast_hash": "9d96d8029f3a3e73c898bffd41abbf4b",
+    "semantic_hash": "9d96d8029f3a3e73c898bffd41abbf4b"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-migration-helper/assets/icon.svg": {
+    "mtime": 1780125103.4973562,
+    "ast_hash": "d3f9b469ddd0979fdf7a34ffdf0d291d",
+    "semantic_hash": "d3f9b469ddd0979fdf7a34ffdf0d291d"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-create-component/assets/icon.svg": {
+    "mtime": 1780125103.4931245,
+    "ast_hash": "750ee31db4186a3a336f1c6376a15221",
+    "semantic_hash": "750ee31db4186a3a336f1c6376a15221"
+  },
+  "/home/thelio/Github/Study_calendar/.agents/skills/convex-setup-auth/assets/icon.svg": {
+    "mtime": 1780125103.5071044,
+    "ast_hash": "5fd65f0f070bca77e1ea8ed46fbc1fd3",
+    "semantic_hash": "5fd65f0f070bca77e1ea8ed46fbc1fd3"
+  }
+}

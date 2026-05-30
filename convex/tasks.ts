@@ -6,12 +6,28 @@ export const getByDate = query({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) return [];
-    return await ctx.db
+    const tasks = await ctx.db
       .query("tasks")
       .withIndex("by_userId_and_date", (q) =>
         q.eq("userId", identity.tokenIdentifier).eq("date", args.date),
       )
       .take(50);
+    // Only return daily tasks (or legacy tasks without taskType)
+    return tasks.filter((t) => t.taskType !== "general");
+  },
+});
+
+export const listGeneral = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    return await ctx.db
+      .query("tasks")
+      .withIndex("by_userId_and_taskType", (q) =>
+        q.eq("userId", identity.tokenIdentifier).eq("taskType", "general"),
+      )
+      .take(100);
   },
 });
 
@@ -30,7 +46,7 @@ export const listIncomplete = query({
 
 export const create = mutation({
   args: {
-    date: v.string(),
+    date: v.optional(v.string()),
     title: v.string(),
     description: v.optional(v.string()),
     priority: v.union(
@@ -39,18 +55,21 @@ export const create = mutation({
       v.literal("high"),
     ),
     subjectId: v.optional(v.id("subjects")),
+    taskType: v.optional(v.union(v.literal("daily"), v.literal("general"))),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) throw new Error("Not authenticated");
+    const type = args.taskType ?? "daily";
     return await ctx.db.insert("tasks", {
       userId: identity.tokenIdentifier,
-      date: args.date,
+      date: type === "general" ? undefined : args.date,
       title: args.title,
       description: args.description,
       completed: false,
       priority: args.priority,
       subjectId: args.subjectId,
+      taskType: type,
     });
   },
 });
@@ -78,6 +97,7 @@ export const update = mutation({
       v.union(v.literal("low"), v.literal("medium"), v.literal("high")),
     ),
     subjectId: v.optional(v.id("subjects")),
+    taskType: v.optional(v.union(v.literal("daily"), v.literal("general"))),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -90,7 +110,13 @@ export const update = mutation({
     const filtered = Object.fromEntries(
       Object.entries(updates).filter(([, v]) => v !== undefined),
     );
-    await ctx.db.patch(id, filtered);
+    // If switching to general, clear the date
+    if (updates.taskType === "general") {
+      delete filtered.date;
+      await ctx.db.patch(id, { ...filtered, date: undefined });
+    } else {
+      await ctx.db.patch(id, filtered);
+    }
   },
 });
 

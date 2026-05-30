@@ -354,6 +354,7 @@ export function CalendarView({
                 description: (fd.get("description") as string) || undefined,
                 priority: (fd.get("priority") as "low" | "medium" | "high") ?? "medium",
                 subjectId: fd.get("subjectId") ? (fd.get("subjectId") as Id<"subjects">) : undefined,
+                taskType: "daily",
               });
               setShowTaskModal(false);
             }}

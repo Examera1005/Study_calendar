@@ -17,6 +17,7 @@ export function Dashboard({
   const today = new Date().toISOString().split("T")[0];
   const upcomingExams = useQuery(api.exams.upcoming, { limit: 5 });
   const todayTasks = useQuery(api.tasks.getByDate, { date: today });
+  const generalTasks = useQuery(api.tasks.listGeneral);
   const todayLogs = useQuery(api.dailyLogs.getByDate, { date: today });
   const todayEvents = useQuery(api.events.getByDate, { date: today });
   const subjects = useQuery(api.subjects.list);
@@ -128,6 +129,7 @@ export function Dashboard({
 
   const completedTasks = todayTasks?.filter((t) => t.completed).length ?? 0;
   const totalTasks = todayTasks?.length ?? 0;
+  const generalIncomplete = generalTasks?.filter((t) => !t.completed).length ?? 0;
   const totalMinutes = todayLogs?.reduce((a, l) => a + (l.duration ?? 0), 0) ?? 0;
 
   return (
@@ -444,6 +446,42 @@ export function Dashboard({
                 </div>
               </div>
             ))
+          )}
+        </div>
+
+        {/* General Tasks */}
+        <div className="card">
+          <div className="card-header">
+            <h3>📋 General Tasks</h3>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => setView("tasks")}
+            >
+              View all
+            </button>
+          </div>
+          {!generalTasks || generalTasks.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">📋</div>
+              <p>No general tasks</p>
+            </div>
+          ) : (
+            generalTasks.filter((t) => !t.completed).slice(0, 5).map((task) => (
+              <div
+                key={task._id}
+                className="task-item"
+              >
+                <div className={`priority-dot ${task.priority}`} />
+                <div>
+                  <div className="task-title">{task.title}</div>
+                </div>
+              </div>
+            ))
+          )}
+          {generalIncomplete > 0 && (
+            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 8 }}>
+              {generalIncomplete} remaining
+            </div>
           )}
         </div>
 
