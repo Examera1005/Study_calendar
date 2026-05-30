@@ -9,6 +9,7 @@ const NAV_ITEMS: { id: View; icon: string; label: string }[] = [
   { id: "exams", icon: "🎯", label: "Exams" },
   { id: "tasks", icon: "✅", label: "Tasks" },
   { id: "log", icon: "📝", label: "Daily Log" },
+  { id: "friends", icon: "👥", label: "Friends" },
   { id: "settings", icon: "⚙️", label: "Settings" },
 ];
 

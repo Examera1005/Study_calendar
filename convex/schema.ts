@@ -65,4 +65,33 @@ export default defineSchema({
     color: v.optional(v.string()),
     subjectId: v.optional(v.id("subjects")),
   }).index("by_userId_and_date", ["userId", "date"]),
+
+  userProfiles: defineTable({
+    userId: v.string(),
+    username: v.string(),
+    publicKey: v.string(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_username", ["username"]),
+
+  friendships: defineTable({
+    user1: v.string(), // userId of friend A
+    user2: v.string(), // userId of friend B
+    status: v.union(v.literal("pending"), v.literal("accepted")),
+    senderId: v.string(),
+  })
+    .index("by_user1", ["user1"])
+    .index("by_user2", ["user2"])
+    .index("by_user1_and_user2", ["user1", "user2"]),
+
+  messages: defineTable({
+    senderId: v.string(),
+    receiverId: v.string(),
+    encryptedBody: v.string(),
+    senderEncryptedBody: v.string(),
+    timestamp: v.number(),
+  })
+    .index("by_conversation", ["senderId", "receiverId"])
+    .index("by_receiverId", ["receiverId"]),
 });
+

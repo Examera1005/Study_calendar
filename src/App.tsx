@@ -8,11 +8,12 @@ import { ExamsView } from "./pages/ExamsView";
 import { TasksView } from "./pages/TasksView";
 import { DailyLogView } from "./pages/DailyLogView";
 import { SettingsView } from "./pages/SettingsView";
+import { FriendsView } from "./pages/FriendsView";
 import { api } from "../convex/_generated/api";
 import { Modal } from "./components/ui/Modal";
 import type { Id } from "../convex/_generated/dataModel";
 
-export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "settings";
+export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "settings" | "friends";
 
 export default function App() {
   const [view, setView] = useState<View>(() => {
@@ -151,6 +152,7 @@ export default function App() {
               />
             )}
             {view === "settings" && <SettingsView />}
+            {view === "friends" && <FriendsView />}
           </main>
         </div>
       </Authenticated>
