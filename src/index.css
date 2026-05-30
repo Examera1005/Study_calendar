@@ -1,8 +1,8 @@
 /* ========== PROFESSIONAL CONFIDENCE THEME SYSTEM ========== */
 :root {
   /* Dark Mode Default Values */
-  --bg-primary: #090d16;
-  --bg-secondary: #0f1524;
+  --bg-primary: #1b1c1d;
+  --bg-secondary: #141b2b;
   --bg-surface: #151d30;
   --bg-elevated: #1e293b;
   --bg-glass: rgba(30, 41, 59, 0.4);
@@ -10,9 +10,9 @@
   --border-subtle: rgba(148, 163, 184, 0.08);
   --border-medium: rgba(148, 163, 184, 0.16);
   
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-primary: #ffffff;
+  --text-secondary: #90a9cb;
+  --text-muted: #72839d;
   
   --accent-primary: #3b82f6; /* Trust Blue */
   --accent-hover: #2563eb;
