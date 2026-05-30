@@ -1058,4 +1058,35 @@ select { cursor: pointer; appearance: none;
   border-radius: var(--radius-md);
 }
 
+/* ========== COLOR PICKER SLIDER ========== */
+.color-picker-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid rgba(0, 0, 0, 0.7);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 100ms ease;
+}
+.color-picker-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.color-picker-slider::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid rgba(0, 0, 0, 0.7);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 100ms ease;
+}
+.color-picker-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+
+
 

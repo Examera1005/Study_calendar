@@ -13,6 +13,8 @@ import { FriendsView } from "./pages/FriendsView";
 import { api } from "../convex/_generated/api";
 import { Modal } from "./components/ui/Modal";
 import type { Id } from "../convex/_generated/dataModel";
+import { applyThemeCustomizations } from "./utils/colorUtils";
+
 
 export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "subjects" | "settings" | "friends";
 
@@ -95,6 +97,7 @@ export default function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
+    applyThemeCustomizations(theme);
   }, [theme]);
 
   const toggleTheme = () => {
