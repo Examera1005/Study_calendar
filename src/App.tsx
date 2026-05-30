@@ -14,9 +14,11 @@ import { api } from "../convex/_generated/api";
 import { Modal } from "./components/ui/Modal";
 import type { Id } from "../convex/_generated/dataModel";
 import { applyThemeCustomizations } from "./utils/colorUtils";
+import { AnalyticsView } from "./pages/AnalyticsView";
+import { playAlertSound } from "./utils/statsUtils";
 
 
-export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "subjects" | "settings" | "friends";
+export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "subjects" | "settings" | "friends" | "analytics";
 
 export default function App() {
   const [view, setView] = useState<View>(() => {
@@ -27,60 +29,127 @@ export default function App() {
   const subjects = useQuery(api.subjects.list);
   const createLog = useMutation(api.dailyLogs.create);
 
-  const [timerActive, setTimerActive] = useState(false);
-  const [timerStartTime, setTimerStartTime] = useState<number | null>(null);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  // Pomodoro Timer States
+  const [pomodoroStatus, setPomodoroStatus] = useState<"idle" | "running" | "paused">(() => {
+    return (localStorage.getItem("pomodoroStatus") as any) || "idle";
+  });
+  const [pomodoroMode, setPomodoroMode] = useState<"work" | "break">(() => {
+    return (localStorage.getItem("pomodoroMode") as any) || "work";
+  });
+  const [workDuration, setWorkDuration] = useState<number>(() => {
+    const saved = localStorage.getItem("pomodoroWorkDuration");
+    return saved ? Number(saved) : 25;
+  });
+  const [breakDuration, setBreakDuration] = useState<number>(() => {
+    const saved = localStorage.getItem("pomodoroBreakDuration");
+    return saved ? Number(saved) : 5;
+  });
+  const [timeLeft, setTimeLeft] = useState<number>(() => {
+    const saved = localStorage.getItem("pomodoroTimeLeft");
+    if (saved) return Number(saved);
+    const mode = localStorage.getItem("pomodoroMode") || "work";
+    const work = localStorage.getItem("pomodoroWorkDuration") ? Number(localStorage.getItem("pomodoroWorkDuration")) : 25;
+    const brk = localStorage.getItem("pomodoroBreakDuration") ? Number(localStorage.getItem("pomodoroBreakDuration")) : 5;
+    return mode === "work" ? work * 60 : brk * 60;
+  });
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(() => {
+    const saved = localStorage.getItem("pomodoroElapsedSeconds");
+    return saved ? Number(saved) : 0;
+  });
   const [showSaveTimerModal, setShowSaveTimerModal] = useState(false);
   const [sessionMinutes, setSessionMinutes] = useState(0);
 
-  // Restore timer on mount
+  // Sync state to localStorage
   useEffect(() => {
-    const active = localStorage.getItem("studyTimerActive") === "true";
-    const start = localStorage.getItem("studyTimerStart");
-    if (active && start) {
-      setTimerActive(true);
-      const startMs = Number(start);
-      setTimerStartTime(startMs);
-      setElapsedSeconds(Math.floor((Date.now() - startMs) / 1000));
-    }
-  }, []);
+    localStorage.setItem("pomodoroStatus", pomodoroStatus);
+    localStorage.setItem("pomodoroMode", pomodoroMode);
+    localStorage.setItem("pomodoroWorkDuration", String(workDuration));
+    localStorage.setItem("pomodoroBreakDuration", String(breakDuration));
+    localStorage.setItem("pomodoroTimeLeft", String(timeLeft));
+    localStorage.setItem("pomodoroElapsedSeconds", String(elapsedSeconds));
+  }, [pomodoroStatus, pomodoroMode, workDuration, breakDuration, timeLeft, elapsedSeconds]);
 
-  // Tick timer
+  // Update time left if durations change while idle
   useEffect(() => {
-    let interval: any = null;
-    if (timerActive && timerStartTime !== null) {
-      interval = setInterval(() => {
-        const secs = Math.floor((Date.now() - timerStartTime) / 1000);
-        setElapsedSeconds(secs);
+    if (pomodoroStatus === "idle") {
+      setTimeLeft(pomodoroMode === "work" ? workDuration * 60 : breakDuration * 60);
+    }
+  }, [workDuration, breakDuration, pomodoroMode, pomodoroStatus]);
+
+  // Handle Pomodoro Timer Ticking
+  useEffect(() => {
+    let timerInterval: any = null;
+
+    if (pomodoroStatus === "running") {
+      timerInterval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerInterval);
+            // Trigger timer complete asynchronously to prevent infinite state update loops
+            setTimeout(() => handleTimerComplete(), 0);
+            return 0;
+          }
+          return prev - 1;
+        });
+
+        if (pomodoroMode === "work") {
+          setElapsedSeconds((prev) => prev + 1);
+        }
       }, 1000);
+    }
+
+    return () => {
+      if (timerInterval) clearInterval(timerInterval);
+    };
+  }, [pomodoroStatus, pomodoroMode]);
+
+  const handleTimerComplete = () => {
+    if (pomodoroMode === "work") {
+      playAlertSound("success");
+      setSessionMinutes(workDuration);
+      setShowSaveTimerModal(true);
+      
+      setPomodoroMode("break");
+      setPomodoroStatus("paused");
+      setTimeLeft(breakDuration * 60);
+      setElapsedSeconds(0);
     } else {
+      playAlertSound("break");
+      setPomodoroMode("work");
+      setPomodoroStatus("paused");
+      setTimeLeft(workDuration * 60);
       setElapsedSeconds(0);
     }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [timerActive, timerStartTime]);
+  };
 
-  const startTimer = () => {
-    const now = Date.now();
-    localStorage.setItem("studyTimerActive", "true");
-    localStorage.setItem("studyTimerStart", String(now));
-    setTimerStartTime(now);
-    setTimerActive(true);
+  const startPomodoro = () => {
+    if (pomodoroStatus === "idle") {
+      setTimeLeft(pomodoroMode === "work" ? workDuration * 60 : breakDuration * 60);
+      setElapsedSeconds(0);
+    }
+    setPomodoroStatus("running");
+  };
+
+  const pausePomodoro = () => {
+    setPomodoroStatus("paused");
+  };
+
+  const resetPomodoro = () => {
+    setPomodoroStatus("idle");
+    setPomodoroMode("work");
+    setTimeLeft(workDuration * 60);
     setElapsedSeconds(0);
   };
 
-  const stopTimer = () => {
-    const mins = Math.max(1, Math.round(elapsedSeconds / 60));
-    setSessionMinutes(mins);
-    setShowSaveTimerModal(true);
-    
-    // Reset state
-    localStorage.removeItem("studyTimerActive");
-    localStorage.removeItem("studyTimerStart");
-    setTimerActive(false);
-    setTimerStartTime(null);
+  const stopAndLogWork = () => {
+    if (pomodoroMode === "work" && elapsedSeconds >= 10) {
+      const mins = Math.max(1, Math.round(elapsedSeconds / 60));
+      setSessionMinutes(mins);
+      setShowSaveTimerModal(true);
+    }
+    resetPomodoro();
   };
+
 
   useEffect(() => {
     localStorage.setItem("currentView", view);
@@ -123,10 +192,17 @@ export default function App() {
             setView={setView}
             theme={theme}
             toggleTheme={toggleTheme}
-            timerActive={timerActive}
-            elapsedSeconds={elapsedSeconds}
-            startTimer={startTimer}
-            stopTimer={stopTimer}
+            pomodoroStatus={pomodoroStatus}
+            pomodoroMode={pomodoroMode}
+            timeLeft={timeLeft}
+            workDuration={workDuration}
+            breakDuration={breakDuration}
+            setWorkDuration={setWorkDuration}
+            setBreakDuration={setBreakDuration}
+            startPomodoro={startPomodoro}
+            pausePomodoro={pausePomodoro}
+            resetPomodoro={resetPomodoro}
+            stopAndLogWork={stopAndLogWork}
           />
           <main className="main-content">
             {view === "dashboard" && (
@@ -158,6 +234,7 @@ export default function App() {
             {view === "subjects" && <SubjectsView />}
             {view === "settings" && <SettingsView theme={theme} setTheme={setTheme} />}
             {view === "friends" && <FriendsView />}
+            {view === "analytics" && <AnalyticsView />}
           </main>
         </div>
       </Authenticated>

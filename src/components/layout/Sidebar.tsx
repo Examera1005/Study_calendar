@@ -6,6 +6,7 @@ import { Modal } from "../ui/Modal";
 const NAV_ITEMS: { id: View; icon: string; label: string }[] = [
   { id: "dashboard", icon: "🏠", label: "Dashboard" },
   { id: "calendar", icon: "📅", label: "Calendar" },
+  { id: "analytics", icon: "📊", label: "Stats & Badges" },
   { id: "exams", icon: "🎯", label: "Exams" },
   { id: "tasks", icon: "✅", label: "Tasks" },
   { id: "log", icon: "📝", label: "Daily Log" },
@@ -19,19 +20,33 @@ export function Sidebar({
   setView,
   theme,
   toggleTheme,
-  timerActive,
-  elapsedSeconds,
-  startTimer,
-  stopTimer,
+  pomodoroStatus,
+  pomodoroMode,
+  timeLeft,
+  workDuration,
+  breakDuration,
+  setWorkDuration,
+  setBreakDuration,
+  startPomodoro,
+  pausePomodoro,
+  resetPomodoro,
+  stopAndLogWork,
 }: {
   view: View;
   setView: (v: View) => void;
   theme: "light" | "dark";
   toggleTheme: () => void;
-  timerActive: boolean;
-  elapsedSeconds: number;
-  startTimer: () => void;
-  stopTimer: () => void;
+  pomodoroStatus: "idle" | "running" | "paused";
+  pomodoroMode: "work" | "break";
+  timeLeft: number;
+  workDuration: number;
+  breakDuration: number;
+  setWorkDuration: (w: number) => void;
+  setBreakDuration: (b: number) => void;
+  startPomodoro: () => void;
+  pausePomodoro: () => void;
+  resetPomodoro: () => void;
+  stopAndLogWork: () => void;
 }) {
   const { signOut } = useAuthActions();
   const [showLegal, setShowLegal] = useState<"privacy" | "terms" | null>(null);
@@ -54,43 +69,103 @@ export function Sidebar({
         <span>Stay organized, ace your exams</span>
       </div>
 
-      {/* Study Session Widget */}
+      {/* Pomodoro Timer Widget */}
       <div style={{
         margin: "0 12px 12px",
         padding: "12px",
-        background: timerActive ? "rgba(59, 130, 246, 0.1)" : "var(--bg-elevated)",
-        border: timerActive ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
+        background: pomodoroStatus === "running" 
+          ? (pomodoroMode === "work" ? "rgba(59, 130, 246, 0.08)" : "rgba(16, 185, 129, 0.08)")
+          : "var(--bg-elevated)",
+        border: pomodoroStatus === "running"
+          ? (pomodoroMode === "work" ? "1px solid var(--accent-primary)" : "1px solid var(--success)")
+          : "1px solid var(--border-subtle)",
         borderRadius: "var(--radius-lg)",
         textAlign: "center",
         transition: "all var(--transition-normal)"
       }}>
-        {timerActive ? (
+        {pomodoroStatus === "idle" ? (
           <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
-              <span className="pulse-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--danger)" }} />
-              <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--danger)" }}>STUDYING LIVE</span>
+            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 6 }}>Ready to focus?</div>
+            
+            {/* Config Selectors */}
+            <div style={{ display: "flex", gap: 6, justifyContent: "center", marginBottom: 10 }}>
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: "0.6rem", color: "var(--text-muted)", display: "block", textTransform: "uppercase" }}>Work</span>
+                <select
+                  value={workDuration}
+                  onChange={(e) => setWorkDuration(Number(e.target.value))}
+                  style={{ padding: "4px", fontSize: "0.78rem", height: 26, background: "var(--bg-primary)" }}
+                >
+                  <option value={10}>10m</option>
+                  <option value={15}>15m</option>
+                  <option value={25}>25m</option>
+                  <option value={30}>30m</option>
+                  <option value={45}>45m</option>
+                  <option value={60}>60m</option>
+                </select>
+              </div>
+              <div style={{ flex: 1 }}>
+                <span style={{ fontSize: "0.6rem", color: "var(--text-muted)", display: "block", textTransform: "uppercase" }}>Break</span>
+                <select
+                  value={breakDuration}
+                  onChange={(e) => setBreakDuration(Number(e.target.value))}
+                  style={{ padding: "4px", fontSize: "0.78rem", height: 26, background: "var(--bg-primary)" }}
+                >
+                  <option value={3}>3m</option>
+                  <option value={5}>5m</option>
+                  <option value={10}>10m</option>
+                  <option value={15}>15m</option>
+                </select>
+              </div>
             </div>
-            <div style={{ fontSize: "1.35rem", fontWeight: 800, fontFamily: "monospace", margin: "6px 0", color: "var(--text-primary)" }}>
-              {formatTime(elapsedSeconds)}
-            </div>
+
             <button
-              className="btn btn-danger btn-sm btn-full"
-              onClick={stopTimer}
-              style={{ marginTop: 8 }}
+              className="btn btn-primary btn-sm btn-full"
+              onClick={startPomodoro}
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
             >
-              ⏹ Stop & Log
+              ⏱️ Start Pomodoro
             </button>
           </div>
         ) : (
           <div>
-            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 8 }}>Ready to focus?</div>
-            <button
-              className="btn btn-primary btn-sm btn-full"
-              onClick={startTimer}
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
-            >
-              ⏱️ Start Study Session
-            </button>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
+              {pomodoroStatus === "running" && <span className="pulse-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: pomodoroMode === "work" ? "var(--accent-primary)" : "var(--success)" }} />}
+              <span style={{ fontSize: "0.72rem", fontWeight: 700, color: pomodoroMode === "work" ? "var(--accent-primary)" : "var(--success)" }}>
+                {pomodoroMode === "work" ? "WORK SESSION" : "BREAK TIME"}
+              </span>
+            </div>
+            
+            <div style={{ fontSize: "1.45rem", fontWeight: 800, fontFamily: "monospace", margin: "6px 0", color: "var(--text-primary)" }}>
+              {formatTime(timeLeft)}
+            </div>
+
+            <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+              {pomodoroStatus === "running" ? (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={pausePomodoro}
+                  style={{ flex: 1, padding: "6px" }}
+                >
+                  ⏸ Pause
+                </button>
+              ) : (
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={startPomodoro}
+                  style={{ flex: 1, padding: "6px" }}
+                >
+                  ▶️ Resume
+                </button>
+              )}
+              <button
+                className="btn btn-danger btn-sm"
+                onClick={stopAndLogWork}
+                style={{ flex: 1, padding: "6px" }}
+              >
+                ⏹ Stop
+              </button>
+            </div>
           </div>
         )}
       </div>

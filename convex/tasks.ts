@@ -132,3 +132,16 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+    return await ctx.db
+      .query("tasks")
+      .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+      .take(200);
+  },
+});
+

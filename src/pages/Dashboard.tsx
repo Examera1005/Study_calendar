@@ -4,6 +4,8 @@ import { format } from "date-fns";
 import type { View } from "../App";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import { useState } from "react";
+import { calculateStreak } from "../utils/statsUtils";
+
 
 export function Dashboard({
   setView,
@@ -22,6 +24,7 @@ export function Dashboard({
   const todayEvents = useQuery(api.events.getByDate, { date: today });
   const subjects = useQuery(api.subjects.list);
   const allLogs = useQuery(api.dailyLogs.list);
+  const streak = calculateStreak(allLogs || []);
 
   const getSubject = (id: string) => subjects?.find((s) => s._id === id);
 
@@ -153,6 +156,12 @@ export function Dashboard({
             {completedTasks}/{totalTasks}
           </div>
           <div className="stat-label">Today's Tasks</div>
+        </div>
+        <div className="stat-card" style={{ cursor: "pointer" }} onClick={() => setView("analytics")}>
+          <div className="stat-value" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            🔥 {streak} {streak > 1 ? "Jours" : "Jour"}
+          </div>
+          <div className="stat-label">Série d'Études</div>
         </div>
         <div className="stat-card">
           <div className="stat-value">{todayLogs?.length ?? 0}</div>
