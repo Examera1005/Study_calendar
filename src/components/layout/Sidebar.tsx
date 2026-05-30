@@ -111,6 +111,7 @@ export function Sidebar({
                   onChange={(e) => setBreakDuration(Number(e.target.value))}
                   style={{ padding: "4px", fontSize: "0.78rem", height: 26, background: "var(--bg-primary)" }}
                 >
+                  <option value={0}>None</option>
                   <option value={3}>3m</option>
                   <option value={5}>5m</option>
                   <option value={10}>10m</option>

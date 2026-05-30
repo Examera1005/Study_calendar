@@ -109,10 +109,17 @@ export default function App() {
       setSessionMinutes(workDuration);
       setShowSaveTimerModal(true);
       
-      setPomodoroMode("break");
-      setPomodoroStatus("paused");
-      setTimeLeft(breakDuration * 60);
-      setElapsedSeconds(0);
+      if (breakDuration === 0) {
+        setPomodoroMode("work");
+        setPomodoroStatus("idle");
+        setTimeLeft(workDuration * 60);
+        setElapsedSeconds(0);
+      } else {
+        setPomodoroMode("break");
+        setPomodoroStatus("paused");
+        setTimeLeft(breakDuration * 60);
+        setElapsedSeconds(0);
+      }
     } else {
       playAlertSound("break");
       setPomodoroMode("work");
