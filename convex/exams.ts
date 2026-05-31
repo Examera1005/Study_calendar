@@ -1,14 +1,15 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     return await ctx.db
       .query("exams")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .take(200);
   },
 });
@@ -16,13 +17,13 @@ export const list = query({
 export const upcoming = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     const today = new Date().toISOString().split("T")[0];
     const exams = await ctx.db
       .query("exams")
       .withIndex("by_userId_and_date", (q) =>
-        q.eq("userId", identity.tokenIdentifier).gte("date", today),
+        q.eq("userId", userId).gte("date", today),
       )
       .take(args.limit ?? 10);
     return exams.filter((e) => !e.completed);
@@ -38,10 +39,10 @@ export const create = mutation({
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     return await ctx.db.insert("exams", {
-      userId: identity.tokenIdentifier,
+      userId,
       subjectId: args.subjectId,
       title: args.title,
       date: args.date,
@@ -64,10 +65,10 @@ export const update = mutation({
     subjectId: v.optional(v.id("subjects")),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     const exam = await ctx.db.get(args.id);
-    if (!exam || exam.userId !== identity.tokenIdentifier) {
+    if (!exam || exam.userId !== userId) {
       throw new Error("Unauthorized");
     }
     const { id, ...updates } = args;
@@ -81,10 +82,10 @@ export const update = mutation({
 export const remove = mutation({
   args: { id: v.id("exams") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     const exam = await ctx.db.get(args.id);
-    if (!exam || exam.userId !== identity.tokenIdentifier) {
+    if (!exam || exam.userId !== userId) {
       throw new Error("Unauthorized");
     }
     await ctx.db.delete(args.id);

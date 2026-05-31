@@ -236,7 +236,7 @@ export function SettingsView({
             }}>
               <span style={{ fontSize: "0.88rem", fontWeight: 600, color: "var(--text-secondary)" }}>Email Address</span>
               <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)" }}>
-                {userEmail || "Loading..."}
+                {userEmail === undefined ? "Loading..." : userEmail ?? "Not set"}
               </span>
             </div>
           </div>

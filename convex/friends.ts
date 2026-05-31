@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { Doc, Id } from "./_generated/dataModel";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 // Helper to check if two users have blocked each other
 async function hasBlock(ctx: any, user1: string, user2: string) {
@@ -47,11 +48,11 @@ async function assertIsFriends(ctx: any, user1: string, user2: string) {
 export const getProfile = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return null;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
     return await ctx.db
       .query("userProfiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .unique();
   },
 });
@@ -62,8 +63,8 @@ export const createOrUpdateProfile = mutation({
     publicKey: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     // Clean username format (e.g. "@alice")
     let raw = args.username.trim().toLowerCase();
@@ -81,13 +82,13 @@ export const createOrUpdateProfile = mutation({
       .withIndex("by_username", (q) => q.eq("username", cleanUsername))
       .unique();
     
-    if (existing && existing.userId !== identity.tokenIdentifier) {
+    if (existing && existing.userId !== userId) {
       throw new Error("Username is already taken.");
     }
 
     const currentProfile = await ctx.db
       .query("userProfiles")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .unique();
 
     if (currentProfile) {
@@ -98,7 +99,7 @@ export const createOrUpdateProfile = mutation({
       return currentProfile._id;
     } else {
       return await ctx.db.insert("userProfiles", {
-        userId: identity.tokenIdentifier,
+        userId,
         username: cleanUsername,
         publicKey: args.publicKey,
       });
@@ -109,8 +110,8 @@ export const createOrUpdateProfile = mutation({
 export const searchProfile = query({
   args: { query: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     
     let search = args.query.trim().toLowerCase();
     if (search.length === 0) return [];
@@ -121,10 +122,10 @@ export const searchProfile = query({
     const all = await ctx.db.query("userProfiles").take(100);
     const results = [];
     for (const p of all) {
-      if (p.userId === identity.tokenIdentifier) continue;
+      if (p.userId === userId) continue;
       if (!p.username.includes(search)) continue;
       // Filter out if blocked
-      const blocked = await hasBlock(ctx, identity.tokenIdentifier, p.userId);
+      const blocked = await hasBlock(ctx, userId, p.userId);
       if (!blocked) {
         results.push(p);
       }
@@ -136,8 +137,8 @@ export const searchProfile = query({
 export const sendFriendRequest = mutation({
   args: { username: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     let targetUsername = args.username.trim().toLowerCase();
     if (!targetUsername.startsWith("@")) {
@@ -153,12 +154,12 @@ export const sendFriendRequest = mutation({
       throw new Error("User not found.");
     }
 
-    if (targetProfile.userId === identity.tokenIdentifier) {
+    if (targetProfile.userId === userId) {
       throw new Error("You cannot add yourself.");
     }
 
     // Check if blocked
-    if (await hasBlock(ctx, identity.tokenIdentifier, targetProfile.userId)) {
+    if (await hasBlock(ctx, userId, targetProfile.userId)) {
       throw new Error("Cannot send friend request: user is blocked.");
     }
 
@@ -166,14 +167,14 @@ export const sendFriendRequest = mutation({
     const friendship = await ctx.db
       .query("friendships")
       .withIndex("by_user1_and_user2", (q) =>
-        q.eq("user1", identity.tokenIdentifier).eq("user2", targetProfile.userId)
+        q.eq("user1", userId).eq("user2", targetProfile.userId)
       )
       .first();
 
     const friendshipReverse = await ctx.db
       .query("friendships")
       .withIndex("by_user1_and_user2", (q) =>
-        q.eq("user1", targetProfile.userId).eq("user2", identity.tokenIdentifier)
+        q.eq("user1", targetProfile.userId).eq("user2", userId)
       )
       .first();
 
@@ -182,10 +183,10 @@ export const sendFriendRequest = mutation({
     }
 
     return await ctx.db.insert("friendships", {
-      user1: identity.tokenIdentifier,
+      user1: userId,
       user2: targetProfile.userId,
       status: "pending",
-      senderId: identity.tokenIdentifier,
+      senderId: userId,
     });
   },
 });
@@ -193,17 +194,17 @@ export const sendFriendRequest = mutation({
 export const getFriendships = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return { accepted: [], pendingReceived: [], pendingSent: [] };
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return { accepted: [], pendingReceived: [], pendingSent: [] };
 
     const f1 = await ctx.db
       .query("friendships")
-      .withIndex("by_user1", (q) => q.eq("user1", identity.tokenIdentifier))
+      .withIndex("by_user1", (q) => q.eq("user1", userId))
       .collect();
 
     const f2 = await ctx.db
       .query("friendships")
-      .withIndex("by_user2", (q) => q.eq("user2", identity.tokenIdentifier))
+      .withIndex("by_user2", (q) => q.eq("user2", userId))
       .collect();
 
     const allFriendships = [...f1, ...f2];
@@ -213,10 +214,10 @@ export const getFriendships = query({
     const pendingSent: any[] = [];
 
     for (const f of allFriendships) {
-      const otherUserId = f.user1 === identity.tokenIdentifier ? f.user2 : f.user1;
+      const otherUserId = f.user1 === userId ? f.user2 : f.user1;
       
       // Filter out if blocked
-      if (await hasBlock(ctx, identity.tokenIdentifier, otherUserId)) {
+      if (await hasBlock(ctx, userId, otherUserId)) {
         continue;
       }
 
@@ -236,7 +237,7 @@ export const getFriendships = query({
 
       if (f.status === "accepted") {
         accepted.push(item);
-      } else if (f.senderId === identity.tokenIdentifier) {
+      } else if (f.senderId === userId) {
         pendingSent.push(item);
       } else {
         pendingReceived.push(item);
@@ -253,15 +254,15 @@ export const respondToFriendRequest = mutation({
     action: v.union(v.literal("accept"), v.literal("reject")),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     const friendship = await ctx.db.get(args.friendshipId);
     if (!friendship) throw new Error("Friend request not found.");
 
     if (
-      friendship.user1 !== identity.tokenIdentifier &&
-      friendship.user2 !== identity.tokenIdentifier
+      friendship.user1 !== userId &&
+      friendship.user2 !== userId
     ) {
       throw new Error("Unauthorized");
     }
@@ -280,25 +281,25 @@ export const respondToFriendRequest = mutation({
 export const getFriendsLeaderboard = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
 
     // Get all friends
     const f1 = await ctx.db
       .query("friendships")
-      .withIndex("by_user1", (q) => q.eq("user1", identity.tokenIdentifier))
+      .withIndex("by_user1", (q) => q.eq("user1", userId))
       .collect();
     const f2 = await ctx.db
       .query("friendships")
-      .withIndex("by_user2", (q) => q.eq("user2", identity.tokenIdentifier))
+      .withIndex("by_user2", (q) => q.eq("user2", userId))
       .collect();
 
     const acceptedFriends = [...f1, ...f2]
       .filter((f) => f.status === "accepted")
-      .map((f) => (f.user1 === identity.tokenIdentifier ? f.user2 : f.user1));
+      .map((f) => (f.user1 === userId ? f.user2 : f.user1));
 
     // Include self
-    const userIds = [identity.tokenIdentifier, ...acceptedFriends];
+    const userIds = [userId, ...acceptedFriends];
 
     const today = new Date();
     const last7Days: string[] = [];
@@ -311,10 +312,10 @@ export const getFriendsLeaderboard = query({
 
     const leaderboard: any[] = [];
 
-    for (const userId of userIds) {
+    for (const uid of userIds) {
       const profile = await ctx.db
         .query("userProfiles")
-        .withIndex("by_userId", (q) => q.eq("userId", userId))
+        .withIndex("by_userId", (q) => q.eq("userId", uid))
         .unique();
 
       if (!profile) continue;
@@ -323,7 +324,7 @@ export const getFriendsLeaderboard = query({
       const logs = await ctx.db
         .query("dailyLogs")
         .withIndex("by_userId_and_date", (q) =>
-          q.eq("userId", userId).gte("date", minDate)
+          q.eq("userId", uid).gte("date", minDate)
         )
         .collect();
 
@@ -359,7 +360,7 @@ export const getFriendsLeaderboard = query({
       // Query exams for this user to show "what exams they are preparing for"
       const exams = await ctx.db
         .query("exams")
-        .withIndex("by_userId", (q) => q.eq("userId", userId))
+        .withIndex("by_userId", (q) => q.eq("userId", uid))
         .collect();
 
       const upcomingExams = exams
@@ -371,7 +372,7 @@ export const getFriendsLeaderboard = query({
         .slice(0, 3); // top 3 upcoming exams
 
       leaderboard.push({
-        userId,
+        userId: uid,
         username: profile.username,
         totalDuration,
         subjectsStudied: subjectDetails,
@@ -388,10 +389,10 @@ export const getFriendsLeaderboard = query({
 export const getFriendExams = query({
   args: { friendUserId: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
 
-    await assertIsFriends(ctx, identity.tokenIdentifier, args.friendUserId);
+    await assertIsFriends(ctx, userId, args.friendUserId);
 
     const exams = await ctx.db
       .query("exams")
@@ -418,13 +419,13 @@ export const getFriendExams = query({
 export const importFriendExam = mutation({
   args: { examId: v.id("exams") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     const sourceExam = await ctx.db.get(args.examId);
     if (!sourceExam) throw new Error("Exam not found.");
 
-    await assertIsFriends(ctx, identity.tokenIdentifier, sourceExam.userId);
+    await assertIsFriends(ctx, userId, sourceExam.userId);
 
     // Find if the user has a subject with the same name.
     // If not, we create one, or we link to their existing subject.
@@ -434,7 +435,7 @@ export const importFriendExam = mutation({
     let targetSubjectId: Id<"subjects">;
     const existingSubject = await ctx.db
       .query("subjects")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .collect();
 
     const match = existingSubject.find((s) => s.name.toLowerCase() === sourceSubject.name.toLowerCase());
@@ -444,7 +445,7 @@ export const importFriendExam = mutation({
     } else {
       // Create clone of subject for current user
       targetSubjectId = await ctx.db.insert("subjects", {
-        userId: identity.tokenIdentifier,
+        userId,
         name: sourceSubject.name,
         color: sourceSubject.color,
         icon: sourceSubject.icon,
@@ -453,7 +454,7 @@ export const importFriendExam = mutation({
 
     // Create the exam clone
     return await ctx.db.insert("exams", {
-      userId: identity.tokenIdentifier,
+      userId,
       subjectId: targetSubjectId,
       title: sourceExam.title,
       date: sourceExam.date,
@@ -468,16 +469,16 @@ export const importFriendExam = mutation({
 export const getMessages = query({
   args: { friendUserId: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
 
-    await assertIsFriends(ctx, identity.tokenIdentifier, args.friendUserId);
+    await assertIsFriends(ctx, userId, args.friendUserId);
 
     // Messages where A sent to B
     const sent = await ctx.db
       .query("messages")
       .withIndex("by_conversation", (q) =>
-        q.eq("senderId", identity.tokenIdentifier).eq("receiverId", args.friendUserId)
+        q.eq("senderId", userId).eq("receiverId", args.friendUserId)
       )
       .collect();
 
@@ -485,7 +486,7 @@ export const getMessages = query({
     const received = await ctx.db
       .query("messages")
       .withIndex("by_conversation", (q) =>
-        q.eq("senderId", args.friendUserId).eq("receiverId", identity.tokenIdentifier)
+        q.eq("senderId", args.friendUserId).eq("receiverId", userId)
       )
       .collect();
 
@@ -501,13 +502,13 @@ export const sendMessage = mutation({
     senderEncryptedBody: v.string(),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
-    await assertIsFriends(ctx, identity.tokenIdentifier, args.receiverId);
+    await assertIsFriends(ctx, userId, args.receiverId);
 
     return await ctx.db.insert("messages", {
-      senderId: identity.tokenIdentifier,
+      senderId: userId,
       receiverId: args.receiverId,
       encryptedBody: args.encryptedBody,
       senderEncryptedBody: args.senderEncryptedBody,
@@ -519,8 +520,8 @@ export const sendMessage = mutation({
 export const checkUsernameAvailable = query({
   args: { username: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return false;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return false;
 
     let search = args.username.trim().toLowerCase();
     if (!search.startsWith("@")) {
@@ -535,17 +536,17 @@ export const checkUsernameAvailable = query({
       .unique();
 
     if (!existing) return true;
-    return existing.userId === identity.tokenIdentifier;
+    return existing.userId === userId;
   },
 });
 
 export const blockUser = mutation({
   args: { blockedUserId: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
-    if (identity.tokenIdentifier === args.blockedUserId) {
+    if (userId === args.blockedUserId) {
       throw new Error("Cannot block yourself");
     }
 
@@ -553,13 +554,13 @@ export const blockUser = mutation({
     const existing = await ctx.db
       .query("blocks")
       .withIndex("by_userId_and_blockedUserId", (q) =>
-        q.eq("userId", identity.tokenIdentifier).eq("blockedUserId", args.blockedUserId)
+        q.eq("userId", userId).eq("blockedUserId", args.blockedUserId)
       )
       .first();
 
     if (!existing) {
       await ctx.db.insert("blocks", {
-        userId: identity.tokenIdentifier,
+        userId,
         blockedUserId: args.blockedUserId,
       });
     }
@@ -568,7 +569,7 @@ export const blockUser = mutation({
     const f1 = await ctx.db
       .query("friendships")
       .withIndex("by_user1_and_user2", (q) =>
-        q.eq("user1", identity.tokenIdentifier).eq("user2", args.blockedUserId)
+        q.eq("user1", userId).eq("user2", args.blockedUserId)
       )
       .first();
     if (f1) await ctx.db.delete(f1._id);
@@ -576,7 +577,7 @@ export const blockUser = mutation({
     const f2 = await ctx.db
       .query("friendships")
       .withIndex("by_user1_and_user2", (q) =>
-        q.eq("user1", args.blockedUserId).eq("user2", identity.tokenIdentifier)
+        q.eq("user1", args.blockedUserId).eq("user2", userId)
       )
       .first();
     if (f2) await ctx.db.delete(f2._id);
@@ -588,13 +589,13 @@ export const blockUser = mutation({
 export const unblockUser = mutation({
   args: { blockedUserId: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
 
     const block = await ctx.db
       .query("blocks")
       .withIndex("by_userId_and_blockedUserId", (q) =>
-        q.eq("userId", identity.tokenIdentifier).eq("blockedUserId", args.blockedUserId)
+        q.eq("userId", userId).eq("blockedUserId", args.blockedUserId)
       )
       .first();
 
@@ -608,12 +609,12 @@ export const unblockUser = mutation({
 export const getBlockedUsers = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
 
     const blocks = await ctx.db
       .query("blocks")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .collect();
 
     const results = [];
@@ -636,7 +637,9 @@ export const getBlockedUsers = query({
 export const getUserEmail = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    return identity?.email || null;
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+    const user = await ctx.db.get(userId);
+    return user?.email ?? null;
   },
 });

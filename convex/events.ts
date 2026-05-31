@@ -1,15 +1,16 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const getByDate = query({
   args: { date: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     return await ctx.db
       .query("events")
       .withIndex("by_userId_and_date", (q) =>
-        q.eq("userId", identity.tokenIdentifier).eq("date", args.date),
+        q.eq("userId", userId).eq("date", args.date),
       )
       .take(50);
   },
@@ -18,13 +19,13 @@ export const getByDate = query({
 export const getByDateRange = query({
   args: { startDate: v.string(), endDate: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     return await ctx.db
       .query("events")
       .withIndex("by_userId_and_date", (q) =>
         q
-          .eq("userId", identity.tokenIdentifier)
+          .eq("userId", userId)
           .gte("date", args.startDate)
           .lte("date", args.endDate),
       )
@@ -43,10 +44,10 @@ export const create = mutation({
     subjectId: v.optional(v.id("subjects")),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     return await ctx.db.insert("events", {
-      userId: identity.tokenIdentifier,
+      userId,
       date: args.date,
       title: args.title,
       startTime: args.startTime,
@@ -70,10 +71,10 @@ export const update = mutation({
     subjectId: v.optional(v.id("subjects")),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     const event = await ctx.db.get(args.id);
-    if (!event || event.userId !== identity.tokenIdentifier) {
+    if (!event || event.userId !== userId) {
       throw new Error("Unauthorized");
     }
     const { id, ...updates } = args;
@@ -87,10 +88,10 @@ export const update = mutation({
 export const remove = mutation({
   args: { id: v.id("events") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     const event = await ctx.db.get(args.id);
-    if (!event || event.userId !== identity.tokenIdentifier) {
+    if (!event || event.userId !== userId) {
       throw new Error("Unauthorized");
     }
     await ctx.db.delete(args.id);

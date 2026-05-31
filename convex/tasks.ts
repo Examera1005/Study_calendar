@@ -1,15 +1,16 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const getByDate = query({
   args: { date: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     const tasks = await ctx.db
       .query("tasks")
       .withIndex("by_userId_and_date", (q) =>
-        q.eq("userId", identity.tokenIdentifier).eq("date", args.date),
+        q.eq("userId", userId).eq("date", args.date),
       )
       .take(50);
     // Only return daily tasks (or legacy tasks without taskType)
@@ -20,12 +21,12 @@ export const getByDate = query({
 export const listGeneral = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     return await ctx.db
       .query("tasks")
       .withIndex("by_userId_and_taskType", (q) =>
-        q.eq("userId", identity.tokenIdentifier).eq("taskType", "general"),
+        q.eq("userId", userId).eq("taskType", "general"),
       )
       .take(100);
   },
@@ -34,11 +35,11 @@ export const listGeneral = query({
 export const listIncomplete = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     const tasks = await ctx.db
       .query("tasks")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .take(100);
     return tasks.filter((t) => !t.completed);
   },
@@ -58,11 +59,11 @@ export const create = mutation({
     taskType: v.optional(v.union(v.literal("daily"), v.literal("general"))),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     const type = args.taskType ?? "daily";
     return await ctx.db.insert("tasks", {
-      userId: identity.tokenIdentifier,
+      userId,
       date: type === "general" ? undefined : args.date,
       title: args.title,
       description: args.description,
@@ -77,10 +78,10 @@ export const create = mutation({
 export const toggleComplete = mutation({
   args: { id: v.id("tasks") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     const task = await ctx.db.get(args.id);
-    if (!task || task.userId !== identity.tokenIdentifier) {
+    if (!task || task.userId !== userId) {
       throw new Error("Unauthorized");
     }
     await ctx.db.patch(args.id, { completed: !task.completed });
@@ -100,10 +101,10 @@ export const update = mutation({
     taskType: v.optional(v.union(v.literal("daily"), v.literal("general"))),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     const task = await ctx.db.get(args.id);
-    if (!task || task.userId !== identity.tokenIdentifier) {
+    if (!task || task.userId !== userId) {
       throw new Error("Unauthorized");
     }
     const { id, ...updates } = args;
@@ -123,10 +124,10 @@ export const update = mutation({
 export const remove = mutation({
   args: { id: v.id("tasks") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     const task = await ctx.db.get(args.id);
-    if (!task || task.userId !== identity.tokenIdentifier) {
+    if (!task || task.userId !== userId) {
       throw new Error("Unauthorized");
     }
     await ctx.db.delete(args.id);
@@ -136,12 +137,11 @@ export const remove = mutation({
 export const listAll = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     return await ctx.db
       .query("tasks")
-      .withIndex("by_userId", (q) => q.eq("userId", identity.tokenIdentifier))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .take(200);
   },
 });
-

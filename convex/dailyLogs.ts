@@ -1,15 +1,16 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const getByDate = query({
   args: { date: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     return await ctx.db
       .query("dailyLogs")
       .withIndex("by_userId_and_date", (q) =>
-        q.eq("userId", identity.tokenIdentifier).eq("date", args.date),
+        q.eq("userId", userId).eq("date", args.date),
       )
       .take(50);
   },
@@ -23,10 +24,10 @@ export const create = mutation({
     duration: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     return await ctx.db.insert("dailyLogs", {
-      userId: identity.tokenIdentifier,
+      userId,
       date: args.date,
       content: args.content,
       subjectId: args.subjectId,
@@ -43,10 +44,10 @@ export const update = mutation({
     duration: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     const log = await ctx.db.get(args.id);
-    if (!log || log.userId !== identity.tokenIdentifier) {
+    if (!log || log.userId !== userId) {
       throw new Error("Unauthorized");
     }
     const { id, ...updates } = args;
@@ -60,10 +61,10 @@ export const update = mutation({
 export const remove = mutation({
   args: { id: v.id("dailyLogs") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
     const log = await ctx.db.get(args.id);
-    if (!log || log.userId !== identity.tokenIdentifier) {
+    if (!log || log.userId !== userId) {
       throw new Error("Unauthorized");
     }
     await ctx.db.delete(args.id);
@@ -73,13 +74,13 @@ export const remove = mutation({
 export const getByDateRange = query({
   args: { startDate: v.string(), endDate: v.string() },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     return await ctx.db
       .query("dailyLogs")
       .withIndex("by_userId_and_date", (q) =>
         q
-          .eq("userId", identity.tokenIdentifier)
+          .eq("userId", userId)
           .gte("date", args.startDate)
           .lte("date", args.endDate),
       )
@@ -90,14 +91,13 @@ export const getByDateRange = query({
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return [];
     return await ctx.db
       .query("dailyLogs")
       .withIndex("by_userId_and_date", (q) =>
-        q.eq("userId", identity.tokenIdentifier)
+        q.eq("userId", userId)
       )
       .collect();
   },
 });
-
