@@ -21,9 +21,11 @@ export function Sidebar({
   setView,
   theme,
   toggleTheme,
-  timerActive,
+  timerStatus,
   elapsedSeconds,
   startTimer,
+  pauseTimer,
+  resumeTimer,
   stopTimer,
   sidebarOpen,
   setSidebarOpen,
@@ -32,9 +34,11 @@ export function Sidebar({
   setView: (v: View) => void;
   theme: "light" | "dark";
   toggleTheme: () => void;
-  timerActive: boolean;
+  timerStatus: "idle" | "running" | "paused";
   elapsedSeconds: number;
   startTimer: () => void;
+  pauseTimer: () => void;
+  resumeTimer: () => void;
   stopTimer: () => void;
   sidebarOpen: boolean;
   setSidebarOpen: (o: boolean) => void;
@@ -64,28 +68,54 @@ export function Sidebar({
       <div style={{
         margin: "0 12px 12px",
         padding: "12px",
-        background: timerActive ? "rgba(59, 130, 246, 0.1)" : "var(--bg-elevated)",
-        border: timerActive ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
+        background: timerStatus !== "idle" ? "rgba(59, 130, 246, 0.1)" : "var(--bg-elevated)",
+        border: timerStatus !== "idle" ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
         borderRadius: "var(--radius-lg)",
         textAlign: "center",
         transition: "all var(--transition-normal)"
       }}>
-        {timerActive ? (
+        {timerStatus !== "idle" ? (
           <div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
-              <span className="pulse-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--danger)" }} />
-              <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--danger)" }}>STUDYING LIVE</span>
-            </div>
+            {timerStatus === "running" ? (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
+                <span className="pulse-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--danger)" }} />
+                <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--danger)" }}>STUDYING LIVE</span>
+              </div>
+            ) : (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
+                <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--warning)" }} />
+                <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--warning)" }}>SESSION PAUSED</span>
+              </div>
+            )}
             <div style={{ fontSize: "1.35rem", fontWeight: 800, fontFamily: "monospace", margin: "6px 0", color: "var(--text-primary)" }}>
               {formatTime(elapsedSeconds)}
             </div>
-            <button
-              className="btn btn-danger btn-sm btn-full"
-              onClick={stopTimer}
-              style={{ marginTop: 8 }}
-            >
-              ⏹ Stop & Log
-            </button>
+            <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+              {timerStatus === "running" ? (
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={pauseTimer}
+                  style={{ flex: 1 }}
+                >
+                  ⏸️ Pause
+                </button>
+              ) : (
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={resumeTimer}
+                  style={{ flex: 1 }}
+                >
+                  ▶️ Resume
+                </button>
+              )}
+              <button
+                className="btn btn-danger btn-sm"
+                onClick={stopTimer}
+                style={{ flex: 1 }}
+              >
+                ⏹ Stop
+              </button>
+            </div>
           </div>
         ) : (
           <div>

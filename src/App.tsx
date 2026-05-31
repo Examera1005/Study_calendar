@@ -32,57 +32,102 @@ export default function App() {
   const createLog = useMutation(api.dailyLogs.create);
 
   // ==================== STOPWATCH STATES ====================
-  const [stopwatchActive, setStopwatchActive] = useState(false);
+  const [stopwatchStatus, setStopwatchStatus] = useState<"idle" | "running" | "paused">("idle");
   const [stopwatchStartTime, setStopwatchStartTime] = useState<number | null>(null);
+  const [stopwatchAccumulated, setStopwatchAccumulated] = useState(0);
   const [stopwatchElapsed, setStopwatchElapsed] = useState(0);
 
   // Restore stopwatch on mount
   useEffect(() => {
-    const active = localStorage.getItem("studyTimerActive") === "true";
+    const status = (localStorage.getItem("studyTimerStatus") as any) || "idle";
     const start = localStorage.getItem("studyTimerStart");
-    if (active && start) {
-      setStopwatchActive(true);
+    const accum = localStorage.getItem("studyTimerAccumulated");
+    
+    if (status === "running" && start) {
+      setStopwatchStatus("running");
       const startMs = Number(start);
       setStopwatchStartTime(startMs);
-      setStopwatchElapsed(Math.floor((Date.now() - startMs) / 1000));
+      const accumulatedSecs = accum ? Number(accum) : 0;
+      setStopwatchAccumulated(accumulatedSecs);
+      setStopwatchElapsed(accumulatedSecs + Math.floor((Date.now() - startMs) / 1000));
+    } else if (status === "paused") {
+      setStopwatchStatus("paused");
+      const accumulatedSecs = accum ? Number(accum) : 0;
+      setStopwatchAccumulated(accumulatedSecs);
+      setStopwatchElapsed(accumulatedSecs);
     }
   }, []);
 
   // Tick stopwatch
   useEffect(() => {
     let interval: any = null;
-    if (stopwatchActive && stopwatchStartTime !== null) {
+    if (stopwatchStatus === "running" && stopwatchStartTime !== null) {
       interval = setInterval(() => {
-        const secs = Math.floor((Date.now() - stopwatchStartTime) / 1000);
+        const secs = stopwatchAccumulated + Math.floor((Date.now() - stopwatchStartTime) / 1000);
         setStopwatchElapsed(secs);
       }, 1000);
+    } else if (stopwatchStatus === "paused") {
+      setStopwatchElapsed(stopwatchAccumulated);
     } else {
       setStopwatchElapsed(0);
     }
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [stopwatchActive, stopwatchStartTime]);
+  }, [stopwatchStatus, stopwatchStartTime, stopwatchAccumulated]);
 
   const startStopwatch = () => {
     const now = Date.now();
-    localStorage.setItem("studyTimerActive", "true");
+    localStorage.setItem("studyTimerStatus", "running");
     localStorage.setItem("studyTimerStart", String(now));
+    localStorage.setItem("studyTimerAccumulated", "0");
+    setStopwatchStatus("running");
     setStopwatchStartTime(now);
-    setStopwatchActive(true);
+    setStopwatchAccumulated(0);
     setStopwatchElapsed(0);
   };
 
+  const pauseStopwatch = () => {
+    if (stopwatchStatus !== "running" || stopwatchStartTime === null) return;
+    const currentElapsed = stopwatchAccumulated + Math.floor((Date.now() - stopwatchStartTime) / 1000);
+    localStorage.setItem("studyTimerStatus", "paused");
+    localStorage.removeItem("studyTimerStart");
+    localStorage.setItem("studyTimerAccumulated", String(currentElapsed));
+    
+    setStopwatchStatus("paused");
+    setStopwatchStartTime(null);
+    setStopwatchAccumulated(currentElapsed);
+    setStopwatchElapsed(currentElapsed);
+  };
+
+  const resumeStopwatch = () => {
+    if (stopwatchStatus !== "paused") return;
+    const now = Date.now();
+    localStorage.setItem("studyTimerStatus", "running");
+    localStorage.setItem("studyTimerStart", String(now));
+    localStorage.setItem("studyTimerAccumulated", String(stopwatchAccumulated));
+    
+    setStopwatchStatus("running");
+    setStopwatchStartTime(now);
+  };
+
   const stopStopwatch = () => {
-    const mins = Math.max(1, Math.round(stopwatchElapsed / 60));
+    let totalSecs = stopwatchAccumulated;
+    if (stopwatchStatus === "running" && stopwatchStartTime !== null) {
+      totalSecs += Math.floor((Date.now() - stopwatchStartTime) / 1000);
+    }
+    const mins = Math.max(1, Math.round(totalSecs / 60));
     setSessionMinutes(mins);
     setShowSaveTimerModal(true);
     
     // Reset state
-    localStorage.removeItem("studyTimerActive");
+    localStorage.removeItem("studyTimerStatus");
     localStorage.removeItem("studyTimerStart");
-    setStopwatchActive(false);
+    localStorage.removeItem("studyTimerAccumulated");
+    setStopwatchStatus("idle");
     setStopwatchStartTime(null);
+    setStopwatchAccumulated(0);
+    setStopwatchElapsed(0);
   };
 
   // Pomodoro Timer States
@@ -273,10 +318,19 @@ export default function App() {
               {view === "subjects" && "📚 Subjects"}
               {view === "settings" && "⚙️ Settings"}
             </span>
-            {stopwatchActive && (
+            {stopwatchStatus !== "idle" && (
               <div className="mobile-active-timer" onClick={() => setView("dashboard")}>
-                <span className="pulse-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--danger)" }} />
-                <span>LIVE</span>
+                {stopwatchStatus === "running" ? (
+                  <>
+                    <span className="pulse-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--danger)" }} />
+                    <span>LIVE</span>
+                  </>
+                ) : (
+                  <>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--warning)" }} />
+                    <span>PAUSED</span>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -285,9 +339,11 @@ export default function App() {
             setView={setView}
             theme={theme}
             toggleTheme={toggleTheme}
-            timerActive={stopwatchActive}
+            timerStatus={stopwatchStatus}
             elapsedSeconds={stopwatchElapsed}
             startTimer={startStopwatch}
+            pauseTimer={pauseStopwatch}
+            resumeTimer={resumeStopwatch}
             stopTimer={stopStopwatch}
             sidebarOpen={sidebarOpen}
             setSidebarOpen={setSidebarOpen}

@@ -30,7 +30,7 @@ export function calculateStreak(logs: { date: string; duration?: number }[]): nu
   if (studyDates.size === 0) return 0;
 
   const todayStr = getLocalDateString(new Date());
-  
+
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = getLocalDateString(yesterday);
@@ -130,7 +130,7 @@ export function playAlertSound(type: "success" | "break" | "beep") {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioContextClass) return;
     const audioCtx = new AudioContextClass();
-    
+
     if (type === "success") {
       const notes = [523.25, 659.25, 783.99, 1046.50];
       notes.forEach((freq, idx) => {
@@ -138,17 +138,17 @@ export function playAlertSound(type: "success" | "break" | "beep") {
         const gain = audioCtx.createGain();
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        
+
         osc.frequency.value = freq;
         osc.type = "sine";
-        
+
         const startTime = audioCtx.currentTime + idx * 0.12;
         const duration = 0.35;
-        
+
         gain.gain.setValueAtTime(0, startTime);
         gain.gain.linearRampToValueAtTime(0.12, startTime + 0.05);
         gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
-        
+
         osc.start(startTime);
         osc.stop(startTime + duration);
       });
@@ -159,17 +159,17 @@ export function playAlertSound(type: "success" | "break" | "beep") {
         const gain = audioCtx.createGain();
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        
+
         osc.frequency.value = freq;
         osc.type = "triangle";
-        
+
         const startTime = audioCtx.currentTime + idx * 0.25;
         const duration = 0.45;
-        
+
         gain.gain.setValueAtTime(0, startTime);
         gain.gain.linearRampToValueAtTime(0.12, startTime + 0.05);
         gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
-        
+
         osc.start(startTime);
         osc.stop(startTime + duration);
       });
