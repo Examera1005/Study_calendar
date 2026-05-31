@@ -403,19 +403,40 @@ export default function App() {
             onSubmit={(e) => {
               e.preventDefault();
               const fd = new FormData(e.currentTarget);
+              const duration = Number(fd.get("duration")) || sessionMinutes;
               void createLog({
                 date: new Date().toISOString().split("T")[0],
                 content: fd.get("content") as string,
-                duration: sessionMinutes,
+                duration: duration,
                 subjectId: fd.get("subjectId") ? (fd.get("subjectId") as Id<"subjects">) : undefined,
               });
               setShowSaveTimerModal(false);
             }}
           >
             <div style={{ textAlign: "center", marginBottom: 20 }}>
-              <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 4 }}>Elapsed Study Time</div>
-              <div style={{ fontSize: "2.2rem", fontWeight: 800, color: "var(--accent-primary)", fontFamily: "monospace" }}>
-                {sessionMinutes} min
+              <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 8 }}>Adjust Study Time (minutes)</div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                <input
+                  type="number"
+                  name="duration"
+                  min="1"
+                  value={sessionMinutes}
+                  onChange={(e) => setSessionMinutes(Math.max(1, Number(e.target.value)))}
+                  style={{
+                    width: "110px",
+                    textAlign: "center",
+                    fontSize: "2rem",
+                    fontWeight: 800,
+                    color: "var(--accent-primary)",
+                    fontFamily: "monospace",
+                    background: "var(--bg-primary)",
+                    border: "1px solid var(--border-medium)",
+                    borderRadius: "var(--radius-md)",
+                    padding: "4px 8px"
+                  }}
+                  required
+                />
+                <span style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--text-secondary)" }}>min</span>
               </div>
             </div>
             <div className="form-group">
