@@ -632,3 +632,11 @@ export const getBlockedUsers = query({
     return results;
   },
 });
+
+export const getUserEmail = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    return identity?.email || null;
+  },
+});

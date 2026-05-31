@@ -44,6 +44,7 @@ export function SettingsView({
   const friendsApi = (api as any).friends;
   const profile = useQuery(friendsApi.getProfile);
   const blockedUsers = useQuery(friendsApi.getBlockedUsers);
+  const userEmail = useQuery(friendsApi.getUserEmail);
 
   // Theme customizations state
   const [customizations, setCustomizations] = useState<Record<string, string>>(() => loadCustomizations(theme));
@@ -217,6 +218,30 @@ export function SettingsView({
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        {/* Section: Account Information */}
+        <div className="card">
+          <h3 style={{ marginBottom: 12 }}>👤 Account Information</h3>
+          <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 16 }}>
+            Details associated with your active Study Calendar session.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "12px 16px",
+              background: "var(--bg-primary)",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: "var(--radius-md)"
+            }}>
+              <span style={{ fontSize: "0.88rem", fontWeight: 600, color: "var(--text-secondary)" }}>Email Address</span>
+              <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)" }}>
+                {userEmail || "Loading..."}
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* Section 1: Appearance */}
         <div className="card">
           <h3 style={{ marginBottom: 12 }}>🎨 Theme & Appearance</h3>
