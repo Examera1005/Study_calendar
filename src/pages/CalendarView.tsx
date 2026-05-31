@@ -231,9 +231,9 @@ export function CalendarView({
 
       {/* Day Detail Panel */}
       <div className="day-panel">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <h2>{format(new Date(selectedDate + "T00:00:00"), "EEEE, MMMM d, yyyy")}</h2>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <button className="btn btn-secondary btn-sm" onClick={() => setShowTaskModal(true)}>
               + Task
             </button>

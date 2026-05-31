@@ -25,6 +25,8 @@ export function Sidebar({
   elapsedSeconds,
   startTimer,
   stopTimer,
+  sidebarOpen,
+  setSidebarOpen,
 }: {
   view: View;
   setView: (v: View) => void;
@@ -34,6 +36,8 @@ export function Sidebar({
   elapsedSeconds: number;
   startTimer: () => void;
   stopTimer: () => void;
+  sidebarOpen: boolean;
+  setSidebarOpen: (o: boolean) => void;
 }) {
   const { signOut } = useAuthActions();
   const [showLegal, setShowLegal] = useState<"privacy" | "terms" | null>(null);
@@ -50,7 +54,7 @@ export function Sidebar({
   };
 
   return (
-    <aside className="sidebar" id="sidebar">
+    <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} id="sidebar">
       <div className="sidebar-brand">
         <h2>📚 Study Calendar</h2>
         <span>Stay organized, ace your exams</span>
@@ -102,7 +106,10 @@ export function Sidebar({
           <button
             key={item.id}
             className={`nav-item ${view === item.id ? "active" : ""}`}
-            onClick={() => setView(item.id)}
+            onClick={() => {
+              setView(item.id);
+              setSidebarOpen(false);
+            }}
             id={`nav-${item.id}`}
           >
             <span className="nav-icon">{item.icon}</span>

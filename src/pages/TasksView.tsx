@@ -215,14 +215,7 @@ export function TasksView({
 
       {/* Date navigation — only for daily tab */}
       {activeTab === "daily" && (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            marginBottom: 20,
-          }}
-        >
+        <div className="tasks-date-nav">
           <button className="btn-icon" onClick={() => navDate(-1)}>
             ◀
           </button>

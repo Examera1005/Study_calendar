@@ -801,18 +801,173 @@ select { cursor: pointer; appearance: none;
 .exam-card:hover .item-actions { opacity: 1; }
 
 /* ========== RESPONSIVE ========== */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .sidebar { transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); }
-  .main-content { margin-left: 0; padding: 20px 16px; }
+  .sidebar.open { transform: translateX(0); z-index: 1000; }
+  .main-content { margin-left: 0; padding: 20px 16px; padding-top: 76px; }
   .calendar-day { min-height: 60px; }
   .card-grid { grid-template-columns: 1fr; }
   .stats-row { grid-template-columns: repeat(2, 1fr); }
   .calendar-day-items { display: none; }
   .day-dots { display: flex; }
 }
-@media (min-width: 769px) {
+@media (min-width: 1025px) {
   .day-dots { display: none; }
+}
+
+/* ========== MOBILE NAVIGATION HEADER ========== */
+.mobile-header {
+  display: none;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 16px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+  }
+  .hamburger-btn {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition-fast);
+  }
+  .hamburger-btn:hover {
+    background: var(--bg-elevated);
+  }
+  .mobile-header-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 1;
+    margin-left: 12px;
+  }
+  .mobile-active-timer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.16);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--danger);
+  }
+  
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999; /* just below sidebar drawer (1000) */
+  }
+}
+
+/* ========== OTHER VIEW RESPONSIVE TWEAKS ========== */
+.tasks-date-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .tasks-date-nav h2 {
+    font-size: 0.95rem !important;
+    width: 100%;
+    order: -1;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .tasks-date-nav {
+    justify-content: center;
+  }
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analytics-donut-layout {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 16px;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .analytics-donut-layout {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+}
+
+.friends-manage-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .friends-layout {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+  }
+  /* In mobile chat, toggle between active conversations and window */
+  .friends-layout .conversations-list-card.has-active-chat {
+    display: none;
+  }
+  .friends-layout .chat-window:not(.has-active-chat) {
+    display: none;
+  }
+  .friends-manage-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .mobile-back-btn {
+    display: flex !important;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 4px 8px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+  }
+  .mobile-back-btn:hover {
+    background: var(--bg-elevated);
+  }
+}
+
+@media (min-width: 1025px) {
+  .mobile-back-btn {
+    display: none !important;
+  }
 }
 
 /* ========== LOADING ========== */
@@ -882,7 +1037,7 @@ select { cursor: pointer; appearance: none;
   stroke: currentColor;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .chart-container-layout {
     grid-template-columns: 1fr !important;
   }

@@ -224,11 +224,11 @@ export function SettingsView({
             Customize your app theme. Preferred theme will be saved automatically.
           </p>
 
-          <div style={{ display: "flex", gap: 16, marginBottom: 20 }}>
+          <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
             <button
               className={`btn ${theme === "dark" ? "btn-primary" : "btn-secondary"}`}
               onClick={() => setTheme("dark")}
-              style={{ flex: 1, padding: "16px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}
+              style={{ flex: "1 1 140px", padding: "16px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}
             >
               <span style={{ fontSize: "1.5rem" }}>🌙</span>
               <strong>Dark Mode</strong>
@@ -236,7 +236,7 @@ export function SettingsView({
             <button
               className={`btn ${theme === "light" ? "btn-primary" : "btn-secondary"}`}
               onClick={() => setTheme("light")}
-              style={{ flex: 1, padding: "16px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}
+              style={{ flex: "1 1 140px", padding: "16px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}
             >
               <span style={{ fontSize: "1.5rem" }}>☀️</span>
               <strong>Light Mode</strong>

@@ -354,7 +354,7 @@ export function AnalyticsView() {
         <div className="card">
           <h3 style={{ marginBottom: 16 }}>📊 Répartition par Matière</h3>
           {subjectDistribution.length > 0 ? (
-            <div style={{ display: "grid", gridTemplateColumns: "130px 1fr", gap: 16, alignItems: "center" }}>
+            <div className="analytics-donut-layout">
               <div style={{ position: "relative", width: 130, height: 130 }}>
                 <svg viewBox="0 0 160 160" width="100%" height="100%">
                   {donutPaths.map((slice, idx) => (

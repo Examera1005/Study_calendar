@@ -354,7 +354,7 @@ export function FriendsView() {
       {activeTab === "chat" && (
         <div className="friends-layout">
           {/* Active conversations / Friends list */}
-          <div className="card" style={{ padding: 12 }}>
+          <div className={`card conversations-list-card ${activeChatFriend ? "has-active-chat" : ""}`} style={{ padding: 12 }}>
             <h3 style={{ padding: "8px 12px", borderBottom: "1px solid var(--border-subtle)", paddingBottom: 12, marginBottom: 8 }}>
               Conversations
             </h3>
@@ -379,13 +379,23 @@ export function FriendsView() {
           </div>
 
           {/* Chat Window */}
-          <div className="chat-window">
+          <div className={`chat-window ${activeChatFriend ? "has-active-chat" : ""}`}>
             {activeChatFriend ? (
               <>
                 <div className="chat-header">
-                  <div>
-                    <h3 style={{ fontSize: "1rem", color: "var(--text-primary)" }}>{activeChatFriend.username}</h3>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Active Conversation</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <button
+                      type="button"
+                      className="mobile-back-btn"
+                      onClick={() => setActiveChatFriend(null)}
+                      title="Back to conversations list"
+                    >
+                      ⬅️
+                    </button>
+                    <div>
+                      <h3 style={{ fontSize: "1.05rem", color: "var(--text-primary)", margin: 0 }}>{activeChatFriend.username}</h3>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Active Conversation</span>
+                    </div>
                   </div>
                   <div style={{ fontSize: "0.75rem", color: "var(--success)", display: "flex", alignItems: "center", gap: 6 }}>
                     <span className="pulse-dot" style={{ width: 6, height: 6, background: "var(--success)", borderRadius: "50%" }} />
@@ -436,7 +446,7 @@ export function FriendsView() {
 
       {/* Tab 3: Friends & Management */}
       {activeTab === "manage" && (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 20 }}>
+        <div className="friends-manage-grid">
           {/* Column A: Search & Request */}
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
             <div className="card">
@@ -594,6 +604,7 @@ export function FriendsView() {
                 friendships.accepted.map((friend: any) => (
                   <div
                     key={friend.userId}
+                    className="friend-row-card"
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -602,15 +613,17 @@ export function FriendsView() {
                       background: "var(--bg-primary)",
                       borderRadius: "var(--radius-lg)",
                       border: "1px solid var(--border-subtle)",
+                      flexWrap: "wrap",
+                      gap: 12,
                     }}
                   >
-                    <div>
+                    <div style={{ minWidth: 150 }}>
                       <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{friend.username}</div>
                       <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 4 }}>
                         🔒 End-to-End Cryptography Active
                       </div>
                     </div>
-                    <div style={{ display: "flex", gap: 8 }}>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                       <button
                         className="btn btn-secondary btn-sm"
                         onClick={() => setViewExamsFriend(friend)}
