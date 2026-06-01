@@ -41,6 +41,13 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
+
+    // Verify the subject belongs to this user
+    const subject = await ctx.db.get(args.subjectId);
+    if (!subject || subject.userId !== userId) {
+      throw new Error("Subject not found or unauthorized");
+    }
+
     return await ctx.db.insert("exams", {
       userId,
       subjectId: args.subjectId,
@@ -71,6 +78,14 @@ export const update = mutation({
     if (!exam || exam.userId !== userId) {
       throw new Error("Unauthorized");
     }
+
+    if (args.subjectId !== undefined) {
+      const subject = await ctx.db.get(args.subjectId);
+      if (!subject || subject.userId !== userId) {
+        throw new Error("Subject not found or unauthorized");
+      }
+    }
+
     const { id, ...updates } = args;
     const filtered = Object.fromEntries(
       Object.entries(updates).filter(([, v]) => v !== undefined),

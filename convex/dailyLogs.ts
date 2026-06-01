@@ -26,6 +26,14 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
+
+    if (args.subjectId !== undefined) {
+      const subject = await ctx.db.get(args.subjectId);
+      if (!subject || subject.userId !== userId) {
+        throw new Error("Subject not found or unauthorized");
+      }
+    }
+
     return await ctx.db.insert("dailyLogs", {
       userId,
       date: args.date,
@@ -50,6 +58,14 @@ export const update = mutation({
     if (!log || log.userId !== userId) {
       throw new Error("Unauthorized");
     }
+
+    if (args.subjectId !== undefined) {
+      const subject = await ctx.db.get(args.subjectId);
+      if (!subject || subject.userId !== userId) {
+        throw new Error("Subject not found or unauthorized");
+      }
+    }
+
     const { id, ...updates } = args;
     const filtered = Object.fromEntries(
       Object.entries(updates).filter(([, v]) => v !== undefined),
@@ -84,7 +100,7 @@ export const getByDateRange = query({
           .gte("date", args.startDate)
           .lte("date", args.endDate),
       )
-      .collect();
+      .take(500);
   },
 });
 
@@ -98,6 +114,6 @@ export const list = query({
       .withIndex("by_userId_and_date", (q) =>
         q.eq("userId", userId)
       )
-      .collect();
+      .take(500);
   },
 });

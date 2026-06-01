@@ -186,7 +186,10 @@ export function Sidebar({
 
         <button
           className="btn btn-secondary btn-full btn-sm"
-          onClick={() => void signOut()}
+          onClick={() => {
+            localStorage.removeItem("e2ee_private_key");
+            void signOut();
+          }}
           id="sign-out-btn"
         >
           Sign Out

@@ -119,11 +119,16 @@ export const searchProfile = query({
       search = "@" + search;
     }
 
-    const all = await ctx.db.query("userProfiles").take(100);
+    const matches = await ctx.db
+      .query("userProfiles")
+      .withIndex("by_username", (q) =>
+        q.gte("username", search).lte("username", search + "\uffff")
+      )
+      .take(50);
+
     const results = [];
-    for (const p of all) {
+    for (const p of matches) {
       if (p.userId === userId) continue;
-      if (!p.username.includes(search)) continue;
       // Filter out if blocked
       const blocked = await hasBlock(ctx, userId, p.userId);
       if (!blocked) {
@@ -267,6 +272,11 @@ export const respondToFriendRequest = mutation({
       throw new Error("Unauthorized");
     }
 
+    // Only the RECIPIENT can accept; the sender may only reject/cancel.
+    if (args.action === "accept" && friendship.senderId === userId) {
+      throw new Error("You cannot accept your own friend request.");
+    }
+
     if (args.action === "reject") {
       await ctx.db.delete(args.friendshipId);
       return "rejected";
@@ -294,9 +304,17 @@ export const getFriendsLeaderboard = query({
       .withIndex("by_user2", (q) => q.eq("user2", userId))
       .collect();
 
-    const acceptedFriends = [...f1, ...f2]
+    const acceptedFriendCandidates = [...f1, ...f2]
       .filter((f) => f.status === "accepted")
       .map((f) => (f.user1 === userId ? f.user2 : f.user1));
+
+    // Filter out any blocked users (defense-in-depth)
+    const acceptedFriends: string[] = [];
+    for (const friendId of acceptedFriendCandidates) {
+      if (!(await hasBlock(ctx, userId, friendId))) {
+        acceptedFriends.push(friendId);
+      }
+    }
 
     // Include self
     const userIds = [userId, ...acceptedFriends];

@@ -64,13 +64,15 @@ export const remove = mutation({
       throw new Error("Unauthorized");
     }
 
-    // 1. Delete all exams tied to this subject (since subjectId is required)
+    // 1. Delete all exams tied to this subject for this user
     const examsToDelete = await ctx.db
       .query("exams")
-      .withIndex("by_subjectId", (q) => q.eq("subjectId", args.id))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .collect();
     for (const exam of examsToDelete) {
-      await ctx.db.delete(exam._id);
+      if (exam.subjectId === args.id) {
+        await ctx.db.delete(exam._id);
+      }
     }
 
     // 2. Unset subjectId for tasks

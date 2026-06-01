@@ -1,3 +1,25 @@
+# Dependencies
+node_modules/
 
+# Production build outputs
+dist/
+dist-ssr/
+
+# Environment files
+.env
 .env.local
-node_modules
+.env.*
+!.env.example
+
+# Convex configuration and generated files
+.convex/
+
+# OS/IDE files
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
