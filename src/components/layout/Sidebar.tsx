@@ -75,7 +75,8 @@ export function Sidebar({
         border: timerStatus !== "idle" ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
         borderRadius: "var(--radius-lg)",
         textAlign: "center",
-        transition: "all var(--transition-normal)"
+        transition: "all var(--transition-normal)",
+        flexShrink: 0
       }}>
         {timerStatus !== "idle" ? (
           <div>

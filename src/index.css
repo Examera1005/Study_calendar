@@ -243,12 +243,14 @@ select { cursor: pointer; appearance: none;
   left: 0;
   bottom: 0;
   z-index: 100;
+  overflow-y: auto;
   transition: transform var(--transition-normal), background var(--transition-normal), border var(--transition-normal);
 }
 .sidebar-brand {
   padding: 0 20px 16px;
   border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 12px;
+  flex-shrink: 0;
 }
 .sidebar-brand h2 {
   font-size: 1.1rem;
@@ -259,7 +261,10 @@ select { cursor: pointer; appearance: none;
   font-size: 0.75rem;
   color: var(--text-muted);
 }
-.sidebar-nav { flex: 1; padding: 8px 12px; }
+.sidebar-nav {
+  flex: 1 0 auto;
+  padding: 8px 12px;
+}
 .nav-item {
   display: flex;
   align-items: center;
@@ -285,13 +290,14 @@ select { cursor: pointer; appearance: none;
   font-weight: 600;
 }
 .nav-item .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
-
+ 
 .sidebar-footer {
   padding: 12px 16px;
   border-top: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .main-content {
