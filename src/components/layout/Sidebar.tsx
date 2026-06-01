@@ -60,7 +60,10 @@ export function Sidebar({
   return (
     <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} id="sidebar">
       <div className="sidebar-brand">
-        <h2>📚 Study Calendar</h2>
+        <h2 style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+          <img src="/logo.png" alt="Logo" style={{ width: "28px", height: "28px", borderRadius: "6px" }} />
+          Study Calendar
+        </h2>
         <span>Stay organized, ace your exams</span>
       </div>
 
