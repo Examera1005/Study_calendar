@@ -625,6 +625,29 @@ select { cursor: pointer; appearance: none;
   border: 1px solid var(--border-subtle);
 }
 
+.done-badge {
+  background: var(--success);
+}
+
+.task-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.task-group-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  margin-top: 12px;
+  padding-left: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 4px;
+}
+
 /* ========== DAILY LOG ========== */
 .log-entry {
   padding: 12px 14px;
