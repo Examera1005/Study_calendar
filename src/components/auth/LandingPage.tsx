@@ -322,10 +322,7 @@ export function LandingPage() {
 
       {/* Hero Section */}
       <section className="lp-hero">
-        <div className="lp-badge-pill">
-          <span className="lp-badge-dot" />
-          <span>Real-time Convex sync enabled</span>
-        </div>
+      
         
         <h1>
           <span>The tactile study planner,</span>
