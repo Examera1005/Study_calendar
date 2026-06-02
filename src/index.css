@@ -2371,6 +2371,9 @@ select { cursor: pointer; appearance: none;
   border-radius: var(--border-radius);
   isolation: isolate;
   transform: translate3d(0, 0, 0.01px);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
   display: grid;
   border: 1px solid rgb(255 255 255 / 15%);
   background: transparent;
@@ -2497,5 +2500,7 @@ select { cursor: pointer; appearance: none;
   flex: 1;
   background: var(--card-bg, #120F17);
   border-radius: inherit;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
