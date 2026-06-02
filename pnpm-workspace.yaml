@@ -1,4 +1,7 @@
 allowBuilds:
   esbuild: set this to true or false
+  msgpackr-extract: true
+minimumReleaseAge: 1440
+trustPolicy: no-downgrade
 minimumReleaseAgeExclude:
   - convex@1.40.0

@@ -15,12 +15,43 @@ import { FriendsView } from "./pages/FriendsView";
 import { api } from "../convex/_generated/api";
 import { Modal } from "./components/ui/Modal";
 import type { Id } from "../convex/_generated/dataModel";
-import { applyThemeCustomizations } from "./utils/colorUtils";
+import { 
+  applyThemeCustomizations,
+  getCustomizationsRawJson,
+  saveCustomizationsRawJson
+} from "./utils/colorUtils";
 import { AnalyticsView } from "./pages/AnalyticsView";
 import { playAlertSound } from "./utils/statsUtils";
 import { PomodoroView } from "./pages/PomodoroView";
 
 export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "subjects" | "settings" | "friends" | "analytics" | "pomodoro";
+
+let initialPomodoroCached = false;
+let initialPomodoroStatus = "idle";
+let initialPomodoroMode = "work";
+let initialWorkDuration = 25;
+let initialBreakDuration = 5;
+let initialTimeLeft = 1500;
+let initialElapsedSeconds = 0;
+
+function ensurePomodoroCached() {
+  if (initialPomodoroCached) return;
+  initialPomodoroCached = true;
+  if (typeof window === "undefined") return;
+
+  initialPomodoroStatus = localStorage.getItem("pomodoroStatus") as any || "idle";
+  initialPomodoroMode = localStorage.getItem("pomodoroMode") as any || "work";
+  const savedWork = localStorage.getItem("pomodoroWorkDuration");
+  initialWorkDuration = savedWork ? Number(savedWork) : 25;
+  const savedBreak = localStorage.getItem("pomodoroBreakDuration");
+  initialBreakDuration = savedBreak ? Number(savedBreak) : 5;
+  const savedTimeLeft = localStorage.getItem("pomodoroTimeLeft");
+  initialTimeLeft = savedTimeLeft 
+    ? Number(savedTimeLeft) 
+    : (initialPomodoroMode === "work" ? initialWorkDuration * 60 : initialBreakDuration * 60);
+  const savedElapsed = localStorage.getItem("pomodoroElapsedSeconds");
+  initialElapsedSeconds = savedElapsed ? Number(savedElapsed) : 0;
+}
 
 export default function App() {
   const [view, setView] = useState<View>(() => {
@@ -134,30 +165,28 @@ export default function App() {
 
   // Pomodoro Timer States
   const [pomodoroStatus, setPomodoroStatus] = useState<"idle" | "running" | "paused">(() => {
-    return (localStorage.getItem("pomodoroStatus") as any) || "idle";
+    ensurePomodoroCached();
+    return initialPomodoroStatus as any;
   });
   const [pomodoroMode, setPomodoroMode] = useState<"work" | "break">(() => {
-    return (localStorage.getItem("pomodoroMode") as any) || "work";
+    ensurePomodoroCached();
+    return initialPomodoroMode as any;
   });
   const [workDuration, setWorkDuration] = useState<number>(() => {
-    const saved = localStorage.getItem("pomodoroWorkDuration");
-    return saved ? Number(saved) : 25;
+    ensurePomodoroCached();
+    return initialWorkDuration;
   });
   const [breakDuration, setBreakDuration] = useState<number>(() => {
-    const saved = localStorage.getItem("pomodoroBreakDuration");
-    return saved ? Number(saved) : 5;
+    ensurePomodoroCached();
+    return initialBreakDuration;
   });
   const [timeLeft, setTimeLeft] = useState<number>(() => {
-    const saved = localStorage.getItem("pomodoroTimeLeft");
-    if (saved) return Number(saved);
-    const mode = localStorage.getItem("pomodoroMode") || "work";
-    const work = localStorage.getItem("pomodoroWorkDuration") ? Number(localStorage.getItem("pomodoroWorkDuration")) : 25;
-    const brk = localStorage.getItem("pomodoroBreakDuration") ? Number(localStorage.getItem("pomodoroBreakDuration")) : 5;
-    return mode === "work" ? work * 60 : brk * 60;
+    ensurePomodoroCached();
+    return initialTimeLeft;
   });
   const [elapsedSeconds, setElapsedSeconds] = useState<number>(() => {
-    const saved = localStorage.getItem("pomodoroElapsedSeconds");
-    return saved ? Number(saved) : 0;
+    ensurePomodoroCached();
+    return initialElapsedSeconds;
   });
   const [showSaveTimerModal, setShowSaveTimerModal] = useState(false);
   const [sessionMinutes, setSessionMinutes] = useState(0);
@@ -290,9 +319,9 @@ export default function App() {
         setTheme(userSettings.theme as "light" | "dark");
       }
       if (userSettings.customizations) {
-        const localCustomizationsJson = localStorage.getItem("themeCustomizations") || "{}";
+        const localCustomizationsJson = getCustomizationsRawJson();
         if (localCustomizationsJson !== userSettings.customizations) {
-          localStorage.setItem("themeCustomizations", userSettings.customizations);
+          saveCustomizationsRawJson(userSettings.customizations);
           applyThemeCustomizations((userSettings.theme as "light" | "dark") || theme);
         }
       }

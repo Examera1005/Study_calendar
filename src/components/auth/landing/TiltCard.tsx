@@ -36,13 +36,20 @@ export function TiltCard({
   const [transform, setTransform] = useState("rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
   const [isHovered, setIsHovered] = useState(false);
 
+  const rectRef = useRef<DOMRect | null>(null);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (disableTilt) return;
 
     const card = cardRef.current;
     if (!card) return;
 
-    const rect = card.getBoundingClientRect();
+    let rect = rectRef.current;
+    if (!rect) {
+      rect = card.getBoundingClientRect();
+      rectRef.current = rect;
+    }
+
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
@@ -60,10 +67,14 @@ export function TiltCard({
 
   const handleMouseEnter = () => {
     setIsHovered(true);
+    if (cardRef.current) {
+      rectRef.current = cardRef.current.getBoundingClientRect();
+    }
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
+    rectRef.current = null;
     if (!disableTilt) {
       setTransform("rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
     }

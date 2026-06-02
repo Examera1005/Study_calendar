@@ -216,29 +216,71 @@ export function adjustColorLightness(hex: string, amount: number): string {
   return `#${toHex(rOut)}${toHex(gOut)}${toHex(bOut)}`;
 }
 
+const STORAGE_KEY = "themeCustomizations:v1";
+const LEGACY_STORAGE_KEY = "themeCustomizations";
+
+function getConfigsJson(): string | null {
+  if (typeof window === "undefined") return null;
+  let data = localStorage.getItem(STORAGE_KEY);
+  if (!data) {
+    const legacyData = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (legacyData) {
+      data = legacyData;
+      try {
+        localStorage.setItem(STORAGE_KEY, legacyData);
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+  return data;
+}
+
+export function getCustomizationsRawJson(): string {
+  return getConfigsJson() || "{}";
+}
+
+export function saveCustomizationsRawJson(jsonStr: string) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY, jsonStr);
+  } catch (e) {
+    // ignore
+  }
+}
+
 // Save customization config to localStorage
 export function saveCustomizations(theme: "light" | "dark", customizations: Record<string, string>) {
-  const allConfigsJson = localStorage.getItem("themeCustomizations");
+  const allConfigsJson = getConfigsJson();
   const allConfigs = allConfigsJson ? JSON.parse(allConfigsJson) : {};
   allConfigs[theme] = customizations;
-  localStorage.setItem("themeCustomizations", JSON.stringify(allConfigs));
+  saveCustomizationsRawJson(JSON.stringify(allConfigs));
 }
 
 // Load customization config from localStorage
 export function loadCustomizations(theme: "light" | "dark"): Record<string, string> {
-  const allConfigsJson = localStorage.getItem("themeCustomizations");
+  const allConfigsJson = getConfigsJson();
   if (!allConfigsJson) return {};
-  const allConfigs = JSON.parse(allConfigsJson);
-  return allConfigs[theme] || {};
+  try {
+    const allConfigs = JSON.parse(allConfigsJson);
+    return allConfigs[theme] || {};
+  } catch (e) {
+    return {};
+  }
 }
 
 // Clear customizations for a theme
 export function clearCustomizations(theme: "light" | "dark") {
-  const allConfigsJson = localStorage.getItem("themeCustomizations");
+  const allConfigsJson = getConfigsJson();
   if (!allConfigsJson) return;
-  const allConfigs = JSON.parse(allConfigsJson);
-  delete allConfigs[theme];
-  localStorage.setItem("themeCustomizations", JSON.stringify(allConfigs));
+  try {
+    const allConfigs = JSON.parse(allConfigsJson);
+    delete allConfigs[theme];
+    saveCustomizationsRawJson(JSON.stringify(allConfigs));
+  } catch (e) {
+    // ignore
+  }
 }
 
 // Apply theme custom variables to document

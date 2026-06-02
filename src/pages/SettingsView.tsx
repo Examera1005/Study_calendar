@@ -7,6 +7,7 @@ import {
   saveCustomizations,
   clearCustomizations,
   applyThemeCustomizations,
+  getCustomizationsRawJson,
 } from "../utils/colorUtils";
 import { Modal } from "../components/ui/Modal";
 
@@ -88,7 +89,7 @@ export function SettingsView({
 
     // Sync with Convex
     if (updateSettings) {
-      const allConfigsJson = localStorage.getItem("themeCustomizations") || "{}";
+      const allConfigsJson = getCustomizationsRawJson();
       void updateSettings({ customizations: allConfigsJson });
     }
   };
@@ -101,7 +102,7 @@ export function SettingsView({
 
     // Sync with Convex
     if (updateSettings) {
-      const allConfigsJson = localStorage.getItem("themeCustomizations") || "{}";
+      const allConfigsJson = getCustomizationsRawJson();
       void updateSettings({ customizations: allConfigsJson });
     }
   };
