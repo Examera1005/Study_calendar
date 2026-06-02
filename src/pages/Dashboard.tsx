@@ -421,7 +421,7 @@ export function Dashboard({
               padding: "16px",
               borderRadius: "var(--radius-md)",
               border: "1px solid var(--border-subtle)",
-              height: "220px",
+              height: "250px",
               overflowY: "auto",
               display: "flex",
               flexDirection: "column",
