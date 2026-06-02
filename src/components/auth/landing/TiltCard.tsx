@@ -33,7 +33,7 @@ export function TiltCard({
   disableTilt?: boolean;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [transform, setTransform] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+  const [transform, setTransform] = useState("rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -55,19 +55,19 @@ export function TiltCard({
     const rotateX = -((y - centerY) / centerY) * maxTilt;
     const rotateY = ((x - centerX) / centerX) * maxTilt;
 
-    setTransform(`perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`);
+    setTransform(`rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`);
   };
 
   const handleMouseEnter = () => {
     setIsHovered(true);
     if (disableTilt) {
-      setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1.01, 1.01, 1.01)");
+      setTransform("rotateX(0deg) rotateY(0deg) scale3d(1.01, 1.01, 1.01)");
     }
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+    setTransform("rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
   };
 
   const theme = COLOR_THEMES[neonColor] || {
@@ -86,6 +86,7 @@ export function TiltCard({
         width: "100%",
         height: "100%",
         display: "flex",
+        perspective: "1000px",
       }}
     >
       <BorderGlow
@@ -104,9 +105,21 @@ export function TiltCard({
             ? "transform 0.15s cubic-bezier(0.25, 1, 0.5, 1)" 
             : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
           transformStyle: "preserve-3d",
+          willChange: "transform",
+          backfaceVisibility: "hidden",
+          WebkitFontSmoothing: "antialiased",
         }}
       >
-        <div style={{ transform: disableTilt ? "" : "translateZ(20px)", transformStyle: "preserve-3d", height: "100%", display: "flex", flexDirection: "column", flex: 1 }}>
+        <div style={{ 
+          transform: disableTilt ? "" : "translateZ(20px)", 
+          transformStyle: "preserve-3d", 
+          height: "100%", 
+          display: "flex", 
+          flexDirection: "column", 
+          flex: 1,
+          willChange: "transform",
+          backfaceVisibility: "hidden"
+        }}>
           {children}
         </div>
       </BorderGlow>
