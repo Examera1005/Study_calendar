@@ -772,7 +772,7 @@ select { cursor: pointer; appearance: none;
 /* ========== STATS ========== */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 12px;
   margin-bottom: 20px;
 }
@@ -781,6 +781,10 @@ select { cursor: pointer; appearance: none;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 16px;
+  height: 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .stat-value {
   font-size: 1.45rem;

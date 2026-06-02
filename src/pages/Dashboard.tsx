@@ -300,10 +300,6 @@ export function Dashboard({
           <div className="stat-label">Série d'Études</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value">{todayLogs?.length ?? 0}</div>
-          <div className="stat-label">{activeDate === today ? "Study Sessions" : "Sessions of the Day"}</div>
-        </div>
-        <div className="stat-card">
           <div className="stat-value" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>
               {totalMinutes > 0
