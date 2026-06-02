@@ -16,7 +16,7 @@ import { useState } from "react";
 import { Modal } from "../components/ui/Modal";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import type { Id } from "../../convex/_generated/dataModel";
-import { formatLocalDate } from "../utils/dateUtils";
+import { formatLocalDate, formatDuration } from "../utils/dateUtils";
 
 export function CalendarView({
   selectedDate,
@@ -187,9 +187,7 @@ export function CalendarView({
                 </div>
                 {data?.totalStudyMinutes && data.totalStudyMinutes > 0 && (
                   <div className="day-study-badge" title="Total study duration today">
-                    ⏱️ {data.totalStudyMinutes >= 60 
-                      ? `${Math.floor(data.totalStudyMinutes / 60)}h${data.totalStudyMinutes % 60 > 0 ? ` ${data.totalStudyMinutes % 60}m` : ""}`
-                      : `${data.totalStudyMinutes}m`}
+                    ⏱️ {formatDuration(data.totalStudyMinutes, { formatUnderHourAsMins: true })}
                   </div>
                 )}
               </div>

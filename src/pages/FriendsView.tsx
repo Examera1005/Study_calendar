@@ -3,6 +3,7 @@ import { api } from "../../convex/_generated/api";
 import { useState, useEffect, useRef } from "react";
 import { Modal } from "../components/ui/Modal";
 import { generateAndSaveKeys, encryptWithPublicKey, decryptWithPrivateKey } from "../utils/crypto";
+import { formatDuration } from "../utils/dateUtils";
 
 // Sub-component for decrypting message rows asynchronously
 function ChatMessageRow({
@@ -335,7 +336,7 @@ export function FriendsView() {
                         )}
                       </div>
                       <div className="leaderboard-time">
-                        {Math.floor(user.totalDuration / 60)}h {user.totalDuration % 60}m
+                        {formatDuration(user.totalDuration)}
                       </div>
                     </div>
                   );

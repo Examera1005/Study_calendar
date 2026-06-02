@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useState, useMemo } from "react";
 import { calculateStreak, getAchievements } from "../utils/statsUtils";
+import { formatDuration } from "../utils/dateUtils";
 
 export function AnalyticsView() {
   const allLogs = useQuery(api.dailyLogs.list);
@@ -283,7 +284,7 @@ export function AnalyticsView() {
                         strokeDasharray="4,4"
                       />
                       <text x={progressionChartElements.paddingLeft - 8} y={y + 3} textAnchor="end" fontSize="0.65rem" fill="var(--text-muted)" fontWeight="500">
-                        {val >= 60 ? `${Math.floor(val / 60)}h${val % 60 > 0 ? `${val % 60}m` : ""}` : `${val}m`}
+                        {formatDuration(val, { formatUnderHourAsMins: true })}
                       </text>
                     </g>
                   );
@@ -312,9 +313,7 @@ export function AnalyticsView() {
                   fill="var(--warning)"
                   fontWeight="600"
                 >
-                  Moyenne: {progressionChartElements.averageMinutes >= 60 
-                    ? `${Math.floor(progressionChartElements.averageMinutes / 60)}h${Math.round(progressionChartElements.averageMinutes % 60) > 0 ? `${Math.round(progressionChartElements.averageMinutes % 60)}m` : ""}`
-                    : `${Math.round(progressionChartElements.averageMinutes)}m`}
+                  Moyenne: {formatDuration(Math.round(progressionChartElements.averageMinutes), { formatUnderHourAsMins: true })}
                 </text>
 
                 {/* Median Line (only for working days, left-aligned) */}
@@ -337,9 +336,7 @@ export function AnalyticsView() {
                       fill="var(--accent-primary)"
                       fontWeight="600"
                     >
-                      Médiane (actifs): {progressionChartElements.medianMinutes >= 60 
-                        ? `${Math.floor(progressionChartElements.medianMinutes / 60)}h${Math.round(progressionChartElements.medianMinutes % 60) > 0 ? `${Math.round(progressionChartElements.medianMinutes % 60)}m` : ""}`
-                        : `${Math.round(progressionChartElements.medianMinutes)}m`}
+                      Médiane (actifs): {formatDuration(Math.round(progressionChartElements.medianMinutes), { formatUnderHourAsMins: true })}
                     </text>
                   </g>
                 )}
@@ -422,7 +419,7 @@ export function AnalyticsView() {
                   zIndex: 10,
                   whiteSpace: "nowrap",
                 }}>
-                  <strong>{hoveredPoint.label}</strong> : {hoveredPoint.value >= 60 ? `${Math.floor(hoveredPoint.value / 60)}h ${hoveredPoint.value % 60}m` : `${hoveredPoint.value} min`}
+                  <strong>{hoveredPoint.label}</strong> : {formatDuration(hoveredPoint.value)}
                 </div>
               )}
             </div>

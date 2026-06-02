@@ -272,6 +272,14 @@ export default function App() {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   });
 
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    return localStorage.getItem("sidebarCollapsed") === "true";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("sidebarCollapsed", String(sidebarCollapsed));
+  }, [sidebarCollapsed]);
+
   const userSettings = useQuery((api as any).userSettings?.get);
   const updateSettings = useMutation((api as any).userSettings?.update);
 
@@ -323,7 +331,7 @@ export default function App() {
         {sidebarOpen && (
           <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
         )}
-        <div className="app-layout">
+        <div className={`app-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
           <div className="mobile-header">
             <button className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -373,6 +381,8 @@ export default function App() {
             stopTimer={stopStopwatch}
             sidebarOpen={sidebarOpen}
             setSidebarOpen={setSidebarOpen}
+            sidebarCollapsed={sidebarCollapsed}
+            setSidebarCollapsed={setSidebarCollapsed}
           />
           <main className="main-content">
             {view === "dashboard" && (

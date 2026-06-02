@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Modal } from "../components/ui/Modal";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import type { Id } from "../../convex/_generated/dataModel";
-import { formatLocalDate } from "../utils/dateUtils";
+import { formatLocalDate, formatDuration } from "../utils/dateUtils";
 
 export function DailyLogView({
   selectedDate,
@@ -36,7 +36,7 @@ export function DailyLogView({
         <div>
           <h1>Daily Log</h1>
           <div className="date-display">
-            {logs?.length ?? 0} entries · {totalMinutes > 0 ? `${Math.floor(totalMinutes / 60)}h ${totalMinutes % 60}m studied` : "No study time logged"}
+            {logs?.length ?? 0} entries · {totalMinutes > 0 ? `${formatDuration(totalMinutes)} studied` : "No study time logged"}
           </div>
         </div>
         <button className="btn btn-primary" onClick={() => setShowAdd(true)} id="add-log-btn">

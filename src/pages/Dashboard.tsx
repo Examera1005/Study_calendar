@@ -5,7 +5,7 @@ import type { View } from "../App";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import { useState, useMemo, useEffect } from "react";
 import { calculateStreak } from "../utils/statsUtils";
-import { formatLocalDate } from "../utils/dateUtils";
+import { formatLocalDate, formatDuration } from "../utils/dateUtils";
 
 
 export function Dashboard({
@@ -320,9 +320,7 @@ export function Dashboard({
         <div className="stat-card">
           <div className="stat-value" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>
-              {totalMinutes > 0
-                ? `${Math.floor(totalMinutes / 60)}h${totalMinutes % 60 > 0 ? ` ${totalMinutes % 60}m` : ""}`
-                : "0h"}
+              {formatDuration(totalMinutes, { showZero: "0h" })}
             </span>
             {yesterdayLogs !== undefined && renderPercentageBadge(todayChangePct)}
           </div>
@@ -362,9 +360,7 @@ export function Dashboard({
                     <g key={pct}>
                       <line x1="50" y1={yVal} x2="480" y2={yVal} stroke="var(--border-subtle)" strokeDasharray="3,3" />
                       <text x="42" y={yVal + 3} textAnchor="end" fontSize="0.65rem" fill="var(--text-muted)" fontWeight="500">
-                        {value >= 60 
-                          ? `${Math.floor(value / 60)}h${value % 60 > 0 ? ` ${value % 60}m` : ""}`
-                          : `${value}m`}
+                        {formatDuration(value, { formatUnderHourAsMins: true })}
                       </text>
                     </g>
                   );
@@ -485,9 +481,7 @@ export function Dashboard({
                   ) : (
                     <div>
                       <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 12 }}>
-                        Total: {chartData[displayDayIndex].total >= 60 
-                          ? `${Math.floor(chartData[displayDayIndex].total / 60)}h${chartData[displayDayIndex].total % 60 > 0 ? ` ${chartData[displayDayIndex].total % 60}m` : ""}`
-                          : `${chartData[displayDayIndex].total}m`}
+                        Total: {formatDuration(chartData[displayDayIndex].total, { formatUnderHourAsMins: true })}
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                         {Object.entries(chartData[displayDayIndex].subjects).map(([subId, mins]) => {
@@ -544,9 +538,7 @@ export function Dashboard({
                                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                   {allLogs !== undefined && renderPercentageBadge(pctChange)}
                                   <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
-                                    {mins >= 60 
-                                      ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? ` ${mins % 60}m` : ""}`
-                                      : `${mins}m`}
+                                    {formatDuration(mins, { formatUnderHourAsMins: true })}
                                   </span>
                                 </div>
                               </div>
@@ -772,9 +764,7 @@ export function Dashboard({
                       <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{item.name}</span>
                     </div>
                     <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>
-                      {item.minutes >= 60 
-                        ? `${Math.floor(item.minutes / 60)}h${item.minutes % 60 > 0 ? ` ${item.minutes % 60}m` : ""}`
-                        : `${item.minutes}m`}
+                      {formatDuration(item.minutes, { formatUnderHourAsMins: true })}
                     </span>
                   </div>
                   <div style={{ height: 6, background: "var(--bg-secondary)", borderRadius: 3, overflow: "hidden", display: "flex" }}>

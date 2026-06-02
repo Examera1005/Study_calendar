@@ -29,6 +29,8 @@ export function Sidebar({
   stopTimer,
   sidebarOpen,
   setSidebarOpen,
+  sidebarCollapsed,
+  setSidebarCollapsed,
 }: {
   view: View;
   setView: (v: View) => void;
@@ -42,6 +44,8 @@ export function Sidebar({
   stopTimer: () => void;
   sidebarOpen: boolean;
   setSidebarOpen: (o: boolean) => void;
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (c: boolean) => void;
 }) {
   const { signOut } = useAuthActions();
   const [showLegal, setShowLegal] = useState<"privacy" | "terms" | null>(null);
@@ -59,16 +63,27 @@ export function Sidebar({
 
   return (
     <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} id="sidebar">
-      <div className="sidebar-brand">
+      <div className="sidebar-brand" style={{ position: "relative" }}>
         <h2 style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
           <img src="/logo.png" alt="Logo" style={{ width: "28px", height: "28px", borderRadius: "6px" }} />
-          Study Calendar
+          <span className="brand-text">Study Calendar</span>
         </h2>
-        <span>Stay organized, ace your exams</span>
+        <span className="brand-subtitle">Stay organized, ace your exams</span>
+
+        {/* Collapse Button (Desktop Only) */}
+        <button
+          className="sidebar-collapse-toggle"
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{ transition: "transform var(--transition-normal)", transform: sidebarCollapsed ? "rotate(180deg)" : "none" }}>
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
       </div>
 
       {/* Study Session Widget */}
-      <div style={{
+      <div className="sidebar-widget" style={{
         margin: "0 12px 12px",
         padding: "12px",
         background: timerStatus !== "idle" ? "rgba(59, 130, 246, 0.1)" : "var(--bg-elevated)",
@@ -81,20 +96,20 @@ export function Sidebar({
         {timerStatus !== "idle" ? (
           <div>
             {timerStatus === "running" ? (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
+              <div className="widget-status-text" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
                 <span className="pulse-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--danger)" }} />
                 <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--danger)" }}>STUDYING LIVE</span>
               </div>
             ) : (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
+              <div className="widget-status-text" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginBottom: 4 }}>
                 <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--warning)" }} />
                 <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--warning)" }}>SESSION PAUSED</span>
               </div>
             )}
-            <div style={{ fontSize: "1.35rem", fontWeight: 800, fontFamily: "monospace", margin: "6px 0", color: "var(--text-primary)" }}>
+            <div className="widget-time" style={{ fontSize: "1.35rem", fontWeight: 800, fontFamily: "monospace", margin: "6px 0", color: "var(--text-primary)" }}>
               {formatTime(elapsedSeconds)}
             </div>
-            <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+            <div className="widget-actions" style={{ display: "flex", gap: 6, marginTop: 8 }}>
               {timerStatus === "running" ? (
                 <button
                   className="btn btn-secondary btn-sm"
@@ -123,9 +138,9 @@ export function Sidebar({
           </div>
         ) : (
           <div>
-            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 8 }}>Ready to focus?</div>
+            <div className="widget-title" style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 8 }}>Ready to focus?</div>
             <button
-              className="btn btn-primary btn-sm btn-full"
+              className="btn btn-primary btn-sm btn-full widget-start-btn"
               onClick={startTimer}
               style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
             >
@@ -147,7 +162,7 @@ export function Sidebar({
             id={`nav-${item.id}`}
           >
             <span className="nav-icon">{item.icon}</span>
-            {item.label}
+            <span className="nav-label">{item.label}</span>
           </button>
         ))}
       </nav>
@@ -172,14 +187,14 @@ export function Sidebar({
                 <path d="m6.34 17.66-1.41 1.41"/>
                 <path d="m19.07 4.93-1.41 1.41"/>
               </svg>
-              <span>Light Mode</span>
+              <span className="footer-label">Light Mode</span>
             </>
           ) : (
             <>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
               </svg>
-              <span>Dark Mode</span>
+              <span className="footer-label">Dark Mode</span>
             </>
           )}
         </button>
@@ -191,11 +206,14 @@ export function Sidebar({
             void signOut();
           }}
           id="sign-out-btn"
+          title="Sign Out"
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
         >
-          Sign Out
+          <span className="sign-out-icon">🚪</span>
+          <span className="footer-label">Sign Out</span>
         </button>
 
-        <div style={{
+        <div className="sidebar-footer-info" style={{
           marginTop: 10,
           fontSize: "0.7rem",
           color: "var(--text-muted)",
