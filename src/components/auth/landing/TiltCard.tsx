@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 
 // Reusable 3D Tilt Card component for premium tactile micro-interactions and custom neon glows
 export function TiltCard({
@@ -16,6 +16,28 @@ export function TiltCard({
   const [transform, setTransform] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
   const [isHovered, setIsHovered] = useState(false);
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (disableTilt) return;
+
+    const card = cardRef.current;
+    if (!card) return;
+
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const maxTilt = 8; // Max tilt rotation angle in degrees
+
+    // Weight physics: pushing the mouse down acts as weight tilt X and Y
+    const rotateX = -((y - centerY) / centerY) * maxTilt;
+    const rotateY = ((x - centerX) / centerX) * maxTilt;
+
+    setTransform(`perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`);
+  };
+
   const handleMouseEnter = () => {
     setIsHovered(true);
     if (disableTilt) {
@@ -23,93 +45,45 @@ export function TiltCard({
     }
   };
 
-  useEffect(() => {
-    if (!isHovered || disableTilt) return;
-
-    const card = cardRef.current;
-    if (!card) return;
-
-    // Cache the flat bounding rect once when hover starts to avoid 3D feedback loops
-    const rect = card.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const halfW = rect.width / 2;
-    const halfH = rect.height / 2;
-
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      const dx = e.clientX - centerX;
-      const dy = e.clientY - centerY;
-
-      // Calculate distance outside card boundaries
-      const distX = Math.max(0, Math.abs(dx) - halfW);
-      const distY = Math.max(0, Math.abs(dy) - halfH);
-      const distanceOutside = Math.sqrt(distX * distX + distY * distY);
-
-      const fadeDistance = 120; // 120px fade-out distance outside the card
-
-      if (distanceOutside >= fadeDistance) {
-        setIsHovered(false);
-        setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
-        return;
-      }
-
-      // Smooth scale from 1 (at card edge) to 0 (at fadeDistance outside)
-      const scale = 1 - distanceOutside / fadeDistance;
-
-      // Clamp normalized coordinates inside card to [-1, 1]
-      const normX = Math.max(-1, Math.min(1, dx / halfW));
-      const normY = Math.max(-1, Math.min(1, dy / halfH));
-
-      const maxTilt = 8; // Max tilt rotation angle in degrees
-      const rotateX = -normY * maxTilt * scale;
-      const rotateY = normX * maxTilt * scale;
-
-      const scalePop = 1 + 0.02 * scale; // scales from 1.02 to 1.0
-
-      setTransform(`perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(${scalePop.toFixed(3)}, ${scalePop.toFixed(3)}, ${scalePop.toFixed(3)})`);
-    };
-
-    const handleMouseLeaveWindow = () => {
-      setIsHovered(false);
-      setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
-    };
-
-    document.addEventListener("mousemove", handleGlobalMouseMove);
-    document.addEventListener("mouseleave", handleMouseLeaveWindow);
-
-    return () => {
-      document.removeEventListener("mousemove", handleGlobalMouseMove);
-      document.removeEventListener("mouseleave", handleMouseLeaveWindow);
-    };
-  }, [isHovered, disableTilt]);
-
   const handleMouseLeave = () => {
-    if (disableTilt) {
-      setIsHovered(false);
-      setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
-    }
+    setIsHovered(false);
+    setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
   };
 
   return (
     <div
       ref={cardRef}
-      className={className}
+      onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       style={{
-        transform: transform,
-        transition: isHovered 
-          ? "border-color 0.3s ease, box-shadow 0.3s ease" 
-          : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease",
-        transformStyle: "preserve-3d",
-        borderColor: isHovered ? neonColor : "",
-        boxShadow: isHovered 
-          ? `0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px ${neonColor}33` 
-          : "",
+        position: "relative",
+        width: "100%",
+        height: "100%",
+        display: "flex",
       }}
     >
-      <div style={{ transform: disableTilt ? "" : "translateZ(20px)", transformStyle: "preserve-3d", height: "100%", display: "flex", flexDirection: "column" }}>
-        {children}
+      <div
+        className={className}
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          transform: transform,
+          transition: isHovered 
+            ? "border-color 0.3s ease, box-shadow 0.3s ease" 
+            : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease",
+          transformStyle: "preserve-3d",
+          borderColor: isHovered ? neonColor : "",
+          boxShadow: isHovered 
+            ? `0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px ${neonColor}33` 
+            : "",
+        }}
+      >
+        <div style={{ transform: disableTilt ? "" : "translateZ(20px)", transformStyle: "preserve-3d", height: "100%", display: "flex", flexDirection: "column", flex: 1 }}>
+          {children}
+        </div>
       </div>
     </div>
   );
