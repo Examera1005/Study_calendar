@@ -3,7 +3,7 @@ import { api } from "../../convex/_generated/api";
 import { format } from "date-fns";
 import type { View } from "../App";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { calculateStreak } from "../utils/statsUtils";
 import { formatLocalDate } from "../utils/dateUtils";
 
@@ -133,6 +133,26 @@ export function Dashboard({
   };
 
   const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
+  const [clickedDayIndex, setClickedDayIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const todayStr = formatLocalDate();
+    if (selectedDate === todayStr) {
+      setClickedDayIndex(null);
+    } else {
+      const days = Array.from({ length: 7 }, (_, i) => {
+        const d = new Date();
+        d.setDate(d.getDate() - (6 - i));
+        return format(d, "yyyy-MM-dd");
+      });
+      const index = days.indexOf(selectedDate);
+      if (index !== -1) {
+        setClickedDayIndex(index);
+      } else {
+        setClickedDayIndex(null);
+      }
+    }
+  }, [selectedDate]);
 
   const chartData = (() => {
     if (!allLogs) return [];
@@ -248,6 +268,8 @@ export function Dashboard({
     return 0;
   })();
 
+  const displayDayIndex = hoveredDayIndex !== null ? hoveredDayIndex : clickedDayIndex;
+
   return (
     <div>
       <div className="page-header">
@@ -359,7 +381,7 @@ export function Dashboard({
                   let currentY = 170; // chart baseline (paddingTop: 20 + chartHeight: 150 = 170)
                   const sortedKeys = Object.keys(dayData.subjects).sort();
                   const isHovered = hoveredDayIndex === i;
-                  const isSelected = dayData.date === activeDate;
+                  const isSelected = clickedDayIndex === i;
 
                   return (
                     <g key={dayData.date}>
@@ -426,7 +448,13 @@ export function Dashboard({
                         style={{ cursor: "pointer" }}
                         onMouseEnter={() => setHoveredDayIndex(i)}
                         onMouseLeave={() => setHoveredDayIndex(null)}
-                        onClick={() => setSelectedDate(dayData.date)}
+                        onClick={() => {
+                          if (clickedDayIndex === i) {
+                            setSelectedDate(today);
+                          } else {
+                            setSelectedDate(dayData.date);
+                          }
+                        }}
                       />
                     </g>
                   );
@@ -446,23 +474,23 @@ export function Dashboard({
               flexDirection: "column",
               justifyContent: "flex-start",
             }}>
-              {hoveredDayIndex !== null ? (
+              {displayDayIndex !== null ? (
                 // Day Breakdown Detail
                 <div>
                   <h4 style={{ fontSize: "0.85rem", fontWeight: 700, marginBottom: 8, color: "var(--text-primary)" }}>
-                    {format(new Date(chartData[hoveredDayIndex].date + "T00:00:00"), "EEEE, MMM d")}
+                    {format(new Date(chartData[displayDayIndex].date + "T00:00:00"), "EEEE, MMM d")}
                   </h4>
-                  {chartData[hoveredDayIndex].total === 0 ? (
+                  {chartData[displayDayIndex].total === 0 ? (
                     <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>No study time logged on this day.</p>
                   ) : (
                     <div>
                       <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 12 }}>
-                        Total: {chartData[hoveredDayIndex].total >= 60 
-                          ? `${Math.floor(chartData[hoveredDayIndex].total / 60)}h${chartData[hoveredDayIndex].total % 60 > 0 ? ` ${chartData[hoveredDayIndex].total % 60}m` : ""}`
-                          : `${chartData[hoveredDayIndex].total}m`}
+                        Total: {chartData[displayDayIndex].total >= 60 
+                          ? `${Math.floor(chartData[displayDayIndex].total / 60)}h${chartData[displayDayIndex].total % 60 > 0 ? ` ${chartData[displayDayIndex].total % 60}m` : ""}`
+                          : `${chartData[displayDayIndex].total}m`}
                       </div>
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                        {Object.entries(chartData[hoveredDayIndex].subjects).map(([subId, mins]) => {
+                        {Object.entries(chartData[displayDayIndex].subjects).map(([subId, mins]) => {
                           if (mins <= 0) return null;
                           const subj = subId !== "uncategorized" ? getSubject(subId) : null;
                           return (
