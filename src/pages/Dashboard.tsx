@@ -312,7 +312,7 @@ export function Dashboard({
             <span>{activeDate === today ? "Study Time Today" : "Study Time for Day"}</span>
             {yesterdayLogs !== undefined && (
               <span style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>
-                {activeDate === today ? "VS Yesterday" : "VS Previous Day"}
+                {activeDate === today ? "VS  Yesterday" : "VS  Previous Day"}
               </span>
             )}
           </div>
