@@ -275,7 +275,7 @@ export function Dashboard({
       <div className="page-header">
         <div>
           <h1>Dashboard</h1>
-          <div className="date-display" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <div className="date-display" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", minHeight: "32px" }}>
             <span>
               {format(new Date(activeDate + "T00:00:00"), "EEEE, MMMM d, yyyy")}
             </span>
