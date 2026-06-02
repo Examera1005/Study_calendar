@@ -5,37 +5,31 @@ export function TiltCard({
   children,
   className = "",
   neonColor = "#3b82f6",
+  disableTilt = false,
 }: {
   children: React.ReactNode;
   className?: string;
   neonColor?: string;
+  disableTilt?: boolean;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const rectRef = useRef<DOMRect | null>(null);
   const [transform, setTransform] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!rectRef.current && cardRef.current) {
-      rectRef.current = cardRef.current.getBoundingClientRect();
-    }
-    const rect = rectRef.current;
-    if (!rect) return;
+    if (disableTilt) return;
 
-    // Freeze tilt rotation and keep the card stable when hovering over interactive children
-    const target = e.target as HTMLElement;
-    if (target.closest("button, input, select, textarea, [role='checkbox'], a")) {
-      setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1.02, 1.02, 1.02)");
-      return;
-    }
+    const card = cardRef.current;
+    if (!card) return;
 
+    const rect = card.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const maxTilt = 6; // Premium subtle tilt angle
+    const maxTilt = 8; // Max tilt rotation angle in degrees
 
     // Weight physics: pushing the mouse down acts as weight tilt X and Y
     const rotateX = -((y - centerY) / centerY) * maxTilt;
@@ -46,14 +40,13 @@ export function TiltCard({
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-    if (cardRef.current) {
-      rectRef.current = cardRef.current.getBoundingClientRect();
+    if (disableTilt) {
+      setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1.01, 1.01, 1.01)");
     }
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    rectRef.current = null;
     setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
   };
 
@@ -67,7 +60,7 @@ export function TiltCard({
       style={{
         transform: transform,
         transition: isHovered 
-          ? "transform 0.1s ease-out, border-color 0.3s ease, box-shadow 0.3s ease" 
+          ? "border-color 0.3s ease, box-shadow 0.3s ease" 
           : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease",
         transformStyle: "preserve-3d",
         borderColor: isHovered ? neonColor : "",
@@ -76,7 +69,7 @@ export function TiltCard({
           : "",
       }}
     >
-      <div style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d", height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ transform: disableTilt ? "" : "translateZ(20px)", transformStyle: "preserve-3d", height: "100%", display: "flex", flexDirection: "column" }}>
         {children}
       </div>
     </div>

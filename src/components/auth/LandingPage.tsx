@@ -181,22 +181,22 @@ export function LandingPage() {
 
         <div className="lp-demo-grid">
           {/* Card 1: Focus Engine */}
-          <TiltCard className="lp-demo-card" neonColor="#ef4444">
+          <TiltCard className="lp-demo-card" neonColor="#ef4444" disableTilt>
             <PomodoroDemo />
           </TiltCard>
 
           {/* Card 2: Interactive Tasks Checklist */}
-          <TiltCard className="lp-demo-card" neonColor="#3b82f6">
+          <TiltCard className="lp-demo-card" neonColor="#3b82f6" disableTilt>
             <ChecklistDemo />
           </TiltCard>
 
           {/* Card 3: Cryptography E2E Visualizer */}
-          <TiltCard className="lp-demo-card" neonColor="#10b981">
+          <TiltCard className="lp-demo-card" neonColor="#10b981" disableTilt>
             <CryptoDemo />
           </TiltCard>
 
           {/* Card 4: Streaks & Badges */}
-          <TiltCard className="lp-demo-card" neonColor="#f59e0b">
+          <TiltCard className="lp-demo-card" neonColor="#f59e0b" disableTilt>
             <StreakDemo />
           </TiltCard>
         </div>
