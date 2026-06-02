@@ -62,6 +62,75 @@ function playSynthSound(type: "success" | "tick" | "click" | "pop") {
   }
 }
 
+// Reusable 3D Tilt Card component for premium tactile micro-interactions and custom neon glows
+function TiltCard({
+  children,
+  className = "",
+  neonColor = "#3b82f6",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  neonColor?: string;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [transform, setTransform] = useState("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    const maxTilt = 8; // Max tilt rotation angle in degrees
+
+    // Weight physics: pushing the mouse down acts as weight tilt X and Y
+    const rotateX = -((y - centerY) / centerY) * maxTilt;
+    const rotateY = ((x - centerX) / centerX) * maxTilt;
+
+    setTransform(`perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      className={className}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform: transform,
+        transition: isHovered 
+          ? "border-color 0.3s ease, box-shadow 0.3s ease" 
+          : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease",
+        transformStyle: "preserve-3d",
+        borderColor: isHovered ? neonColor : "",
+        boxShadow: isHovered 
+          ? `0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px ${neonColor}33` 
+          : "",
+      }}
+    >
+      <div style={{ transform: "translateZ(20px)", transformStyle: "preserve-3d", height: "100%", display: "flex", flexDirection: "column" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function LandingPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
@@ -430,29 +499,29 @@ export function LandingPage() {
         </div>
 
         <div className="lp-features-grid">
-          <div className="lp-feat-card">
+          <TiltCard className="lp-feat-card" neonColor="#3b82f6">
             <div className="lp-feat-icon">📅</div>
             <h3>Structured Timetable</h3>
             <p>Block out lectures, review blocks, and exam dates on a real-time calendar that syncs instantly across devices.</p>
-          </div>
+          </TiltCard>
 
-          <div className="lp-feat-card">
+          <TiltCard className="lp-feat-card" neonColor="#ef4444">
             <div className="lp-feat-icon">🍅</div>
             <h3>Pomodoro Focus Sessions</h3>
             <p>Activate customizable work and break timers. Complete sessions automatically pipe logs into your agenda.</p>
-          </div>
+          </TiltCard>
 
-          <div className="lp-feat-card">
+          <TiltCard className="lp-feat-card" neonColor="#10b981">
             <div className="lp-feat-icon">🔒</div>
             <h3>End-to-End Encrypted Chat</h3>
             <p>Message study partners with military-grade client-side encryption. Server never sees your text; keys are stored locally.</p>
-          </div>
+          </TiltCard>
 
-          <div className="lp-feat-card">
+          <TiltCard className="lp-feat-card" neonColor="#f59e0b">
             <div className="lp-feat-icon">📊</div>
             <h3>Academic Analytics</h3>
             <p>Visualize statistics per course. Review total study durations, streak counters, and track badge achievements.</p>
-          </div>
+          </TiltCard>
         </div>
       </section>
 
@@ -465,7 +534,7 @@ export function LandingPage() {
 
         <div className="lp-demo-grid">
           {/* Card 1: Focus Engine */}
-          <div className="lp-demo-card">
+          <TiltCard className="lp-demo-card" neonColor="#ef4444">
             <span className="lp-demo-tag lp-tag-pomodoro">Focus Engine</span>
             <h3>Pomodoro & Logging Simulator</h3>
             <p className="lp-demo-desc">Start the focus session. The 25-minute countdown is accelerated to complete in exactly 25 seconds (1 minute per second) to show the log sync.</p>
@@ -516,10 +585,10 @@ export function LandingPage() {
                 ))}
               </div>
             </div>
-          </div>
+          </TiltCard>
 
           {/* Card 2: Interactive Tasks Checklist */}
-          <div className="lp-demo-card">
+          <TiltCard className="lp-demo-card" neonColor="#3b82f6">
             <span className="lp-demo-tag lp-tag-checklist">Task Checklist</span>
             <h3>Interactive Task Checklist</h3>
             <p className="lp-demo-desc">Mark off tasks to update your daily progress bar. Satisfaction guaranteed with subtle micro-animations.</p>
@@ -580,10 +649,10 @@ export function LandingPage() {
                 </span>
               </div>
             </div>
-          </div>
+          </TiltCard>
 
           {/* Card 3: Cryptography E2E Visualizer */}
-          <div className="lp-demo-card">
+          <TiltCard className="lp-demo-card" neonColor="#10b981">
             <span className="lp-demo-tag lp-tag-crypto">Encryption Block</span>
             <h3>E2E Message Encryptor</h3>
             <p className="lp-demo-desc">We use local 2048-bit RSA keys. Test encryption on the browser; watch client text scramble and descramble at recipient side.</p>
@@ -659,10 +728,10 @@ export function LandingPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </TiltCard>
 
           {/* Card 4: Streaks & Badges */}
-          <div className="lp-demo-card">
+          <TiltCard className="lp-demo-card" neonColor="#f59e0b">
             <span className="lp-demo-tag lp-tag-streaks">Achievements</span>
             <h3>Streak & Badge Tracker</h3>
             <p className="lp-demo-desc">Streaks build academic discipline. Test log session to increment your calendar streak and unlock badges.</p>
@@ -707,7 +776,7 @@ export function LandingPage() {
                 </button>
               </div>
             </div>
-          </div>
+          </TiltCard>
         </div>
       </section>
 
