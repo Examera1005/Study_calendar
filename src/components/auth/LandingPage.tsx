@@ -338,10 +338,10 @@ export function LandingPage() {
       
         
         <h1>
-          <span className="lp-title-serif">The tactile study planner,</span>
+          <span className="lp-title-sans">The tactile study planner,</span>
           <br />
-          <span className="lp-title-serif">built for </span>
-          <span className="lp-gradient-accent lp-title-sans">digital minds.</span>
+          <span className="lp-title-sans">built for </span>
+          <span className="lp-gradient-accent lp-title-serif">digital minds.</span>
         </h1>
         
         <p className="lp-hero-desc">
