@@ -773,7 +773,7 @@ select { cursor: pointer; appearance: none;
 .stats-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 12px;
+  gap: 10px;
   margin-bottom: 20px;
 }
 .stat-card {
