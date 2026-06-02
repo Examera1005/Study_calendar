@@ -309,11 +309,10 @@ select { cursor: pointer; appearance: none;
 }
 
 /* ========== COLLAPSIBLE SIDEBAR ========== */
-.sidebar-collapsed {
-  --sidebar-width: 70px;
-}
-
 @media (min-width: 769px) {
+  .sidebar-collapsed {
+    --sidebar-width: 70px;
+  }
   /* Brand transitions */
   .sidebar-collapsed .sidebar-brand h2 {
     font-size: 0;
@@ -1402,5 +1401,28 @@ select { cursor: pointer; appearance: none;
   transform: scale(1.15);
 }
 
-
-
+/* ========== FLOATING TIMER WIDGET ========== */
+.floating-timer-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+.floating-timer-active {
+  background: var(--bg-surface);
+  border: 1px solid var(--accent-primary);
+  border-radius: var(--radius-xl);
+  padding: 16px 20px;
+  box-shadow: var(--shadow-lg);
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all var(--transition-normal);
+}
+.floating-timer-start-btn {
+  border-radius: 100px !important;
+  padding: 14px 28px !important;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+}

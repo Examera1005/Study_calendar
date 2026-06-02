@@ -373,12 +373,6 @@ export default function App() {
             setView={setView}
             theme={theme}
             toggleTheme={toggleTheme}
-            timerStatus={stopwatchStatus}
-            elapsedSeconds={stopwatchElapsed}
-            startTimer={startStopwatch}
-            pauseTimer={pauseStopwatch}
-            resumeTimer={resumeStopwatch}
-            stopTimer={stopStopwatch}
             sidebarOpen={sidebarOpen}
             setSidebarOpen={setSidebarOpen}
             sidebarCollapsed={sidebarCollapsed}
@@ -431,6 +425,50 @@ export default function App() {
               />
             )}
           </main>
+
+          {/* Floating Study Session Widget */}
+          <div className="floating-timer-widget">
+            {stopwatchStatus !== "idle" ? (
+              <div className="floating-timer-active">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  {stopwatchStatus === "running" ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span className="pulse-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--danger)" }} />
+                      <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--danger)" }}>STUDYING LIVE</span>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--warning)" }} />
+                      <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--warning)" }}>PAUSED</span>
+                    </div>
+                  )}
+                  <div style={{ fontSize: "1.2rem", fontWeight: 800, fontFamily: "monospace", color: "var(--text-primary)" }}>
+                    {[
+                      Math.floor(stopwatchElapsed / 3600) > 0 ? String(Math.floor(stopwatchElapsed / 3600)).padStart(2, "0") : null,
+                      String(Math.floor((stopwatchElapsed % 3600) / 60)).padStart(2, "0"),
+                      String(stopwatchElapsed % 60).padStart(2, "0")
+                    ].filter(Boolean).join(":")}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {stopwatchStatus === "running" ? (
+                    <button className="btn btn-secondary btn-sm" onClick={pauseStopwatch} style={{ flex: 1 }}>⏸️ Pause</button>
+                  ) : (
+                    <button className="btn btn-primary btn-sm" onClick={resumeStopwatch} style={{ flex: 1 }}>▶️ Resume</button>
+                  )}
+                  <button className="btn btn-danger btn-sm" onClick={stopStopwatch} style={{ flex: 1 }}>⏹ Stop</button>
+                </div>
+              </div>
+            ) : (
+              <button
+                className="btn btn-primary floating-timer-start-btn"
+                onClick={startStopwatch}
+                style={{ display: "flex", alignItems: "center", gap: 8, boxShadow: "var(--shadow-md)" }}
+              >
+                ⏱️ Start Session
+              </button>
+            )}
+          </div>
         </div>
       </Authenticated>
       {showSaveTimerModal && (
