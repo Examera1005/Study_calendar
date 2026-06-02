@@ -421,10 +421,11 @@ export function Dashboard({
               padding: "16px",
               borderRadius: "var(--radius-md)",
               border: "1px solid var(--border-subtle)",
-              minHeight: "160px",
+              height: "220px",
+              overflowY: "auto",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center",
+              justifyContent: "flex-start",
             }}>
               {hoveredDayIndex !== null ? (
                 // Day Breakdown Detail
