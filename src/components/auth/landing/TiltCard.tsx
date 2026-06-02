@@ -60,20 +60,29 @@ export function TiltCard({
 
   const handleMouseEnter = () => {
     setIsHovered(true);
-    if (disableTilt) {
-      setTransform("rotateX(0deg) rotateY(0deg) scale3d(1.01, 1.01, 1.01)");
-    }
   };
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    setTransform("rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+    if (!disableTilt) {
+      setTransform("rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
+    }
   };
 
   const theme = COLOR_THEMES[neonColor] || {
     glowColor: "217 91% 60%",
     colors: ["#3b82f6", "#60a5fa", "#93c5fd"],
   };
+
+  const cardTransform = disableTilt ? "none" : transform;
+  const cardTransition = disableTilt 
+    ? "none" 
+    : (isHovered 
+        ? "transform 0.15s cubic-bezier(0.25, 1, 0.5, 1)" 
+        : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)");
+  const cardTransformStyle = disableTilt ? "flat" : "preserve-3d";
+  const cardWillChange = disableTilt ? "auto" : "transform";
+  const cardBackface = disableTilt ? "visible" : "hidden";
 
   return (
     <div
@@ -86,7 +95,7 @@ export function TiltCard({
         width: "100%",
         height: "100%",
         display: "flex",
-        perspective: "1000px",
+        perspective: disableTilt ? "none" : "1000px",
       }}
     >
       <BorderGlow
@@ -100,25 +109,23 @@ export function TiltCard({
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          transform: transform,
-          transition: isHovered 
-            ? "transform 0.15s cubic-bezier(0.25, 1, 0.5, 1)" 
-            : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
-          transformStyle: "preserve-3d",
-          willChange: "transform",
-          backfaceVisibility: "hidden",
+          transform: cardTransform,
+          transition: cardTransition,
+          transformStyle: cardTransformStyle as any,
+          willChange: cardWillChange,
+          backfaceVisibility: cardBackface as any,
           WebkitFontSmoothing: "antialiased",
         }}
       >
         <div style={{ 
-          transform: disableTilt ? "" : "translateZ(20px)", 
-          transformStyle: "preserve-3d", 
+          transform: disableTilt ? "none" : "translateZ(20px)", 
+          transformStyle: cardTransformStyle as any, 
           height: "100%", 
           display: "flex", 
           flexDirection: "column", 
           flex: 1,
-          willChange: "transform",
-          backfaceVisibility: "hidden"
+          willChange: cardWillChange,
+          backfaceVisibility: cardBackface as any
         }}>
           {children}
         </div>
