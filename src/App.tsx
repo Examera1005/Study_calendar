@@ -1,6 +1,7 @@
 import { Authenticated, Unauthenticated, AuthLoading, useQuery, useMutation } from "convex/react";
 import { useEffect, useState } from "react";
 import { SignIn } from "./components/auth/SignIn";
+import { LandingPage } from "./components/auth/LandingPage";
 import { Sidebar } from "./components/layout/Sidebar";
 import { Dashboard } from "./pages/Dashboard";
 import { CalendarView } from "./pages/CalendarView";
@@ -324,7 +325,7 @@ export default function App() {
       </AuthLoading>
 
       <Unauthenticated>
-        <SignIn />
+        <LandingPage />
       </Unauthenticated>
 
       <Authenticated>
