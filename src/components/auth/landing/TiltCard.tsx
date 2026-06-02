@@ -92,7 +92,7 @@ export function TiltCard({
         className={className}
         glowColor={theme.glowColor}
         colors={theme.colors}
-        backgroundColor={disableTilt ? "#121417" : "rgba(22, 24, 27, 0.5)"}
+        backgroundColor="#121417"
         borderRadius={disableTilt ? 16 : 12}
         fillOpacity={0.45}
         style={{

@@ -1823,7 +1823,6 @@ select { cursor: pointer; appearance: none;
 }
 
 .lp-feat-card {
-  background: rgba(22, 24, 27, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 28px;
@@ -1833,7 +1832,6 @@ select { cursor: pointer; appearance: none;
 }
 
 .lp-feat-card:hover {
-  background: rgba(22, 24, 27, 0.8);
   border-color: rgba(255, 255, 255, 0.12);
   transform: translateY(-4px);
 }
@@ -1887,7 +1885,6 @@ select { cursor: pointer; appearance: none;
 }
 
 .lp-demo-card {
-  background: #121417;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
   padding: 32px;
@@ -2378,7 +2375,7 @@ select { cursor: pointer; appearance: none;
   transform: translate3d(0, 0, 0.01px);
   display: grid;
   border: 1px solid rgb(255 255 255 / 15%);
-  background: var(--card-bg, #120F17);
+  background: transparent;
   overflow: visible;
   box-shadow:
     rgba(0, 0, 0, 0.1) 0px 1px 2px,
@@ -2466,7 +2463,7 @@ select { cursor: pointer; appearance: none;
 .border-glow-card > .edge-light {
   inset: calc(var(--glow-padding) * -1);
   pointer-events: none;
-  z-index: 1;
+  z-index: -1;
 
   mask-image:
     conic-gradient(
@@ -2500,5 +2497,7 @@ select { cursor: pointer; appearance: none;
   width: 100%;
   height: 100%;
   flex: 1;
+  background: var(--card-bg, #120F17);
+  border-radius: inherit;
 }
 
