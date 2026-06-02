@@ -103,5 +103,11 @@ export default defineSchema({
     .index("by_userId", ["userId"])
     .index("by_userId_and_blockedUserId", ["userId", "blockedUserId"])
     .index("by_blockedUserId", ["blockedUserId"]),
+
+  userSettings: defineTable({
+    userId: v.string(),
+    theme: v.optional(v.union(v.literal("light"), v.literal("dark"))),
+    customizations: v.optional(v.string()), // JSON string of all customizations
+  }).index("by_userId", ["userId"]),
 });
 

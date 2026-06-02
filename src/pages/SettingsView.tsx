@@ -46,6 +46,10 @@ export function SettingsView({
   const blockedUsers = useQuery(friendsApi.getBlockedUsers);
   const userEmail = useQuery(friendsApi.getUserEmail);
 
+  // Theme customizations from Convex
+  const userSettings = useQuery((api as any).userSettings?.get);
+  const updateSettings = useMutation((api as any).userSettings?.update);
+
   // Theme customizations state
   const [customizations, setCustomizations] = useState<Record<string, string>>(() => loadCustomizations(theme));
   const [activeVariable, setActiveVariable] = useState<string | null>(null);
@@ -54,6 +58,21 @@ export function SettingsView({
     setCustomizations(loadCustomizations(theme));
     setActiveVariable(null);
   }, [theme]);
+
+  // Sync customizations in real-time when they change on another device
+  useEffect(() => {
+    if (userSettings && userSettings.customizations) {
+      try {
+        const allConfigs = JSON.parse(userSettings.customizations);
+        const activeCustomizations = allConfigs[theme] || {};
+        if (JSON.stringify(activeCustomizations) !== JSON.stringify(customizations)) {
+          setCustomizations(activeCustomizations);
+        }
+      } catch (e) {
+        console.error("Failed to parse user settings customizations:", e);
+      }
+    }
+  }, [userSettings, theme, customizations]);
 
   const handleColorChange = (newColor: string) => {
     if (!activeVariable) return;
@@ -64,6 +83,12 @@ export function SettingsView({
     setCustomizations(updated);
     saveCustomizations(theme, updated);
     applyThemeCustomizations(theme);
+
+    // Sync with Convex
+    if (updateSettings) {
+      const allConfigsJson = localStorage.getItem("themeCustomizations") || "{}";
+      void updateSettings({ customizations: allConfigsJson });
+    }
   };
 
   const handleResetTheme = () => {
@@ -71,6 +96,12 @@ export function SettingsView({
     setCustomizations({});
     applyThemeCustomizations(theme);
     setActiveVariable(null);
+
+    // Sync with Convex
+    if (updateSettings) {
+      const allConfigsJson = localStorage.getItem("themeCustomizations") || "{}";
+      void updateSettings({ customizations: allConfigsJson });
+    }
   };
 
   const updateProfile = useMutation(friendsApi.createOrUpdateProfile);

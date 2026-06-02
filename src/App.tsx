@@ -272,14 +272,39 @@ export default function App() {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   });
 
+  const userSettings = useQuery((api as any).userSettings?.get);
+  const updateSettings = useMutation((api as any).userSettings?.update);
+
+  useEffect(() => {
+    if (userSettings) {
+      if (userSettings.theme && userSettings.theme !== theme) {
+        setTheme(userSettings.theme as "light" | "dark");
+      }
+      if (userSettings.customizations) {
+        const localCustomizationsJson = localStorage.getItem("themeCustomizations") || "{}";
+        if (localCustomizationsJson !== userSettings.customizations) {
+          localStorage.setItem("themeCustomizations", userSettings.customizations);
+          applyThemeCustomizations((userSettings.theme as "light" | "dark") || theme);
+        }
+      }
+    }
+  }, [userSettings]);
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
     applyThemeCustomizations(theme);
   }, [theme]);
 
+  const handleSetTheme = (newTheme: "light" | "dark") => {
+    setTheme(newTheme);
+    if (updateSettings) {
+      void updateSettings({ theme: newTheme });
+    }
+  };
+
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    handleSetTheme(theme === "light" ? "dark" : "light");
   };
 
   return (
@@ -377,7 +402,7 @@ export default function App() {
               />
             )}
             {view === "subjects" && <SubjectsView />}
-            {view === "settings" && <SettingsView theme={theme} setTheme={setTheme} />}
+            {view === "settings" && <SettingsView theme={theme} setTheme={handleSetTheme} />}
             {view === "friends" && <FriendsView />}
             {view === "analytics" && <AnalyticsView />}
             {view === "pomodoro" && (
