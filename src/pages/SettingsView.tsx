@@ -499,34 +499,34 @@ export function SettingsView({
 
         {/* Section 4: Legal & About */}
         <div style={{
-          marginTop: 12,
-          padding: "16px 0",
+          marginTop: 24,
+          padding: "24px 0 12px 0",
           borderTop: "1px solid var(--border-subtle)",
           display: "flex",
-          justifyContent: "space-between",
+          flexDirection: "column",
           alignItems: "center",
-          flexWrap: "wrap",
-          gap: 16
+          gap: 10,
+          textAlign: "center"
         }}>
-          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-            © {new Date().getFullYear()} Study Calendar. All rights reserved.
-          </span>
-          <div style={{ display: "flex", gap: 16 }}>
+          <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
             <button 
-              style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
+              style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", fontSize: "0.82rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
               onClick={() => setShowLegal("privacy")}
               id="privacy-link"
             >
               Privacy Policy
             </button>
             <button 
-              style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
+              style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", fontSize: "0.82rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
               onClick={() => setShowLegal("terms")}
               id="terms-link"
             >
               Terms of Service
             </button>
           </div>
+          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+            © {new Date().getFullYear()} Study Calendar. All rights reserved.
+          </span>
         </div>
       </div>
 
