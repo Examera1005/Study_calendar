@@ -32,8 +32,19 @@ export function TiltCard({
     const maxTilt = 8; // Max tilt rotation angle in degrees
 
     // Weight physics: pushing the mouse down acts as weight tilt X and Y
-    const rotateX = -((y - centerY) / centerY) * maxTilt;
-    const rotateY = ((x - centerX) / centerX) * maxTilt;
+    let rotateX = -((y - centerY) / centerY) * maxTilt;
+    let rotateY = ((x - centerX) / centerX) * maxTilt;
+
+    // Edge fade-in scaling: smoothly ramp down tilt to 0 right at the card edges
+    const edgePadding = 40; // 40px fade-in zone from the borders
+    const clampedX = Math.max(0, Math.min(x, rect.width));
+    const clampedY = Math.max(0, Math.min(y, rect.height));
+    const minDistX = Math.min(clampedX, rect.width - clampedX);
+    const minDistY = Math.min(clampedY, rect.height - clampedY);
+    const edgeScale = Math.max(0, Math.min(1, Math.min(minDistX, minDistY) / edgePadding));
+
+    rotateX *= edgeScale;
+    rotateY *= edgeScale;
 
     setTransform(`perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`);
   };
