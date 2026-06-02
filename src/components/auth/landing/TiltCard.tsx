@@ -22,13 +22,20 @@ export function TiltCard({
     const rect = rectRef.current;
     if (!rect) return;
 
+    // Freeze tilt rotation and keep the card stable when hovering over interactive children
+    const target = e.target as HTMLElement;
+    if (target.closest("button, input, select, textarea, [role='checkbox'], a")) {
+      setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1.02, 1.02, 1.02)");
+      return;
+    }
+
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const maxTilt = 8; // Max tilt rotation angle in degrees
+    const maxTilt = 6; // Premium subtle tilt angle
 
     // Weight physics: pushing the mouse down acts as weight tilt X and Y
     const rotateX = -((y - centerY) / centerY) * maxTilt;
@@ -60,7 +67,7 @@ export function TiltCard({
       style={{
         transform: transform,
         transition: isHovered 
-          ? "border-color 0.3s ease, box-shadow 0.3s ease" 
+          ? "transform 0.1s ease-out, border-color 0.3s ease, box-shadow 0.3s ease" 
           : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease",
         transformStyle: "preserve-3d",
         borderColor: isHovered ? neonColor : "",
