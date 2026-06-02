@@ -39,6 +39,7 @@ export function LandingPage() {
           <a className="lp-nav-link" href="#features">Features</a>
           <a className="lp-nav-link" href="#playground">Interactive Demo</a>
           <button 
+            type="button"
             id="lp-nav-signin-btn"
             className="btn btn-secondary btn-sm"
             style={{ borderRadius: "var(--radius-md)" }}
@@ -66,6 +67,7 @@ export function LandingPage() {
 
         <div className="lp-cta-group">
           <button 
+            type="button"
             id="lp-hero-getstarted-btn"
             className="btn lp-btn lp-btn-primary"
             onClick={() => { playSynthSound("click"); setShowAuthModal(true); }}
@@ -207,6 +209,7 @@ export function LandingPage() {
         <h2>Take Control of Your Semester</h2>
         <p>Join students using Study Calendar to structure review sessions, track grades, collaborate safely, and build daily habits.</p>
         <button 
+          type="button"
           className="lp-btn lp-btn-primary" 
           onClick={() => { playSynthSound("click"); setShowAuthModal(true); }}
         >

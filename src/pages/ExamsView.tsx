@@ -41,7 +41,7 @@ export function ExamsView() {
     <div>
       <div className="page-header">
         <h1>Exams</h1>
-        <button className="btn btn-primary" onClick={() => setShowAdd(true)} id="add-exam-btn">
+        <button type="button" className="btn btn-primary" onClick={() => setShowAdd(true)} id="add-exam-btn">
           + Add Exam
         </button>
       </div>
@@ -99,6 +99,7 @@ export function ExamsView() {
                     <div style={{ display: "flex", gap: 4 }}>
                       {!exam.completed && (
                         <button
+                          type="button"
                           className="btn btn-sm btn-secondary"
                           onClick={() => {
                             const grade = prompt("Enter your grade:");
@@ -110,8 +111,8 @@ export function ExamsView() {
                           ✓ Done
                         </button>
                       )}
-                      <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingExam(exam)}>✏️</button>
-                      <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeExam({ id: exam._id })}>🗑</button>
+                      <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingExam(exam)}>✏️</button>
+                      <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeExam({ id: exam._id })}>🗑</button>
                     </div>
                   </div>
                 </div>

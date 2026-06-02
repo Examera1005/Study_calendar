@@ -285,6 +285,7 @@ export function SettingsView({
 
           <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
             <button
+              type="button"
               className={`btn ${theme === "dark" ? "btn-primary" : "btn-secondary"}`}
               onClick={() => setTheme("dark")}
               style={{ flex: "1 1 140px", padding: "16px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}
@@ -293,6 +294,7 @@ export function SettingsView({
               <strong>Dark Mode</strong>
             </button>
             <button
+              type="button"
               className={`btn ${theme === "light" ? "btn-primary" : "btn-secondary"}`}
               onClick={() => setTheme("light")}
               style={{ flex: "1 1 140px", padding: "16px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}
@@ -320,6 +322,14 @@ export function SettingsView({
                     <div
                       key={v.key}
                       onClick={() => setActiveVariable(v.key)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setActiveVariable(v.key);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -483,6 +493,7 @@ export function SettingsView({
                 >
                   <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{user.username}</span>
                   <button
+                    type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={() => handleUnblock(user.userId, user.username)}
                   >
@@ -511,6 +522,7 @@ export function SettingsView({
         }}>
           <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
             <button 
+              type="button"
               style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", fontSize: "0.82rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
               onClick={() => setShowLegal("privacy")}
               id="privacy-link"
@@ -518,6 +530,7 @@ export function SettingsView({
               Privacy Policy
             </button>
             <button 
+              type="button"
               style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", fontSize: "0.82rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
               onClick={() => setShowLegal("terms")}
               id="terms-link"

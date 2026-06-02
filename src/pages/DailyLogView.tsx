@@ -39,18 +39,19 @@ export function DailyLogView({
             {logs?.length ?? 0} entries · {totalMinutes > 0 ? `${formatDuration(totalMinutes)} studied` : "No study time logged"}
           </div>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowAdd(true)} id="add-log-btn">
+        <button type="button" className="btn btn-primary" onClick={() => setShowAdd(true)} id="add-log-btn">
           + Add Entry
         </button>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-        <button className="btn-icon" onClick={() => navDate(-1)}>◀</button>
+        <button type="button" className="btn-icon" onClick={() => navDate(-1)}>◀</button>
         <h2 style={{ fontSize: "1.1rem" }}>
           {format(new Date(selectedDate + "T00:00:00"), "EEEE, MMMM d, yyyy")}
         </h2>
-        <button className="btn-icon" onClick={() => navDate(1)}>▶</button>
+        <button type="button" className="btn-icon" onClick={() => navDate(1)}>▶</button>
         <button
+          type="button"
           className="btn btn-secondary btn-sm"
           onClick={() => setSelectedDate(formatLocalDate())}
         >
@@ -63,7 +64,7 @@ export function DailyLogView({
           <div className="empty-state">
             <div className="empty-icon">✏️</div>
             <p>No study entries for this day</p>
-            <button className="btn btn-primary" style={{ marginTop: 12 }} onClick={() => setShowAdd(true)}>
+            <button type="button" className="btn btn-primary" style={{ marginTop: 12 }} onClick={() => setShowAdd(true)}>
               Log your first session
             </button>
           </div>
@@ -86,8 +87,8 @@ export function DailyLogView({
                   </div>
                 </div>
                 <div className="item-actions" style={{ display: "flex", gap: 4 }}>
-                  <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingLog(log)}>✏️</button>
-                  <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeLog({ id: log._id })}>🗑</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingLog(log)}>✏️</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeLog({ id: log._id })}>🗑</button>
                 </div>
               </div>
             );

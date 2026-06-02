@@ -25,7 +25,7 @@ export function SubjectsView() {
       <div className="card">
         <div className="card-header">
           <h3>📚 Manage Subjects</h3>
-          <button className="btn btn-primary btn-sm" onClick={() => setShowAdd(true)} id="add-subject-btn">
+          <button type="button" className="btn btn-primary btn-sm" onClick={() => setShowAdd(true)} id="add-subject-btn">
             + Add Subject
           </button>
         </div>
@@ -54,6 +54,7 @@ export function SubjectsView() {
                 <span style={{ fontSize: "1rem" }}>{s.icon}</span>
                 <span style={{ flex: 1, fontWeight: 500 }}>{s.name}</span>
                 <button
+                  type="button"
                   className="btn btn-ghost btn-sm"
                   onClick={() => {
                     setEditId(s._id);
@@ -63,6 +64,7 @@ export function SubjectsView() {
                   Edit
                 </button>
                 <button
+                  type="button"
                   className="btn-icon"
                   style={{ width: 28, height: 28 }}
                   onClick={() => {

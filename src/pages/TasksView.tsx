@@ -195,6 +195,7 @@ export function TasksView({
         className={`task-item ${task.completed ? "completed" : ""}`}
       >
         <button
+          type="button"
           className={`task-checkbox ${task.completed ? "checked" : ""}`}
           onClick={() => void toggleTask({ id: task._id })}
         >
@@ -230,6 +231,7 @@ export function TasksView({
           style={{ display: "flex", gap: 4 }}
         >
           <button
+            type="button"
             className="btn-icon"
             style={{ width: 28, height: 28 }}
             onClick={() => setEditingTask(task)}
@@ -237,6 +239,7 @@ export function TasksView({
             ✏️
           </button>
           <button
+            type="button"
             className="btn-icon"
             style={{ width: 28, height: 28 }}
             onClick={() => void removeTask({ id: task._id })}
@@ -258,6 +261,7 @@ export function TasksView({
           </div>
         </div>
         <button
+          type="button"
           className="btn btn-primary"
           onClick={() => setShowAdd(true)}
           id="add-task-btn"
@@ -269,6 +273,7 @@ export function TasksView({
       {/* Tab Switcher */}
       <div className="task-tabs" style={{ marginBottom: 20 }}>
         <button
+          type="button"
           className={`task-tab ${activeTab === "daily" ? "active" : ""}`}
           onClick={() => setActiveTab("daily")}
           id="task-tab-daily"
@@ -277,6 +282,7 @@ export function TasksView({
           Daily
         </button>
         <button
+          type="button"
           className={`task-tab ${activeTab === "general" ? "active" : ""}`}
           onClick={() => setActiveTab("general")}
           id="task-tab-general"
@@ -288,6 +294,7 @@ export function TasksView({
           )}
         </button>
         <button
+          type="button"
           className={`task-tab ${activeTab === "done" ? "active" : ""}`}
           onClick={() => setActiveTab("done")}
           id="task-tab-done"
@@ -305,7 +312,7 @@ export function TasksView({
       {/* Date navigation — for daily and done tabs */}
       {(activeTab === "daily" || activeTab === "done") && (
         <div className="tasks-date-nav">
-          <button className="btn-icon" onClick={() => navDate(-1)}>
+          <button type="button" className="btn-icon" onClick={() => navDate(-1)}>
             ◀
           </button>
           <h2 style={{ fontSize: "1.1rem" }}>
@@ -314,10 +321,11 @@ export function TasksView({
               "EEEE, MMMM d, yyyy",
             )}
           </h2>
-          <button className="btn-icon" onClick={() => navDate(1)}>
+          <button type="button" className="btn-icon" onClick={() => navDate(1)}>
             ▶
           </button>
           <button
+            type="button"
             className="btn btn-secondary btn-sm"
             onClick={() =>
               setSelectedDate(formatLocalDate())

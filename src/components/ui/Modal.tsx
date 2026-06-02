@@ -16,11 +16,21 @@ export function Modal({
   }, [onClose]);
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="modal-overlay"
+      onClick={onClose}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          onClose();
+        }
+      }}
+      role="button"
+      tabIndex={-1}
+    >
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{title}</h2>
-          <button className="btn-icon" onClick={onClose}>✕</button>
+          <button type="button" className="btn-icon" onClick={onClose}>✕</button>
         </div>
         {children}
       </div>

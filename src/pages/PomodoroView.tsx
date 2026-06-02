@@ -174,6 +174,7 @@ export function PomodoroView({
         <div style={{ display: "flex", gap: 12, width: "100%", maxWidth: 300 }}>
           {pomodoroStatus === "running" ? (
             <button
+              type="button"
               className="btn btn-secondary"
               onClick={pausePomodoro}
               style={{ flex: 1, padding: "12px", fontSize: "0.95rem" }}
@@ -182,6 +183,7 @@ export function PomodoroView({
             </button>
           ) : (
             <button
+              type="button"
               className="btn btn-primary"
               onClick={startPomodoro}
               style={{
@@ -198,6 +200,7 @@ export function PomodoroView({
 
           {pomodoroStatus !== "idle" && (
             <button
+              type="button"
               className="btn btn-danger"
               onClick={stopAndLogWork}
               style={{ flex: 1, padding: "12px", fontSize: "0.95rem" }}

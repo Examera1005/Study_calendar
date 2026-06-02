@@ -145,10 +145,11 @@ export function CalendarView({
       <div className="calendar-header">
         <h2>{format(currentMonth, "MMMM yyyy")}</h2>
         <div className="calendar-nav">
-          <button className="btn-icon" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+          <button type="button" className="btn-icon" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
             ◀
           </button>
           <button
+            type="button"
             className="btn btn-secondary btn-sm"
             onClick={() => {
               setCurrentMonth(new Date());
@@ -157,7 +158,7 @@ export function CalendarView({
           >
             Today
           </button>
-          <button className="btn-icon" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+          <button type="button" className="btn-icon" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
             ▶
           </button>
         </div>
@@ -176,6 +177,14 @@ export function CalendarView({
               key={dateStr}
               className={`calendar-day${!isSameMonth(day, currentMonth) ? " other-month" : ""}${isToday(day) ? " today" : ""}${isSelected ? " selected" : ""}`}
               onClick={() => setSelectedDate(dateStr)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedDate(dateStr);
+                }
+              }}
+              role="button"
+              tabIndex={0}
             >
               <div className="day-header">
                 <div className="day-number">
@@ -233,13 +242,13 @@ export function CalendarView({
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
           <h2>{format(new Date(selectedDate + "T00:00:00"), "EEEE, MMMM d, yyyy")}</h2>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowTaskModal(true)}>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowTaskModal(true)}>
               + Task
             </button>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowEventModal(true)}>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowEventModal(true)}>
               + Event
             </button>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowLogModal(true)}>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={() => setShowLogModal(true)}>
               + Log
             </button>
           </div>
@@ -273,6 +282,7 @@ export function CalendarView({
             tasks.map((task) => (
               <div key={task._id} className={`task-item ${task.completed ? "completed" : ""}`}>
                 <button
+                  type="button"
                   className={`task-checkbox ${task.completed ? "checked" : ""}`}
                   onClick={() => void toggleTask({ id: task._id })}
                 >
@@ -284,8 +294,8 @@ export function CalendarView({
                   {task.description && <div className="task-desc">{task.description}</div>}
                 </div>
                 <div className="item-actions" style={{ display: "flex", gap: 4 }}>
-                  <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingTask(task)}>✏️</button>
-                  <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeTask({ id: task._id })}>🗑</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingTask(task)}>✏️</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeTask({ id: task._id })}>🗑</button>
                 </div>
               </div>
             ))
@@ -305,7 +315,7 @@ export function CalendarView({
                   <div className="event-title">{ev.title}</div>
                 </div>
                 <div className="item-actions">
-                  <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeEvent({ id: ev._id })}>🗑</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeEvent({ id: ev._id })}>🗑</button>
                 </div>
               </div>
             ))
@@ -330,8 +340,8 @@ export function CalendarView({
                     </div>
                   </div>
                   <div className="item-actions" style={{ display: "flex", gap: 4 }}>
-                    <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingLog(log)}>✏️</button>
-                    <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeLog({ id: log._id })}>🗑</button>
+                    <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingLog(log)}>✏️</button>
+                    <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeLog({ id: log._id })}>🗑</button>
                   </div>
                 </div>
               );

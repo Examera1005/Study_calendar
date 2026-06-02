@@ -281,6 +281,7 @@ export function Dashboard({
             </span>
             {activeDate !== today && (
               <button
+                type="button"
                 className="btn btn-ghost btn-sm"
                 onClick={() => setSelectedDate(today)}
                 style={{
@@ -311,7 +312,19 @@ export function Dashboard({
           </div>
           <div className="stat-label">{activeDate === today ? "Today's Tasks" : "Tasks of the Day"}</div>
         </div>
-        <div className="stat-card" style={{ cursor: "pointer" }} onClick={() => setView("analytics")}>
+        <div
+          className="stat-card"
+          style={{ cursor: "pointer" }}
+          onClick={() => setView("analytics")}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setView("analytics");
+            }
+          }}
+          role="button"
+          tabIndex={0}
+        >
           <div className="stat-value" style={{ display: "flex", alignItems: "center", gap: 6 }}>
             🔥 {streak} {streak > 1 ? "Jours" : "Jour"}
           </div>
@@ -559,7 +572,7 @@ export function Dashboard({
         <div className="card">
           <div className="card-header">
             <h3>🎯 Upcoming Exams</h3>
-            <button className="btn btn-ghost btn-sm" onClick={() => setView("exams")}>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setView("exams")}>
               View all
             </button>
           </div>
@@ -607,6 +620,7 @@ export function Dashboard({
           <div className="card-header">
             <h3>✅ {activeDate === today ? "Today's Tasks" : "Tasks of the Day"}</h3>
             <button
+              type="button"
               className="btn btn-ghost btn-sm"
               onClick={() => {
                 setSelectedDate(activeDate);
@@ -641,6 +655,7 @@ export function Dashboard({
           <div className="card-header">
             <h3>📋 General Tasks</h3>
             <button
+              type="button"
               className="btn btn-ghost btn-sm"
               onClick={() => setView("tasks")}
             >
@@ -706,6 +721,7 @@ export function Dashboard({
           <div className="card-header">
             <h3>📝 {activeDate === today ? "Study Log" : "Study Log for Selected Day"}</h3>
             <button
+              type="button"
               className="btn btn-ghost btn-sm"
               onClick={() => {
                 setSelectedDate(activeDate);

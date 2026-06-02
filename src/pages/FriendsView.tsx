@@ -253,18 +253,21 @@ export function FriendsView() {
 
       <div className="friends-nav-tabs">
         <button
+          type="button"
           className={`friend-tab-btn ${activeTab === "leaderboard" ? "active" : ""}`}
           onClick={() => setActiveTab("leaderboard")}
         >
           🏆 Leaderboard
         </button>
         <button
+          type="button"
           className={`friend-tab-btn ${activeTab === "chat" ? "active" : ""}`}
           onClick={() => setActiveTab("chat")}
         >
           💬 Secure Chat
         </button>
         <button
+          type="button"
           className={`friend-tab-btn ${activeTab === "manage" ? "active" : ""}`}
           onClick={() => setActiveTab("manage")}
         >
@@ -364,6 +367,7 @@ export function FriendsView() {
                 friendships.accepted.map((friend: any) => (
                   <button
                     key={friend.userId}
+                    type="button"
                     className={`nav-item ${activeChatFriend?.userId === friend.userId ? "active" : ""}`}
                     onClick={() => setActiveChatFriend(friend)}
                     style={{ justifyContent: "space-between" }}
@@ -497,6 +501,7 @@ export function FriendsView() {
                       >
                         <span style={{ fontWeight: 600 }}>{user.username}</span>
                         <button
+                          type="button"
                           className="btn btn-secondary btn-sm"
                           onClick={() => {
                             setSearchQuery(user.username);
@@ -535,12 +540,14 @@ export function FriendsView() {
                         <span style={{ fontWeight: 600 }}>{req.username}</span>
                         <div style={{ display: "flex", gap: 6 }}>
                           <button
+                            type="button"
                             className="btn btn-primary btn-sm"
                             onClick={() => handleRespond(req.friendshipId, "accept")}
                           >
                             Accept
                           </button>
                           <button
+                            type="button"
                             className="btn btn-secondary btn-sm"
                             onClick={() => handleRespond(req.friendshipId, "reject")}
                           >
@@ -576,6 +583,7 @@ export function FriendsView() {
                       >
                         <span>{req.username}</span>
                         <button
+                          type="button"
                           className="btn btn-secondary btn-sm"
                           onClick={() => handleRespond(req.friendshipId, "reject")}
                         >
@@ -626,12 +634,14 @@ export function FriendsView() {
                     </div>
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                       <button
+                        type="button"
                         className="btn btn-secondary btn-sm"
                         onClick={() => setViewExamsFriend(friend)}
                       >
                         🎯 View Exams
                       </button>
                       <button
+                        type="button"
                         className="btn btn-primary btn-sm"
                         onClick={() => {
                           setActiveChatFriend(friend);
@@ -641,6 +651,7 @@ export function FriendsView() {
                         💬 Chat
                       </button>
                       <button
+                        type="button"
                         className="btn btn-danger btn-sm"
                         onClick={() => handleBlockFriend(friend.userId, friend.username)}
                       >
@@ -708,6 +719,7 @@ export function FriendsView() {
                         </div>
                       </div>
                       <button
+                        type="button"
                         className={`btn btn-sm ${isImported ? "btn-secondary" : "btn-primary"}`}
                         onClick={() => handleImportExam(exam._id)}
                         disabled={isImported}
@@ -726,6 +738,7 @@ export function FriendsView() {
 
             <div className="modal-actions" style={{ marginTop: 10 }}>
               <button
+                type="button"
                 className="btn btn-secondary"
                 onClick={() => setViewExamsFriend(null)}
               >

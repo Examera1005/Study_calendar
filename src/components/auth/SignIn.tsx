@@ -111,6 +111,7 @@ export function SignIn() {
         <span>© {new Date().getFullYear()} Study Calendar</span>
         <span>•</span>
         <button 
+          type="button"
           style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", cursor: "pointer", textDecoration: "underline", padding: 0 }}
           onClick={() => setShowLegal("privacy")}
         >
@@ -118,6 +119,7 @@ export function SignIn() {
         </button>
         <span>•</span>
         <button 
+          type="button"
           style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", cursor: "pointer", textDecoration: "underline", padding: 0 }}
           onClick={() => setShowLegal("terms")}
         >

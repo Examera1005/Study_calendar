@@ -214,6 +214,7 @@ export function AnalyticsView() {
         </div>
         <div style={{ display: "flex", gap: 8, background: "var(--bg-glass)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", padding: 4 }}>
           <button
+            type="button"
             className={`btn btn-sm ${timeRange === 7 ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setTimeRange(7)}
             style={{ padding: "6px 12px" }}
@@ -221,6 +222,7 @@ export function AnalyticsView() {
             7 Jours
           </button>
           <button
+            type="button"
             className={`btn btn-sm ${timeRange === 30 ? "btn-primary" : "btn-secondary"}`}
             onClick={() => setTimeRange(30)}
             style={{ padding: "6px 12px" }}

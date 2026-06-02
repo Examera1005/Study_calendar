@@ -102,6 +102,7 @@ export function PomodoroDemo() {
             </span>
             <div style={{ display: "flex", gap: 8 }}>
               <button 
+                type="button"
                 className="btn btn-primary btn-sm" 
                 onClick={handleStartPomo}
                 aria-label={pomoRunning ? "Pause Pomodoro Timer" : "Start Pomodoro Timer"}
@@ -109,6 +110,7 @@ export function PomodoroDemo() {
                 {pomoRunning ? "⏸️ Pause" : "▶️ Start"}
               </button>
               <button 
+                type="button"
                 className="btn btn-secondary btn-sm" 
                 onClick={handleResetPomo}
                 aria-label="Reset Pomodoro Timer"

@@ -55,13 +55,14 @@ export function StreakDemo() {
 
         <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 24 }}>
           <button 
+            type="button"
             className="btn btn-primary btn-sm" 
             onClick={handleLogStudySession}
             disabled={streakCount === 5}
           >
             📝 Log Mock Session
           </button>
-          <button className="btn btn-secondary btn-sm" onClick={handleResetStreak}>
+          <button type="button" className="btn btn-secondary btn-sm" onClick={handleResetStreak}>
             Reset
           </button>
         </div>

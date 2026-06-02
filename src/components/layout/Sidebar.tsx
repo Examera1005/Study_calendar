@@ -49,6 +49,7 @@ export function Sidebar({
 
         {/* Collapse Button (Desktop Only) */}
         <button
+          type="button"
           className="sidebar-collapse-toggle"
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
           title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -65,6 +66,7 @@ export function Sidebar({
         {NAV_ITEMS.map((item) => (
           <button
             key={item.id}
+            type="button"
             className={`nav-item ${view === item.id ? "active" : ""}`}
             onClick={() => {
               setView(item.id);
@@ -80,6 +82,7 @@ export function Sidebar({
 
       <div className="sidebar-footer">
         <button
+          type="button"
           className="theme-toggle-btn"
           onClick={toggleTheme}
           id="theme-toggle"
@@ -111,6 +114,7 @@ export function Sidebar({
         </button>
 
         <button
+          type="button"
           className="btn btn-secondary btn-full btn-sm"
           onClick={() => {
             localStorage.removeItem("e2ee_private_key");

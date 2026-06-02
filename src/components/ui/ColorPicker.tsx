@@ -154,6 +154,31 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
         ref={svContainerRef}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
+        onKeyDown={(e) => {
+          let nextS = hsv.s;
+          let nextV = hsv.v;
+          let changed = false;
+          if (e.key === "ArrowLeft") {
+            nextS = Math.max(0, hsv.s - 5);
+            changed = true;
+          } else if (e.key === "ArrowRight") {
+            nextS = Math.min(100, hsv.s + 5);
+            changed = true;
+          } else if (e.key === "ArrowDown") {
+            nextV = Math.max(0, hsv.v - 5);
+            changed = true;
+          } else if (e.key === "ArrowUp") {
+            nextV = Math.min(100, hsv.v + 5);
+            changed = true;
+          }
+          if (changed) {
+            e.preventDefault();
+            updateColor({ ...hsv, s: nextS, v: nextV });
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label="Color saturation and brightness picker"
         style={{
           position: "relative",
           width: "100%",

@@ -359,11 +359,21 @@ export default function App() {
 
       <Authenticated>
         {sidebarOpen && (
-          <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+          <div
+            className="sidebar-overlay"
+            onClick={() => setSidebarOpen(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setSidebarOpen(false);
+              }
+            }}
+            role="button"
+            tabIndex={-1}
+          />
         )}
         <div className={`app-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
           <div className="mobile-header">
-            <button className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
+            <button type="button" className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -383,7 +393,18 @@ export default function App() {
               {view === "settings" && "⚙️ Settings"}
             </span>
             {stopwatchStatus !== "idle" && (
-              <div className="mobile-active-timer" onClick={() => setView("dashboard")}>
+              <div
+                className="mobile-active-timer"
+                onClick={() => setView("dashboard")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setView("dashboard");
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+              >
                 {stopwatchStatus === "running" ? (
                   <>
                     <span className="pulse-dot" style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--danger)" }} />
@@ -482,15 +503,16 @@ export default function App() {
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
                   {stopwatchStatus === "running" ? (
-                    <button className="btn btn-secondary btn-sm" onClick={pauseStopwatch} style={{ flex: 1 }}>⏸️ Pause</button>
+                    <button type="button" className="btn btn-secondary btn-sm" onClick={pauseStopwatch} style={{ flex: 1 }}>⏸️ Pause</button>
                   ) : (
-                    <button className="btn btn-primary btn-sm" onClick={resumeStopwatch} style={{ flex: 1 }}>▶️ Resume</button>
+                    <button type="button" className="btn btn-primary btn-sm" onClick={resumeStopwatch} style={{ flex: 1 }}>▶️ Resume</button>
                   )}
-                  <button className="btn btn-danger btn-sm" onClick={stopStopwatch} style={{ flex: 1 }}>⏹ Stop</button>
+                  <button type="button" className="btn btn-danger btn-sm" onClick={stopStopwatch} style={{ flex: 1 }}>⏹ Stop</button>
                 </div>
               </div>
             ) : (
               <button
+                type="button"
                 className="btn btn-primary floating-timer-start-btn"
                 onClick={startStopwatch}
                 style={{ display: "flex", alignItems: "center", gap: 8, boxShadow: "var(--shadow-md)" }}

@@ -180,6 +180,7 @@ export function CryptoDemo() {
 
           <div className="lp-crypto-actions">
             <button 
+              type="button"
               className="btn btn-primary btn-sm" 
               onClick={startCryptoProcess}
               disabled={cryptoStage !== "plain" && cryptoStage !== "done"}
@@ -187,6 +188,7 @@ export function CryptoDemo() {
               🔐 Encrypt & Send
             </button>
             <button 
+              type="button"
               className="btn btn-secondary btn-sm" 
               onClick={handleResetCrypto}
             >
