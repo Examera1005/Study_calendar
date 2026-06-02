@@ -72,7 +72,7 @@ export function TiltCard({
           flexDirection: "column",
           transform: transform,
           transition: isHovered 
-            ? "border-color 0.3s ease, box-shadow 0.3s ease" 
+            ? "transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, box-shadow 0.3s ease" 
             : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease",
           transformStyle: "preserve-3d",
           borderColor: isHovered ? neonColor : "",
