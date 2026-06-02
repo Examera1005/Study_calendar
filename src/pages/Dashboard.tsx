@@ -5,6 +5,7 @@ import type { View } from "../App";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import { useState, useMemo } from "react";
 import { calculateStreak } from "../utils/statsUtils";
+import { formatLocalDate } from "../utils/dateUtils";
 
 
 export function Dashboard({
@@ -16,12 +17,12 @@ export function Dashboard({
   selectedDate: string;
   setSelectedDate: (d: string) => void;
 }) {
-  const today = new Date().toISOString().split("T")[0];
+  const today = formatLocalDate();
   const activeDate = selectedDate || today;
   const yesterday = (() => {
     const d = new Date(activeDate + "T00:00:00");
     d.setDate(d.getDate() - 1);
-    return d.toISOString().split("T")[0];
+    return formatLocalDate(d);
   })();
 
   const upcomingExams = useQuery(api.exams.upcoming, { limit: 5 });
@@ -39,12 +40,7 @@ export function Dashboard({
   const comparisonData = useMemo(() => {
     if (!allLogs) return { totalChangePct: 0, subjectChanges: {} as Record<string, number>, prevTotal: 0, currentTotal: 0 };
 
-    const formatLocalDate = (d: Date) => {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    };
+
 
     // Current 7 days: today to 6 days ago
     const currentWeekDates = Array.from({ length: 7 }, (_, i) => {

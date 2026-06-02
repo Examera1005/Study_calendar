@@ -16,6 +16,7 @@ import { useState } from "react";
 import { Modal } from "../components/ui/Modal";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import type { Id } from "../../convex/_generated/dataModel";
+import { formatLocalDate } from "../utils/dateUtils";
 
 export function CalendarView({
   selectedDate,
@@ -151,7 +152,7 @@ export function CalendarView({
             className="btn btn-secondary btn-sm"
             onClick={() => {
               setCurrentMonth(new Date());
-              setSelectedDate(new Date().toISOString().split("T")[0]);
+              setSelectedDate(formatLocalDate());
             }}
           >
             Today

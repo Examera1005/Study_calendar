@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Modal } from "../components/ui/Modal";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import type { Id, Doc } from "../../convex/_generated/dataModel";
+import { formatLocalDate } from "../utils/dateUtils";
 
 type TaskTab = "daily" | "general" | "done";
 
@@ -319,7 +320,7 @@ export function TasksView({
           <button
             className="btn btn-secondary btn-sm"
             onClick={() =>
-              setSelectedDate(new Date().toISOString().split("T")[0])
+              setSelectedDate(formatLocalDate())
             }
           >
             Today

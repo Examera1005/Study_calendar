@@ -7,6 +7,7 @@ import { CalendarView } from "./pages/CalendarView";
 import { ExamsView } from "./pages/ExamsView";
 import { TasksView } from "./pages/TasksView";
 import { DailyLogView } from "./pages/DailyLogView";
+import { formatLocalDate } from "./utils/dateUtils";
 import { SettingsView } from "./pages/SettingsView";
 import { SubjectsView } from "./pages/SubjectsView";
 import { FriendsView } from "./pages/FriendsView";
@@ -263,7 +264,7 @@ export default function App() {
     localStorage.setItem("currentView", view);
   }, [view]);
   const [selectedDate, setSelectedDate] = useState<string>(
-    new Date().toISOString().split("T")[0],
+    formatLocalDate(),
   );
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     const saved = localStorage.getItem("theme");
@@ -405,7 +406,7 @@ export default function App() {
               const fd = new FormData(e.currentTarget);
               const duration = Number(fd.get("duration")) || sessionMinutes;
               void createLog({
-                date: new Date().toISOString().split("T")[0],
+                date: formatLocalDate(),
                 content: fd.get("content") as string,
                 duration: duration,
                 subjectId: fd.get("subjectId") ? (fd.get("subjectId") as Id<"subjects">) : undefined,

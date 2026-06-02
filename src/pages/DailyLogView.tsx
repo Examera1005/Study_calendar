@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Modal } from "../components/ui/Modal";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import type { Id } from "../../convex/_generated/dataModel";
+import { formatLocalDate } from "../utils/dateUtils";
 
 export function DailyLogView({
   selectedDate,
@@ -51,7 +52,7 @@ export function DailyLogView({
         <button className="btn-icon" onClick={() => navDate(1)}>▶</button>
         <button
           className="btn btn-secondary btn-sm"
-          onClick={() => setSelectedDate(new Date().toISOString().split("T")[0])}
+          onClick={() => setSelectedDate(formatLocalDate())}
         >
           Today
         </button>
