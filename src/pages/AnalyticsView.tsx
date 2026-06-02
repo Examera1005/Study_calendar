@@ -159,6 +159,20 @@ export function AnalyticsView() {
     const averageMinutes = totalMinutes / progressionData.length;
     const averageY = paddingTop + (1 - averageMinutes / maxMinutes) * chartHeight;
 
+    // Median calculation (only days where study happened, i.e., minutes > 0)
+    const workingDays = progressionData.filter((d) => d.minutes > 0);
+    const sortedMinutes = workingDays.map((d) => d.minutes).sort((a, b) => a - b);
+    let medianMinutes = 0;
+    if (sortedMinutes.length > 0) {
+      const mid = Math.floor(sortedMinutes.length / 2);
+      if (sortedMinutes.length % 2 !== 0) {
+        medianMinutes = sortedMinutes[mid];
+      } else {
+        medianMinutes = (sortedMinutes[mid - 1] + sortedMinutes[mid]) / 2;
+      }
+    }
+    const medianY = paddingTop + (1 - medianMinutes / maxMinutes) * chartHeight;
+
     const points = progressionData.map((d, i) => {
       const x = paddingLeft + (i / (progressionData.length - 1)) * chartWidth;
       const y = paddingTop + (1 - d.minutes / maxMinutes) * chartHeight;
@@ -186,6 +200,8 @@ export function AnalyticsView() {
       maxMinutes,
       averageMinutes,
       averageY,
+      medianMinutes,
+      medianY,
     };
   }, [progressionData]);
 
@@ -300,6 +316,33 @@ export function AnalyticsView() {
                     ? `${Math.floor(progressionChartElements.averageMinutes / 60)}h${Math.round(progressionChartElements.averageMinutes % 60) > 0 ? `${Math.round(progressionChartElements.averageMinutes % 60)}m` : ""}`
                     : `${Math.round(progressionChartElements.averageMinutes)}m`}
                 </text>
+
+                {/* Median Line (only for working days, left-aligned) */}
+                {progressionChartElements.medianMinutes > 0 && (
+                  <g>
+                    <line
+                      x1={progressionChartElements.paddingLeft}
+                      y1={progressionChartElements.medianY}
+                      x2={progressionChartElements.width - progressionChartElements.paddingRight}
+                      y2={progressionChartElements.medianY}
+                      stroke="var(--accent-primary)"
+                      strokeWidth="1.5"
+                      strokeDasharray="4,4"
+                    />
+                    <text
+                      x={progressionChartElements.paddingLeft + 6}
+                      y={progressionChartElements.medianY - 6}
+                      textAnchor="start"
+                      fontSize="0.65rem"
+                      fill="var(--accent-primary)"
+                      fontWeight="600"
+                    >
+                      Médiane (actifs): {progressionChartElements.medianMinutes >= 60 
+                        ? `${Math.floor(progressionChartElements.medianMinutes / 60)}h${Math.round(progressionChartElements.medianMinutes % 60) > 0 ? `${Math.round(progressionChartElements.medianMinutes % 60)}m` : ""}`
+                        : `${Math.round(progressionChartElements.medianMinutes)}m`}
+                    </text>
+                  </g>
+                )}
 
                 {/* Dynamic Curve Segments (Green if endpoint >= average, else Red) */}
                 {progressionChartElements.points.map((p, idx) => {
