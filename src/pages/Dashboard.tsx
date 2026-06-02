@@ -17,18 +17,19 @@ export function Dashboard({
   setSelectedDate: (d: string) => void;
 }) {
   const today = new Date().toISOString().split("T")[0];
+  const activeDate = selectedDate || today;
   const yesterday = (() => {
-    const d = new Date();
+    const d = new Date(activeDate + "T00:00:00");
     d.setDate(d.getDate() - 1);
     return d.toISOString().split("T")[0];
   })();
 
   const upcomingExams = useQuery(api.exams.upcoming, { limit: 5 });
-  const todayTasks = useQuery(api.tasks.getByDate, { date: today });
+  const todayTasks = useQuery(api.tasks.getByDate, { date: activeDate });
   const generalTasks = useQuery(api.tasks.listGeneral);
-  const todayLogs = useQuery(api.dailyLogs.getByDate, { date: today });
+  const todayLogs = useQuery(api.dailyLogs.getByDate, { date: activeDate });
   const yesterdayLogs = useQuery(api.dailyLogs.getByDate, { date: yesterday });
-  const todayEvents = useQuery(api.events.getByDate, { date: today });
+  const todayEvents = useQuery(api.events.getByDate, { date: activeDate });
   const subjects = useQuery(api.subjects.list);
   const allLogs = useQuery(api.dailyLogs.list);
   const streak = calculateStreak(allLogs || []);
@@ -256,8 +257,27 @@ export function Dashboard({
       <div className="page-header">
         <div>
           <h1>Dashboard</h1>
-          <div className="date-display">
-            {format(new Date(), "EEEE, MMMM d, yyyy")}
+          <div className="date-display" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <span>
+              {format(new Date(activeDate + "T00:00:00"), "EEEE, MMMM d, yyyy")}
+            </span>
+            {activeDate !== today && (
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={() => setSelectedDate(today)}
+                style={{
+                  padding: "4px 8px",
+                  fontSize: "0.75rem",
+                  border: "1px solid var(--border-medium)",
+                  borderRadius: "var(--radius-sm)",
+                  background: "var(--bg-glass)",
+                  color: "var(--text-primary)",
+                  cursor: "pointer"
+                }}
+              >
+                Retour à Aujourd'hui
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -271,7 +291,7 @@ export function Dashboard({
           <div className="stat-value">
             {completedTasks}/{totalTasks}
           </div>
-          <div className="stat-label">Today's Tasks</div>
+          <div className="stat-label">{activeDate === today ? "Today's Tasks" : "Tasks of the Day"}</div>
         </div>
         <div className="stat-card" style={{ cursor: "pointer" }} onClick={() => setView("analytics")}>
           <div className="stat-value" style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -281,7 +301,7 @@ export function Dashboard({
         </div>
         <div className="stat-card">
           <div className="stat-value">{todayLogs?.length ?? 0}</div>
-          <div className="stat-label">Study Sessions</div>
+          <div className="stat-label">{activeDate === today ? "Study Sessions" : "Sessions of the Day"}</div>
         </div>
         <div className="stat-card">
           <div className="stat-value" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -293,9 +313,11 @@ export function Dashboard({
             {yesterdayLogs !== undefined && renderPercentageBadge(todayChangePct)}
           </div>
           <div className="stat-label" style={{ display: "flex", justifyContent: "space-between" }}>
-            <span>Study Time Today</span>
+            <span>{activeDate === today ? "Study Time Today" : "Study Time for Day"}</span>
             {yesterdayLogs !== undefined && (
-              <span style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>vs yesterday</span>
+              <span style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>
+                {activeDate === today ? "vs yesterday" : "vs previous day"}
+              </span>
             )}
           </div>
         </div>
@@ -345,6 +367,7 @@ export function Dashboard({
                   let currentY = 170; // chart baseline (paddingTop: 20 + chartHeight: 150 = 170)
                   const sortedKeys = Object.keys(dayData.subjects).sort();
                   const isHovered = hoveredDayIndex === i;
+                  const isSelected = dayData.date === activeDate;
 
                   return (
                     <g key={dayData.date}>
@@ -378,22 +401,25 @@ export function Dashboard({
                         y="188"
                         textAnchor="middle"
                         fontSize="0.7rem"
-                        fontWeight={isHovered ? "700" : "500"}
-                        fill={isHovered ? "var(--accent-primary)" : "var(--text-secondary)"}
+                        fontWeight={isHovered || isSelected ? "700" : "500"}
+                        fill={isHovered || isSelected ? "var(--accent-primary)" : "var(--text-secondary)"}
                         style={{ transition: "fill var(--transition-fast)" }}
                       >
                         {dayData.label}
                       </text>
 
-                      {/* Highlight column background on hover */}
-                      {isHovered && (
+                      {/* Highlight column background on hover/selection */}
+                      {(isHovered || isSelected) && (
                         <rect
                           x={xPos - 6}
-                          y="20"
+                          y="18"
                           width={barWidth + 12}
-                          height="150"
+                          height="154"
                           fill="var(--accent-primary)"
-                          opacity="0.05"
+                          opacity={isSelected ? "0.1" : "0.05"}
+                          stroke={isSelected ? "var(--accent-primary)" : "none"}
+                          strokeWidth={isSelected ? "1.5" : "0"}
+                          rx="4"
                           pointerEvents="none"
                         />
                       )}
@@ -408,6 +434,7 @@ export function Dashboard({
                         style={{ cursor: "pointer" }}
                         onMouseEnter={() => setHoveredDayIndex(i)}
                         onMouseLeave={() => setHoveredDayIndex(null)}
+                        onClick={() => setSelectedDate(dayData.date)}
                       />
                     </g>
                   );
@@ -421,7 +448,7 @@ export function Dashboard({
               padding: "16px",
               borderRadius: "var(--radius-md)",
               border: "1px solid var(--border-subtle)",
-              height: "250px",
+              height: "275px",
               overflowY: "auto",
               display: "flex",
               flexDirection: "column",
@@ -566,11 +593,11 @@ export function Dashboard({
         {/* Today's Tasks */}
         <div className="card">
           <div className="card-header">
-            <h3>✅ Today's Tasks</h3>
+            <h3>✅ {activeDate === today ? "Today's Tasks" : "Tasks of the Day"}</h3>
             <button
               className="btn btn-ghost btn-sm"
               onClick={() => {
-                setSelectedDate(today);
+                setSelectedDate(activeDate);
                 setView("tasks");
               }}
             >
@@ -580,7 +607,7 @@ export function Dashboard({
           {!todayTasks || todayTasks.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">📋</div>
-              <p>No tasks for today</p>
+              <p>{activeDate === today ? "No tasks for today" : "No tasks for this day"}</p>
             </div>
           ) : (
             todayTasks.slice(0, 5).map((task) => (
@@ -636,12 +663,12 @@ export function Dashboard({
         {/* Today's Events */}
         <div className="card">
           <div className="card-header">
-            <h3>📅 Today's Events</h3>
+            <h3>📅 {activeDate === today ? "Today's Events" : "Events for Selected Day"}</h3>
           </div>
           {!todayEvents || todayEvents.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">🗓️</div>
-              <p>No events scheduled</p>
+              <p>{activeDate === today ? "No events scheduled" : "No events scheduled for this day"}</p>
             </div>
           ) : (
             todayEvents.map((ev) => (
@@ -665,11 +692,11 @@ export function Dashboard({
         {/* Today's Study Log */}
         <div className="card">
           <div className="card-header">
-            <h3>📝 Study Log</h3>
+            <h3>📝 {activeDate === today ? "Study Log" : "Study Log for Selected Day"}</h3>
             <button
               className="btn btn-ghost btn-sm"
               onClick={() => {
-                setSelectedDate(today);
+                setSelectedDate(activeDate);
                 setView("log");
               }}
             >
@@ -679,7 +706,7 @@ export function Dashboard({
           {!todayLogs || todayLogs.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">✏️</div>
-              <p>No study entries yet today</p>
+              <p>{activeDate === today ? "No study entries yet today" : "No study entries for this day"}</p>
             </div>
           ) : (
             todayLogs.slice(0, 4).map((log) => {
