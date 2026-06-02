@@ -155,6 +155,10 @@ export function AnalyticsView() {
 
     const maxMinutes = Math.max(...progressionData.map((d) => d.minutes), 60);
 
+    const totalMinutes = progressionData.reduce((acc, d) => acc + d.minutes, 0);
+    const averageMinutes = totalMinutes / progressionData.length;
+    const averageY = paddingTop + (1 - averageMinutes / maxMinutes) * chartHeight;
+
     const points = progressionData.map((d, i) => {
       const x = paddingLeft + (i / (progressionData.length - 1)) * chartWidth;
       const y = paddingTop + (1 - d.minutes / maxMinutes) * chartHeight;
@@ -180,6 +184,8 @@ export function AnalyticsView() {
       pathData,
       areaData,
       maxMinutes,
+      averageMinutes,
+      averageY,
     };
   }, [progressionData]);
 
@@ -241,8 +247,8 @@ export function AnalyticsView() {
               <svg viewBox={`0 0 ${progressionChartElements.width} ${progressionChartElements.height}`} width="100%">
                 <defs>
                   <linearGradient id="area-grad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--accent-primary)" stopOpacity="0.25" />
-                    <stop offset="100%" stopColor="var(--accent-primary)" stopOpacity="0.0" />
+                    <stop offset="0%" stopColor="var(--text-muted)" stopOpacity="0.12" />
+                    <stop offset="100%" stopColor="var(--text-muted)" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
 
@@ -272,33 +278,67 @@ export function AnalyticsView() {
                   <path d={progressionChartElements.areaData} fill="url(#area-grad)" />
                 )}
 
-                {/* Main Curved Path */}
-                {progressionChartElements.pathData && (
-                  <path
-                    d={progressionChartElements.pathData}
-                    fill="none"
-                    stroke="var(--accent-primary)"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                )}
+                {/* Average Line */}
+                <line
+                  x1={progressionChartElements.paddingLeft}
+                  y1={progressionChartElements.averageY}
+                  x2={progressionChartElements.width - progressionChartElements.paddingRight}
+                  y2={progressionChartElements.averageY}
+                  stroke="var(--warning)"
+                  strokeWidth="1.5"
+                  strokeDasharray="5,5"
+                />
+                <text
+                  x={progressionChartElements.width - progressionChartElements.paddingRight - 6}
+                  y={progressionChartElements.averageY - 6}
+                  textAnchor="end"
+                  fontSize="0.65rem"
+                  fill="var(--warning)"
+                  fontWeight="600"
+                >
+                  Moyenne: {progressionChartElements.averageMinutes >= 60 
+                    ? `${Math.floor(progressionChartElements.averageMinutes / 60)}h${Math.round(progressionChartElements.averageMinutes % 60) > 0 ? `${Math.round(progressionChartElements.averageMinutes % 60)}m` : ""}`
+                    : `${Math.round(progressionChartElements.averageMinutes)}m`}
+                </text>
+
+                {/* Dynamic Curve Segments (Green if endpoint >= average, else Red) */}
+                {progressionChartElements.points.map((p, idx) => {
+                  if (idx === 0) return null;
+                  const prev = progressionChartElements.points[idx - 1];
+                  const isAbove = p.value >= progressionChartElements.averageMinutes;
+                  const strokeColor = isAbove ? "var(--success)" : "var(--danger)";
+                  return (
+                    <path
+                      key={idx}
+                      d={`M ${prev.x} ${prev.y} L ${p.x} ${p.y}`}
+                      fill="none"
+                      stroke={strokeColor}
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  );
+                })}
 
                 {/* Interactive Points circles */}
-                {progressionChartElements.points.map((p, idx) => (
-                  <circle
-                    key={idx}
-                    cx={p.x}
-                    cy={p.y}
-                    r="4"
-                    fill="var(--bg-surface)"
-                    stroke="var(--accent-primary)"
-                    strokeWidth="2.5"
-                    style={{ cursor: "pointer", transition: "r 100ms ease" }}
-                    onMouseEnter={() => setHoveredPoint(p)}
-                    onMouseLeave={() => setHoveredPoint(null)}
-                  />
-                ))}
+                {progressionChartElements.points.map((p, idx) => {
+                  const isAbove = p.value >= progressionChartElements.averageMinutes;
+                  const strokeColor = isAbove ? "var(--success)" : "var(--danger)";
+                  return (
+                    <circle
+                      key={idx}
+                      cx={p.x}
+                      cy={p.y}
+                      r="4"
+                      fill="var(--bg-surface)"
+                      stroke={strokeColor}
+                      strokeWidth="2.5"
+                      style={{ cursor: "pointer", transition: "r 100ms ease" }}
+                      onMouseEnter={() => setHoveredPoint(p)}
+                      onMouseLeave={() => setHoveredPoint(null)}
+                    />
+                  );
+                })}
 
                 {/* X Axis ticks */}
                 {progressionChartElements.points.map((p, idx) => {

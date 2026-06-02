@@ -3,7 +3,7 @@ import { api } from "../../convex/_generated/api";
 import { format } from "date-fns";
 import type { View } from "../App";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { calculateStreak } from "../utils/statsUtils";
 
 
@@ -17,16 +17,123 @@ export function Dashboard({
   setSelectedDate: (d: string) => void;
 }) {
   const today = new Date().toISOString().split("T")[0];
+  const yesterday = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    return d.toISOString().split("T")[0];
+  })();
+
   const upcomingExams = useQuery(api.exams.upcoming, { limit: 5 });
   const todayTasks = useQuery(api.tasks.getByDate, { date: today });
   const generalTasks = useQuery(api.tasks.listGeneral);
   const todayLogs = useQuery(api.dailyLogs.getByDate, { date: today });
+  const yesterdayLogs = useQuery(api.dailyLogs.getByDate, { date: yesterday });
   const todayEvents = useQuery(api.events.getByDate, { date: today });
   const subjects = useQuery(api.subjects.list);
   const allLogs = useQuery(api.dailyLogs.list);
   const streak = calculateStreak(allLogs || []);
 
   const getSubject = (id: string) => subjects?.find((s) => s._id === id);
+
+  const comparisonData = useMemo(() => {
+    if (!allLogs) return { totalChangePct: 0, subjectChanges: {} as Record<string, number>, prevTotal: 0, currentTotal: 0 };
+
+    const formatLocalDate = (d: Date) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    // Current 7 days: today to 6 days ago
+    const currentWeekDates = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return formatLocalDate(d);
+    });
+
+    // Previous 7 days: 7 days ago to 13 days ago
+    const prevWeekDates = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (13 - i));
+      return formatLocalDate(d);
+    });
+
+    let currentTotal = 0;
+    let prevTotal = 0;
+
+    const currentSubjectTotals: Record<string, number> = {};
+    const prevSubjectTotals: Record<string, number> = {};
+
+    allLogs.forEach((log) => {
+      const dur = log.duration ?? 0;
+      if (dur <= 0) return;
+
+      const subId = log.subjectId || "uncategorized";
+
+      if (currentWeekDates.includes(log.date)) {
+        currentTotal += dur;
+        currentSubjectTotals[subId] = (currentSubjectTotals[subId] || 0) + dur;
+      } else if (prevWeekDates.includes(log.date)) {
+        prevTotal += dur;
+        prevSubjectTotals[subId] = (prevSubjectTotals[subId] || 0) + dur;
+      }
+    });
+
+    // Calculate overall percentage change
+    let totalChangePct = 0;
+    if (prevTotal > 0) {
+      totalChangePct = Math.round(((currentTotal - prevTotal) / prevTotal) * 100);
+    } else if (currentTotal > 0) {
+      totalChangePct = 100;
+    }
+
+    // Calculate subject-specific percentage changes
+    const subjectChanges: Record<string, number> = {};
+    const allSubjectIds = new Set([...Object.keys(currentSubjectTotals), ...Object.keys(prevSubjectTotals)]);
+    allSubjectIds.forEach((subId) => {
+      const currSub = currentSubjectTotals[subId] || 0;
+      const prevSub = prevSubjectTotals[subId] || 0;
+
+      if (prevSub > 0) {
+        subjectChanges[subId] = Math.round(((currSub - prevSub) / prevSub) * 100);
+      } else if (currSub > 0) {
+        subjectChanges[subId] = 100;
+      } else {
+        subjectChanges[subId] = 0;
+      }
+    });
+
+    return {
+      currentTotal,
+      prevTotal,
+      totalChangePct,
+      subjectChanges,
+      currentSubjectTotals,
+    };
+  }, [allLogs]);
+
+  const renderPercentageBadge = (pct: number) => {
+    if (pct > 0) {
+      return (
+        <span style={{ color: "var(--success)", fontWeight: 600, fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: 2 }}>
+          ▲ +{pct}%
+        </span>
+      );
+    } else if (pct < 0) {
+      return (
+        <span style={{ color: "var(--danger)", fontWeight: 600, fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: 2 }}>
+          ▼ {pct}%
+        </span>
+      );
+    } else {
+      return (
+        <span style={{ color: "var(--text-muted)", fontWeight: 500, fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: 2 }}>
+          0%
+        </span>
+      );
+    }
+  };
 
   const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
 
@@ -134,6 +241,15 @@ export function Dashboard({
   const totalTasks = todayTasks?.length ?? 0;
   const generalIncomplete = generalTasks?.filter((t) => !t.completed).length ?? 0;
   const totalMinutes = todayLogs?.reduce((a, l) => a + (l.duration ?? 0), 0) ?? 0;
+  const yesterdayMinutes = yesterdayLogs?.reduce((a, l) => a + (l.duration ?? 0), 0) ?? 0;
+  const todayChangePct = (() => {
+    if (yesterdayMinutes > 0) {
+      return Math.round(((totalMinutes - yesterdayMinutes) / yesterdayMinutes) * 100);
+    } else if (totalMinutes > 0) {
+      return 100;
+    }
+    return 0;
+  })();
 
   return (
     <div>
@@ -168,12 +284,20 @@ export function Dashboard({
           <div className="stat-label">Study Sessions</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value">
-            {totalMinutes > 0
-              ? `${Math.floor(totalMinutes / 60)}h${totalMinutes % 60 > 0 ? ` ${totalMinutes % 60}m` : ""}`
-              : "0h"}
+          <div className="stat-value" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span>
+              {totalMinutes > 0
+                ? `${Math.floor(totalMinutes / 60)}h${totalMinutes % 60 > 0 ? ` ${totalMinutes % 60}m` : ""}`
+                : "0h"}
+            </span>
+            {yesterdayLogs !== undefined && renderPercentageBadge(todayChangePct)}
           </div>
-          <div className="stat-label">Study Time Today</div>
+          <div className="stat-label" style={{ display: "flex", justifyContent: "space-between" }}>
+            <span>Study Time Today</span>
+            {yesterdayLogs !== undefined && (
+              <span style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>vs yesterday</span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -338,9 +462,17 @@ export function Dashboard({
               ) : (
                 // Weekly Legend / Summary
                 <div>
-                  <h4 style={{ fontSize: "0.85rem", fontWeight: 700, marginBottom: 8, color: "var(--text-primary)" }}>
-                    Weekly Study Summary
-                  </h4>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                    <h4 style={{ fontSize: "0.85rem", fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>
+                      Weekly Study Summary
+                    </h4>
+                    {allLogs !== undefined && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                        {renderPercentageBadge(comparisonData.totalChangePct)}
+                        <span style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>vs last week</span>
+                      </div>
+                    )}
+                  </div>
                   {Object.keys(weeklyTotals).length === 0 ? (
                     <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Hover over a bar to inspect daily study details.</p>
                   ) : (
@@ -349,23 +481,29 @@ export function Dashboard({
                         Hover over columns to view specific days.
                       </p>
                       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                        {Object.entries(weeklyTotals).map(([subId, mins]) => {
-                          if (mins <= 0) return null;
-                          const subj = subId !== "uncategorized" ? getSubject(subId) : null;
-                          return (
-                            <div key={subId} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <span style={{ width: 8, height: 8, borderRadius: "50%", background: subj?.color ?? "var(--text-muted)" }} />
-                                <span style={{ color: "var(--text-secondary)" }}>{subj?.name ?? "Uncategorized"}</span>
+                        {Object.entries(weeklyTotals)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([subId, mins]) => {
+                            if (mins <= 0) return null;
+                            const subj = subId !== "uncategorized" ? getSubject(subId) : null;
+                            const pctChange = comparisonData.subjectChanges[subId] ?? 0;
+                            return (
+                              <div key={subId} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.78rem" }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: subj?.color ?? "var(--text-muted)" }} />
+                                  <span style={{ color: "var(--text-secondary)" }}>{subj?.name ?? "Uncategorized"}</span>
+                                </div>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                  {allLogs !== undefined && renderPercentageBadge(pctChange)}
+                                  <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+                                    {mins >= 60 
+                                      ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? ` ${mins % 60}m` : ""}`
+                                      : `${mins}m`}
+                                  </span>
+                                </div>
                               </div>
-                              <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
-                                {mins >= 60 
-                                  ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? ` ${mins % 60}m` : ""}`
-                                  : `${mins}m`}
-                              </span>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
                       </div>
                     </div>
                   )}

@@ -14,6 +14,7 @@ import type * as events from "../events.js";
 import type * as exams from "../exams.js";
 import type * as friends from "../friends.js";
 import type * as http from "../http.js";
+import type * as migration from "../migration.js";
 import type * as subjects from "../subjects.js";
 import type * as tasks from "../tasks.js";
 
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   exams: typeof exams;
   friends: typeof friends;
   http: typeof http;
+  migration: typeof migration;
   subjects: typeof subjects;
   tasks: typeof tasks;
 }>;
