@@ -1,4 +1,24 @@
 import React, { useState, useRef } from "react";
+import BorderGlow from "../../ui/BorderGlow";
+
+const COLOR_THEMES: Record<string, { glowColor: string; colors: string[] }> = {
+  "#3b82f6": {
+    glowColor: "217 91% 60%",
+    colors: ["#3b82f6", "#60a5fa", "#93c5fd"],
+  },
+  "#ef4444": {
+    glowColor: "0 84% 60%",
+    colors: ["#ef4444", "#f87171", "#fca5a5"],
+  },
+  "#10b981": {
+    glowColor: "162 78% 47%",
+    colors: ["#10b981", "#34d399", "#6ee7b7"],
+  },
+  "#f59e0b": {
+    glowColor: "38 92% 50%",
+    colors: ["#f59e0b", "#fbbf24", "#fcd34d"],
+  },
+};
 
 // Reusable 3D Tilt Card component for premium tactile micro-interactions and custom neon glows
 export function TiltCard({
@@ -50,6 +70,11 @@ export function TiltCard({
     setTransform("perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)");
   };
 
+  const theme = COLOR_THEMES[neonColor] || {
+    glowColor: "217 91% 60%",
+    colors: ["#3b82f6", "#60a5fa", "#93c5fd"],
+  };
+
   return (
     <div
       ref={cardRef}
@@ -63,8 +88,13 @@ export function TiltCard({
         display: "flex",
       }}
     >
-      <div
+      <BorderGlow
         className={className}
+        glowColor={theme.glowColor}
+        colors={theme.colors}
+        backgroundColor={disableTilt ? "#121417" : "rgba(22, 24, 27, 0.5)"}
+        borderRadius={disableTilt ? 16 : 12}
+        fillOpacity={0.45}
         style={{
           width: "100%",
           height: "100%",
@@ -72,19 +102,15 @@ export function TiltCard({
           flexDirection: "column",
           transform: transform,
           transition: isHovered 
-            ? "transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, box-shadow 0.3s ease" 
-            : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease",
+            ? "transform 0.15s cubic-bezier(0.25, 1, 0.5, 1)" 
+            : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
           transformStyle: "preserve-3d",
-          borderColor: isHovered ? neonColor : "",
-          boxShadow: isHovered 
-            ? `0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px ${neonColor}33` 
-            : "",
         }}
       >
         <div style={{ transform: disableTilt ? "" : "translateZ(20px)", transformStyle: "preserve-3d", height: "100%", display: "flex", flexDirection: "column", flex: 1 }}>
           {children}
         </div>
-      </div>
+      </BorderGlow>
     </div>
   );
 }
