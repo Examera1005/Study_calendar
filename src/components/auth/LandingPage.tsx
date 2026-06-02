@@ -81,6 +81,7 @@ export function LandingPage() {
   useEffect(() => {
     return () => {
       if (scrambleIntervalRef.current) clearInterval(scrambleIntervalRef.current);
+      cryptoTimeoutsRef.current.forEach((id) => clearTimeout(id));
     };
   }, []);
 
@@ -88,7 +89,6 @@ export function LandingPage() {
 
   // ==================== POMODORO SIMULATOR STATE ====================
   const [pomoMinutes, setPomoMinutes] = useState(25);
-  const [pomoSeconds, setPomoSeconds] = useState(0);
   const [pomoRunning, setPomoRunning] = useState(false);
   const [pomoLogs, setPomoLogs] = useState<{ id: number; time: string; label: string }[]>([
     { id: 1, time: "10:15", label: "Completed Chemistry prep (25m)" }
@@ -98,36 +98,30 @@ export function LandingPage() {
   useEffect(() => {
     if (pomoRunning) {
       pomoTimerRef.current = setInterval(() => {
-        setPomoSeconds((prevSecs) => {
-          if (prevSecs === 0) {
-            setPomoMinutes((prevMins) => {
-              if (prevMins === 0) {
-                // Complete timer!
-                clearInterval(pomoTimerRef.current);
-                setPomoRunning(false);
-                playSynthSound("success");
-                
-                // Add study log entry
-                const now = new Date();
-                const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-                setPomoLogs((prev) => [
-                  {
-                    id: Date.now(),
-                    time: timeStr,
-                    label: "Mock Log: Completed Focus Session (25m)"
-                  },
-                  ...prev
-                ]);
-                return 25;
-              }
-              playSynthSound("tick");
-              return prevMins - 1;
-            });
-            return 59;
+        setPomoMinutes((prevMins) => {
+          if (prevMins <= 1) {
+            // Complete timer!
+            clearInterval(pomoTimerRef.current);
+            setPomoRunning(false);
+            playSynthSound("success");
+            
+            // Add study log entry
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+            setPomoLogs((prev) => [
+              {
+                id: Date.now(),
+                time: timeStr,
+                label: "Mock Log: Completed Focus Session (25m)"
+              },
+              ...prev
+            ]);
+            return 25;
           }
-          return prevSecs - 1;
+          playSynthSound("tick");
+          return prevMins - 1;
         });
-      }, 30); // Accelerated speed (runs ~30x faster for demo)
+      }, 1000); // 1 tick per second: counts down 25 virtual minutes in exactly 25 seconds
     } else {
       if (pomoTimerRef.current) clearInterval(pomoTimerRef.current);
     }
@@ -146,13 +140,10 @@ export function LandingPage() {
     playSynthSound("click");
     setPomoRunning(false);
     setPomoMinutes(25);
-    setPomoSeconds(0);
   };
 
   // Radial progress calculations
-  const totalSeconds = 25 * 60;
-  const currentSeconds = pomoMinutes * 60 + pomoSeconds;
-  const pomoProgressPercent = 1 - currentSeconds / totalSeconds;
+  const pomoProgressPercent = 1 - pomoMinutes / 25;
   const strokeDashoffset = 314 - 314 * pomoProgressPercent;
 
   // ==================== CHECKLIST SIMULATOR STATE ====================
@@ -197,85 +188,107 @@ export function LandingPage() {
   const completedCount = tasks.filter(t => t.completed).length;
   const progressPercent = Math.round((completedCount / tasks.length) * 100);
 
-  // ==================== E2E CRYPTO SIMULATOR STATE ====================
-  const [cryptoMessage, setCryptoMessage] = useState("Let's review the calculus answers together!");
-  const [cryptoStage, setCryptoStage] = useState<"plain" | "encrypting" | "cipher" | "transmitting" | "decrypting" | "done">("plain");
-  const [scrambledText, setScrambledText] = useState(cryptoMessage);
-  const scrambleIntervalRef = useRef<any>(null);
+    // ==================== E2E CRYPTO SIMULATOR STATE ====================
+    const [cryptoMessage, setCryptoMessage] = useState("Let's review the calculus answers together!");
+    const [cryptoStage, setCryptoStage] = useState<"plain" | "encrypting" | "cipher" | "transmitting" | "decrypting" | "done">("plain");
+    const [scrambledText, setScrambledText] = useState(cryptoMessage);
+    const scrambleIntervalRef = useRef<any>(null);
+    const cryptoTimeoutsRef = useRef<any[]>([]);
 
-  const startCryptoProcess = () => {
-    if (cryptoStage !== "plain" && cryptoStage !== "done") return;
-    
-    playSynthSound("click");
-    setCryptoStage("encrypting");
-    
-    // Scramble letters
-    let tickCount = 0;
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':\",./<>?";
-    
-    scrambleIntervalRef.current = setInterval(() => {
-      setScrambledText((prev) => 
-        prev.split("").map((c, i) => {
-          if (c === " ") return " ";
-          // Gradually fix characters from left to right as time goes on
-          if (i < tickCount * 4) {
-            return "x"[0]; // Mocking a ciphertext array
-          }
-          return chars[Math.floor(Math.random() * chars.length)];
-        }).join("")
-      );
-      playSynthSound("tick");
-
-      tickCount++;
-      if (tickCount > 10) {
+    const clearCryptoTimers = () => {
+      if (scrambleIntervalRef.current) {
         clearInterval(scrambleIntervalRef.current);
-        
-        // Solidify to hex block
-        setScrambledText("0x3FA91B2E00C6758410EFDC7B9923AA991206C55B");
-        setCryptoStage("cipher");
-
-        // Start Transmission
-        setTimeout(() => {
-          setCryptoStage("transmitting");
-          // Travel across pipeline
-          setTimeout(() => {
-            setCryptoStage("decrypting");
-            
-            // Decrypt scramble back
-            let decryptTick = 0;
-            const originalWords = cryptoMessage.split("");
-            
-            scrambleIntervalRef.current = setInterval(() => {
-              setScrambledText(() => 
-                originalWords.map((char, index) => {
-                  if (char === " ") return " ";
-                  if (index < decryptTick * 4) return char;
-                  return chars[Math.floor(Math.random() * chars.length)];
-                }).join("")
-              );
-              playSynthSound("tick");
-              
-              decryptTick++;
-              if (decryptTick > 10) {
-                clearInterval(scrambleIntervalRef.current);
-                setScrambledText(cryptoMessage);
-                setCryptoStage("done");
-                playSynthSound("success");
-              }
-            }, 80);
-
-          }, 1500);
-        }, 1000);
+        scrambleIntervalRef.current = null;
       }
-    }, 80);
-  };
+      cryptoTimeoutsRef.current.forEach((id) => clearTimeout(id));
+      cryptoTimeoutsRef.current = [];
+    };
 
-  const handleResetCrypto = () => {
-    playSynthSound("click");
-    if (scrambleIntervalRef.current) clearInterval(scrambleIntervalRef.current);
-    setCryptoStage("plain");
-    setScrambledText(cryptoMessage);
-  };
+    const scheduleTimeout = (fn: () => void, delay: number) => {
+      const id = setTimeout(fn, delay);
+      cryptoTimeoutsRef.current.push(id);
+    };
+
+    const startCryptoProcess = () => {
+      if (cryptoStage !== "plain" && cryptoStage !== "done") return;
+      
+      clearCryptoTimers();
+      playSynthSound("click");
+      setCryptoStage("encrypting");
+      
+      // Scramble letters
+      let tickCount = 0;
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':\",./<>?";
+      
+      scrambleIntervalRef.current = setInterval(() => {
+        setScrambledText((prev) => 
+          prev.split("").map((c, i) => {
+            if (c === " ") return " ";
+            // Gradually fix characters from left to right as time goes on
+            if (i < tickCount * 4) {
+              return "x"[0];
+            }
+            return chars[Math.floor(Math.random() * chars.length)];
+          }).join("")
+        );
+        playSynthSound("tick");
+
+        tickCount++;
+        if (tickCount > 10) {
+          if (scrambleIntervalRef.current) {
+            clearInterval(scrambleIntervalRef.current);
+            scrambleIntervalRef.current = null;
+          }
+          
+          // Solidify to hex block
+          setScrambledText("0x3FA91B2E00C6758410EFDC7B9923AA991206C55B");
+          setCryptoStage("cipher");
+
+          // Start Transmission
+          scheduleTimeout(() => {
+            setCryptoStage("transmitting");
+            // Travel across pipeline
+            scheduleTimeout(() => {
+              setCryptoStage("decrypting");
+              
+              // Decrypt scramble back
+              let decryptTick = 0;
+              const originalWords = cryptoMessage.split("");
+              
+              scrambleIntervalRef.current = setInterval(() => {
+                setScrambledText(() => 
+                  originalWords.map((char, index) => {
+                    if (char === " ") return " ";
+                    if (index < decryptTick * 4) return char;
+                    return chars[Math.floor(Math.random() * chars.length)];
+                  }).join("")
+                );
+                playSynthSound("tick");
+                
+                decryptTick++;
+                if (decryptTick > 10) {
+                  if (scrambleIntervalRef.current) {
+                    clearInterval(scrambleIntervalRef.current);
+                    scrambleIntervalRef.current = null;
+                  }
+                  setScrambledText(cryptoMessage);
+                  setCryptoStage("done");
+                  playSynthSound("success");
+                }
+              }, 80);
+
+            }, 1500);
+          }, 1000);
+        }
+      }, 80);
+    };
+
+    const handleResetCrypto = () => {
+      playSynthSound("click");
+      clearCryptoTimers();
+      setCryptoStage("plain");
+      setScrambledText(cryptoMessage);
+    };
 
   // ==================== STREAK & BADGE SIMULATOR STATE ====================
   const [streakCount, setStreakCount] = useState(4);
@@ -325,9 +338,10 @@ export function LandingPage() {
       
         
         <h1>
-          <span>The tactile study planner,</span>
+          <span className="lp-title-serif">The tactile study planner,</span>
           <br />
-          <span className="lp-gradient-accent">built for digital minds.</span>
+          <span className="lp-title-serif">built for </span>
+          <span className="lp-gradient-accent lp-title-sans">digital minds.</span>
         </h1>
         
         <p className="lp-hero-desc">
@@ -454,7 +468,7 @@ export function LandingPage() {
           <div className="lp-demo-card">
             <span className="lp-demo-tag lp-tag-pomodoro">Focus Engine</span>
             <h3>Pomodoro & Logging Simulator</h3>
-            <p className="lp-demo-desc">Start the focus session. It is accelerated (60x speed) to let you see a mock 25-minute cycle log completed study hours.</p>
+            <p className="lp-demo-desc">Start the focus session. The 25-minute countdown is accelerated to complete in exactly 25 seconds (1 minute per second) to show the log sync.</p>
             
             <div className="lp-demo-interactive">
               <div className="lp-pomo-flex">
@@ -471,7 +485,7 @@ export function LandingPage() {
                     />
                   </svg>
                   <div className="lp-pomo-time-display">
-                    {String(pomoMinutes).padStart(2, "0")}:{String(pomoSeconds).padStart(2, "0")}
+                    {String(pomoMinutes).padStart(2, "0")}:00
                   </div>
                 </div>
 
