@@ -81,23 +81,17 @@ export function ChecklistDemo() {
 
         <div className="lp-check-list">
           {tasks.map((task) => (
-            <div 
+            <button 
               key={task.id} 
+              type="button"
               className={`lp-check-item ${task.completed ? "completed" : ""}`}
               onClick={(e) => handleToggleTask(task.id, e)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleToggleTask(task.id, e);
-                }
-              }}
               role="checkbox"
               aria-checked={task.completed}
-              tabIndex={0}
             >
               <div className="lp-check-box">✓</div>
               <span className="lp-check-text">{task.text}</span>
-            </div>
+            </button>
           ))}
         </div>
 

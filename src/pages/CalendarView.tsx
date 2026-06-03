@@ -173,18 +173,11 @@ export function CalendarView({
           const data = dayData[dateStr];
           const isSelected = dateStr === selectedDate;
           return (
-            <div
+            <button
               key={dateStr}
+              type="button"
               className={`calendar-day${!isSameMonth(day, currentMonth) ? " other-month" : ""}${isToday(day) ? " today" : ""}${isSelected ? " selected" : ""}`}
               onClick={() => setSelectedDate(dateStr)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setSelectedDate(dateStr);
-                }
-              }}
-              role="button"
-              tabIndex={0}
             >
               <div className="day-header">
                 <div className="day-number">
@@ -232,7 +225,7 @@ export function CalendarView({
                   </div>
                 </>
               )}
-            </div>
+            </button>
           );
         })}
       </div>

@@ -1,6 +1,6 @@
 import React from "react";
 
-export function getContrastColor(hexColor: string): "#ffffff" | "#000000" {
+function getContrastColor(hexColor: string): "#ffffff" | "#000000" {
   const hex = hexColor.replace("#", "");
   if (hex.length !== 6) return "#ffffff";
   const r = parseInt(hex.substring(0, 2), 16);

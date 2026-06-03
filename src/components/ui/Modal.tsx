@@ -16,18 +16,22 @@ export function Modal({
   }, [onClose]);
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={onClose}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          onClose();
-        }
-      }}
-      role="button"
-      tabIndex={-1}
-    >
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlay">
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close modal"
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "transparent",
+          border: "none",
+          cursor: "default",
+          width: "100%",
+          height: "100%",
+        }}
+      />
+      <div className="modal" onClick={(e) => e.stopPropagation()} style={{ position: "relative", zIndex: 1 }}>
         <div className="modal-header">
           <h2>{title}</h2>
           <button type="button" className="btn-icon" onClick={onClose}>✕</button>

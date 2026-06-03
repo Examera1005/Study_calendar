@@ -133,25 +133,18 @@ export function Dashboard({
   };
 
   const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
-  const [clickedDayIndex, setClickedDayIndex] = useState<number | null>(null);
-
-  useEffect(() => {
+  const clickedDayIndex = useMemo(() => {
     const todayStr = formatLocalDate();
     if (selectedDate === todayStr) {
-      setClickedDayIndex(null);
-    } else {
-      const days = Array.from({ length: 7 }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (6 - i));
-        return format(d, "yyyy-MM-dd");
-      });
-      const index = days.indexOf(selectedDate);
-      if (index !== -1) {
-        setClickedDayIndex(index);
-      } else {
-        setClickedDayIndex(null);
-      }
+      return null;
     }
+    const days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (6 - i));
+      return format(d, "yyyy-MM-dd");
+    });
+    const index = days.indexOf(selectedDate);
+    return index !== -1 ? index : null;
   }, [selectedDate]);
 
   const chartData = (() => {
@@ -312,24 +305,26 @@ export function Dashboard({
           </div>
           <div className="stat-label">{activeDate === today ? "Today's Tasks" : "Tasks of the Day"}</div>
         </div>
-        <div
+        <button
+          type="button"
           className="stat-card"
-          style={{ cursor: "pointer" }}
           onClick={() => setView("analytics")}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              setView("analytics");
-            }
+          style={{
+            cursor: "pointer",
+            width: "100%",
+            textAlign: "left",
+            fontFamily: "inherit",
+            color: "inherit",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
           }}
-          role="button"
-          tabIndex={0}
         >
           <div className="stat-value" style={{ display: "flex", alignItems: "center", gap: 6 }}>
             🔥 {streak} {streak > 1 ? "Jours" : "Jour"}
           </div>
           <div className="stat-label">Série d'Études</div>
-        </div>
+        </button>
         <div className="stat-card">
           <div className="stat-value" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>

@@ -57,10 +57,12 @@ export function SettingsView({
   const [activeVariable, setActiveVariable] = useState<string | null>(null);
   const [showLegal, setShowLegal] = useState<"privacy" | "terms" | null>(null);
 
-  useEffect(() => {
+  const [prevTheme, setPrevTheme] = useState(theme);
+  if (theme !== prevTheme) {
+    setPrevTheme(theme);
     setCustomizations(loadCustomizations(theme));
     setActiveVariable(null);
-  }, [theme]);
+  }
 
   // Sync customizations in real-time when they change on another device
   useEffect(() => {
@@ -319,17 +321,10 @@ export function SettingsView({
                   const val = customizations[v.key] || (theme === "dark" ? v.defaultDark : v.defaultLight);
                   const isEditing = activeVariable === v.key;
                   return (
-                    <div
+                    <button
                       key={v.key}
+                      type="button"
                       onClick={() => setActiveVariable(v.key)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          setActiveVariable(v.key);
-                        }
-                      }}
-                      role="button"
-                      tabIndex={0}
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -340,6 +335,9 @@ export function SettingsView({
                         borderRadius: "var(--radius-md)",
                         cursor: "pointer",
                         transition: "all var(--transition-fast)",
+                        width: "100%",
+                        fontFamily: "inherit",
+                        color: "inherit",
                       }}
                     >
                       <span style={{ fontSize: "0.88rem", fontWeight: 500, color: isEditing ? "var(--accent-primary)" : "var(--text-primary)" }}>
@@ -359,7 +357,7 @@ export function SettingsView({
                           }}
                         />
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
 

@@ -30,9 +30,9 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
   
   // HSV representation for the picker coordinates
   const [hsv, setHsv] = useState(() => hexToHsv(normalizedColor));
-  const [hexInput, setHexInput] = useState(normalizedColor.toUpperCase());
+  const [hexInput, setHexInput] = useState(() => normalizedColor.toUpperCase());
   
-  const svContainerRef = useRef<HTMLDivElement>(null);
+  const svContainerRef = useRef<HTMLButtonElement>(null);
   const isDragging = useRef(false);
 
   // Sync state if color prop changes externally
@@ -150,8 +150,9 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
       boxShadow: "var(--shadow-lg)",
     }}>
       {/* Saturation-Value Picker Rectangle */}
-      <div
+      <button
         ref={svContainerRef}
+        type="button"
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
         onKeyDown={(e) => {
@@ -176,8 +177,6 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
             updateColor({ ...hsv, s: nextS, v: nextV });
           }
         }}
-        role="button"
-        tabIndex={0}
         aria-label="Color saturation and brightness picker"
         style={{
           position: "relative",
@@ -188,6 +187,9 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
           cursor: "crosshair",
           overflow: "hidden",
           touchAction: "none",
+          border: "none",
+          padding: 0,
+          outline: "none",
         }}
       >
         {/* White overlay gradient (Saturation) */}
@@ -218,7 +220,7 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
           backgroundColor: normalizedColor,
           transition: isDragging.current ? "none" : "left 100ms ease, top 100ms ease",
         }} />
-      </div>
+      </button>
 
       {/* Hue Slider */}
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>

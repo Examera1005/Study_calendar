@@ -293,7 +293,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("currentView", view);
   }, [view]);
-  const [selectedDate, setSelectedDate] = useState<string>(
+  const [selectedDate, setSelectedDate] = useState<string>(() =>
     formatLocalDate(),
   );
   const [theme, setTheme] = useState<"light" | "dark">(() => {
@@ -359,16 +359,12 @@ export default function App() {
 
       <Authenticated>
         {sidebarOpen && (
-          <div
+          <button
+            type="button"
             className="sidebar-overlay"
             onClick={() => setSidebarOpen(false)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                setSidebarOpen(false);
-              }
-            }}
-            role="button"
-            tabIndex={-1}
+            aria-label="Close sidebar"
+            style={{ border: "none", padding: 0 }}
           />
         )}
         <div className={`app-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
@@ -393,17 +389,11 @@ export default function App() {
               {view === "settings" && "⚙️ Settings"}
             </span>
             {stopwatchStatus !== "idle" && (
-              <div
+              <button
+                type="button"
                 className="mobile-active-timer"
                 onClick={() => setView("dashboard")}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setView("dashboard");
-                  }
-                }}
-                role="button"
-                tabIndex={0}
+                style={{ fontFamily: "inherit" }}
               >
                 {stopwatchStatus === "running" ? (
                   <>
@@ -416,7 +406,7 @@ export default function App() {
                     <span>PAUSED</span>
                   </>
                 )}
-              </div>
+              </button>
             )}
           </div>
           <Sidebar
