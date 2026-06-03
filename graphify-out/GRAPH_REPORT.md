@@ -1,178 +1,268 @@
-# Graph Report - .  (2026-05-30)
+# Graph Report - .  (2026-06-04)
 
 ## Corpus Check
-- Corpus is ~40,017 words - fits in a single context window. You may not need a graph.
+- 124 files · ~71,030 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 329 nodes · 426 edges · 32 communities (22 shown, 10 thin omitted)
-- Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 35 edges (avg confidence: 0.75)
+- 555 nodes · 776 edges · 57 communities (40 shown, 17 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 19 edges (avg confidence: 0.76)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Backend Data Operations|Backend Data Operations]]
-- [[_COMMUNITY_UI Components & Pages|UI Components & Pages]]
-- [[_COMMUNITY_Convex Agent Skills|Convex Agent Skills]]
-- [[_COMMUNITY_Project Dependencies|Project Dependencies]]
-- [[_COMMUNITY_Data Model & Schema|Data Model & Schema]]
-- [[_COMMUNITY_App TypeScript Config|App TypeScript Config]]
-- [[_COMMUNITY_Convex Skill References|Convex Skill References]]
-- [[_COMMUNITY_Root TypeScript Config|Root TypeScript Config]]
-- [[_COMMUNITY_Friend System|Friend System]]
-- [[_COMMUNITY_React App Core|React App Core]]
-- [[_COMMUNITY_Convex TSConfig|Convex TSConfig]]
-- [[_COMMUNITY_Project Metadata|Project Metadata]]
-- [[_COMMUNITY_Session Management|Session Management]]
-- [[_COMMUNITY_DataModel Types|DataModel Types]]
-- [[_COMMUNITY_Convex Server Ctx|Convex Server Ctx]]
-- [[_COMMUNITY_Cryptography Utils|Cryptography Utils]]
-- [[_COMMUNITY_AI State Tracking|AI State Tracking]]
-- [[_COMMUNITY_Skill Icons|Skill Icons]]
-- [[_COMMUNITY_Generated APIServer|Generated API/Server]]
-- [[_COMMUNITY_App Entrypoint|App Entrypoint]]
-- [[_COMMUNITY_Internal Routing|Internal Routing]]
-- [[_COMMUNITY_Internal Query|Internal Query]]
-- [[_COMMUNITY_Internal Mutation|Internal Mutation]]
-- [[_COMMUNITY_Action Handler|Action Handler]]
-- [[_COMMUNITY_Internal Action|Internal Action]]
-- [[_COMMUNITY_HTTP Action|HTTP Action]]
-- [[_COMMUNITY_Vite Env Types Docs|Vite Env Types Docs]]
-- [[_COMMUNITY_Performance AI Config|Performance AI Config]]
+- [[_COMMUNITY_Application Core|Application Core]]
+- [[_COMMUNITY_Chart Data Building|Chart Data Building]]
+- [[_COMMUNITY_Skill Hashing & Lock|Skill Hashing & Lock]]
+- [[_COMMUNITY_Theme Customization|Theme Customization]]
+- [[_COMMUNITY_Chat & Leaderboard Tabs|Chat & Leaderboard Tabs]]
+- [[_COMMUNITY_Package Dependencies|Package Dependencies]]
+- [[_COMMUNITY_Calendar UI Grid|Calendar UI Grid]]
+- [[_COMMUNITY_TypeScript Config|TypeScript Config]]
+- [[_COMMUNITY_Auth Provider Plugins|Auth Provider Plugins]]
+- [[_COMMUNITY_User Profile & Friends|User Profile & Friends]]
+- [[_COMMUNITY_Stats & Badge Cards|Stats & Badge Cards]]
+- [[_COMMUNITY_Auth Domain Concepts|Auth Domain Concepts]]
+- [[_COMMUNITY_TS Config (App)|TS Config (App)]]
+- [[_COMMUNITY_Landing Page Demos|Landing Page Demos]]
+- [[_COMMUNITY_TS Config (Node)|TS Config (Node)]]
+- [[_COMMUNITY_Border Glow Animation|Border Glow Animation]]
+- [[_COMMUNITY_Timer Hooks & Mobile Header|Timer Hooks & Mobile Header]]
+- [[_COMMUNITY_Convex Component Patterns|Convex Component Patterns]]
+- [[_COMMUNITY_Subject CRUD|Subject CRUD]]
+- [[_COMMUNITY_Task CRUD|Task CRUD]]
+- [[_COMMUNITY_Pomodoro State Reducer|Pomodoro State Reducer]]
+- [[_COMMUNITY_State Transitions|State Transitions]]
+- [[_COMMUNITY_Habit CRUD|Habit CRUD]]
+- [[_COMMUNITY_Stopwatch State Reducer|Stopwatch State Reducer]]
+- [[_COMMUNITY_Background Task State|Background Task State]]
+- [[_COMMUNITY_Event CRUD|Event CRUD]]
+- [[_COMMUNITY_Exam CRUD|Exam CRUD]]
+- [[_COMMUNITY_Convex Data Schema|Convex Data Schema]]
+- [[_COMMUNITY_Convex Server Types|Convex Server Types]]
+- [[_COMMUNITY_Subject Distribution Chart|Subject Distribution Chart]]
+- [[_COMMUNITY_Skill Icon Set|Skill Icon Set]]
+- [[_COMMUNITY_AI Files Sync State|AI Files Sync State]]
+- [[_COMMUNITY_Auth Client API|Auth Client API]]
+- [[_COMMUNITY_Pomodoro View|Pomodoro View]]
+- [[_COMMUNITY_Brand Identity & Logo|Brand Identity & Logo]]
+- [[_COMMUNITY_User ID Migration|User ID Migration]]
+- [[_COMMUNITY_Convex Guidelines & README|Convex Guidelines & README]]
+- [[_COMMUNITY_Floating Timer Widget|Floating Timer Widget]]
+- [[_COMMUNITY_Convex Config|Convex Config]]
+- [[_COMMUNITY_Convex Internal|Convex Internal]]
+- [[_COMMUNITY_Convex Internal Query|Convex Internal Query]]
+- [[_COMMUNITY_Convex Action|Convex Action]]
+- [[_COMMUNITY_Convex Internal Action|Convex Internal Action]]
+- [[_COMMUNITY_Convex HTTP Action|Convex HTTP Action]]
+- [[_COMMUNITY_Vite React Plugin|Vite React Plugin]]
+- [[_COMMUNITY_Generated Data Model|Generated Data Model]]
+- [[_COMMUNITY_Main App Entry|Main App Entry]]
+- [[_COMMUNITY_Vite Env Declaration|Vite Env Declaration]]
+- [[_COMMUNITY_Crypto Utilities|Crypto Utilities]]
+- [[_COMMUNITY_Convex AI Guidelines|Convex AI Guidelines]]
+- [[_COMMUNITY_Convex Audit OpenAI Config|Convex Audit OpenAI Config]]
 - [[_COMMUNITY_Convex Routing Skill|Convex Routing Skill]]
+- [[_COMMUNITY_Public Robots|Public Robots]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `compilerOptions` - 18 edges
-2. `compilerOptions` - 16 edges
-3. `compilerOptions` - 13 edges
-4. `App` - 12 edges
-5. `subjects` - 11 edges
-6. `Modal()` - 9 edges
-7. `api` - 9 edges
-8. `Convex Schema` - 9 edges
-9. `Modal` - 9 edges
-10. `SubjectsView` - 8 edges
+2. `api` - 18 edges
+3. `compilerOptions` - 16 edges
+4. `formatDuration()` - 14 edges
+5. `compilerOptions` - 13 edges
+6. `Modal()` - 12 edges
+7. `Study Calendar App` - 9 edges
+8. `skills` - 7 edges
+9. `playSynthSound()` - 7 edges
+10. `SubjectBadge()` - 7 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Convex AI Guidelines` --conceptually_related_to--> `Convex Schema`  [EXTRACTED]
-  AGENTS.md → convex/schema.ts
-- `Study Calendar Description` --references--> `Study Calendar`  [EXTRACTED]
-  index.html → package.json
-- `Sitemap Reference` --references--> `Study Calendar`  [EXTRACTED]
-  public/robots.txt → package.json
-- `Vite React Plugin` --conceptually_related_to--> `Study Calendar`  [INFERRED]
-  vite.config.ts → package.json
-- `SubjectBadge` --semantically_similar_to--> `ColorPicker`  [INFERRED] [semantically similar]
-  src/components/ui/SubjectBadge.tsx → src/components/ui/ColorPicker.tsx
+- `Convex AI Coding Directive` --references--> `Convex Backend`  [EXTRACTED]
+  CLAUDE.md → convex/http.ts
+- `pnpm Workspace Config` --references--> `Convex Backend`  [EXTRACTED]
+  pnpm-workspace.yaml → convex/http.ts
+- `Study Calendar Brand Logo` --implements--> `Study Calendar Brand Identity`  [INFERRED]
+  public/logo.png → README.md
+- `Study Calendar Brand Logo` --conceptually_related_to--> `Landing page brand text "📚 Study Calendar"`  [INFERRED]
+  public/logo.png → src/components/auth/LandingPage.tsx
+- `Study Calendar App` --references--> `Convex Backend`  [EXTRACTED]
+  README.md → convex/http.ts
 
 ## Hyperedges (group relationships)
-- **Study Calendar Backend Stack** — convex_backend, convex_auth_config, convex_schema, auth_tables [INFERRED 0.78]
-- **Study Calendar Domain Model** — subjects_table, exams_table, dailylogs_table, tasks_table, events_table, userprofiles_table, friendships_table [EXTRACTED 1.00]
-- **Study Planning Data Layer** — dailylogs_module, subjects_module, exams_module, events_module, tasks_module [INFERRED 0.82]
-- **Social Identity Layer** — auth_module, friends_module, user_profiles_table, friendships_table, blocks_table [INFERRED 0.78]
+- **Study Calendar Backend Stack** — convex_backend, convex_auth_config [INFERRED 0.78]
 - **Generated Convex Surface** — generated_api, generated_server, generated_data_model [INFERRED 0.70]
-- **Study app navigation shell** — app, sidebar, dashboard, calendarview, examsview, tasksview, dailylogview, settingsview, subjectsview, friendsview [INFERRED 0.84]
-- **Shared study data pages** — dashboard, calendarview, tasksview, dailylogview, examsview, subjectsview [INFERRED 0.80]
-- **Secure friend messaging stack** — friendsview, crypto_utils, settingsview [INFERRED 0.86]
 - **Performance Audit Reference Cluster** — convex_performance_audit_skill, subscription_cost, hot_path_rules, function_budget, occ_conflicts [EXTRACTED 1.00]
 - **Migration Helper Reference Cluster** — convex_migration_helper_skill, migrations_component_ref, migration_patterns_ref [EXTRACTED 1.00]
 - **Auth Provider Options Cluster** — convex_setup_auth_skill, convex_auth_ref, clerk_ref, workos_authkit_ref, auth0_ref [EXTRACTED 1.00]
+- **Convex Component Design Skill Set** — convex_create_component_agent, advanced_component_patterns, packaged_components_doc, hybrid_components_doc [INFERRED 0.90]
+- **Convex + React + TypeScript + Vite + E2E Crypto** — convex_backend, react_frontend, end_to_end_encryption, web_crypto_api, theme_system, pnpm_workspace_config [EXTRACTED 1.00]
+- **Study Calendar public brand assets** — public_logo_png, index_html_favicon_link, sidebar_logo_img, brand_study_calendar, brand_landing_text [INFERRED 0.90]
 
-## Communities (32 total, 10 thin omitted)
+## Communities (57 total, 17 thin omitted)
 
-### Community 0 - "Backend Data Operations"
+### Community 0 - "Application Core"
 Cohesion: 0.07
-Nodes (31): { auth, signIn, signOut, store, isAuthenticated }, create, getByDate, getByDateRange, list, remove, update, create (+23 more)
+Nodes (30): SignIn(), api, components, ExamsView(), SettingsView(), SubjectsView(), TasksView(), TaskTab (+22 more)
 
-### Community 1 - "UI Components & Pages"
-Cohesion: 0.14
-Nodes (19): SignIn(), api, components, NAV_ITEMS, Sidebar(), CalendarView(), DailyLogView(), Dashboard() (+11 more)
+### Community 1 - "Chart Data Building"
+Cohesion: 0.09
+Nodes (25): buildChartData(), ChartElements, formatLocalDate(), Log, MONTH_LABELS, Point, ProgressionChart(), DayPanel() (+17 more)
 
-### Community 2 - "Convex Agent Skills"
+### Community 2 - "Skill Hashing & Lock"
 Cohesion: 0.06
 Nodes (32): computedHash, computedHash, skillPath, source, sourceType, computedHash, skillPath, source (+24 more)
 
-### Community 3 - "Project Dependencies"
+### Community 3 - "Theme Customization"
+Cohesion: 0.14
+Nodes (25): COLOR_VARIABLES, getPresetsForVariable(), ThemeSettingsCard(), ThemeSettingsCardProps, ColorPicker(), ColorPickerProps, DEFAULT_PRESETS, adjustColorLightness() (+17 more)
+
+### Community 4 - "Chat & Leaderboard Tabs"
+Cohesion: 0.11
+Nodes (19): ChatTab(), ChatTabProps, LeaderboardTab(), LeaderboardTabProps, ManageFriendsTab(), ManageFriendsTabProps, ProfileSetup(), ProfileSetupProps (+11 more)
+
+### Community 5 - "Package Dependencies"
 Cohesion: 0.08
-Nodes (25): dependencies, @auth/core, convex, @convex-dev/auth, date-fns, react, react-dom, devDependencies (+17 more)
+Nodes (25): dependencies, @auth/core, convex, @convex-dev/auth, date-fns, react, react-doctor, react-dom (+17 more)
 
-### Community 4 - "Data Model & Schema"
-Cohesion: 0.16
-Nodes (22): Auth Module, Auth Tables, Blocks Table, Convex Auth Service, Convex AI Guidelines, Convex Schema, Daily Logs Module, dailyLogs (+14 more)
+### Community 6 - "Calendar UI Grid"
+Cohesion: 0.12
+Nodes (17): CalendarDay(), CalendarGrid(), DAY_NAMES, DayData, Props, AddEventModal(), AddLogModal(), AddTaskModal() (+9 more)
 
-### Community 5 - "App TypeScript Config"
+### Community 7 - "TypeScript Config"
 Cohesion: 0.10
 Nodes (19): compilerOptions, allowImportingTsExtensions, isolatedModules, jsx, lib, module, moduleDetection, moduleResolution (+11 more)
 
-### Community 6 - "Convex Skill References"
+### Community 8 - "Auth Provider Plugins"
 Cohesion: 0.15
 Nodes (19): Auth0, Clerk, Convex Auth, Convex Create Component, Convex Migration Helper, Convex Performance Audit, Convex Quickstart OpenAI Config, Convex Quickstart (+11 more)
 
-### Community 7 - "Root TypeScript Config"
+### Community 9 - "User Profile & Friends"
+Cohesion: 0.11
+Nodes (18): assertIsFriends(), blockUser, checkUsernameAvailable, createOrUpdateProfile, getBlockedUsers, getFriendExams, getFriendships, getFriendsLeaderboard (+10 more)
+
+### Community 10 - "Stats & Badge Cards"
+Cohesion: 0.15
+Nodes (15): BadgeCard(), KpiCards(), Props, Stats, Tab, TimeRangeToggle(), AnalyticsView(), Log (+7 more)
+
+### Community 11 - "Auth Domain Concepts"
+Cohesion: 0.11
+Nodes (19): Auth Provider Domain, Calendar View, Convex AI Coding Directive, Convex AI Guidelines (referenced), Convex Auth Config, Convex Backend, Dashboard View, End-to-End Encrypted Messaging (RSA-OAEP 2048-bit) (+11 more)
+
+### Community 12 - "TS Config (App)"
 Cohesion: 0.11
 Nodes (18): compilerOptions, allowImportingTsExtensions, isolatedModules, jsx, lib, module, moduleResolution, noEmit (+10 more)
 
-### Community 8 - "Friend System"
-Cohesion: 0.12
-Nodes (17): assertIsFriends(), blockUser, checkUsernameAvailable, createOrUpdateProfile, getBlockedUsers, getFriendExams, getFriendships, getFriendsLeaderboard (+9 more)
+### Community 13 - "Landing Page Demos"
+Cohesion: 0.21
+Nodes (11): LandingPage(), ChecklistDemo(), CryptoDemo(), PomoAction, PomodoroDemo(), pomoReducer(), PomoState, playSynthSound() (+3 more)
 
-### Community 9 - "React App Core"
-Cohesion: 0.33
-Nodes (16): App, CalendarView, ColorPicker, crypto utilities, DailyLogView, Dashboard, ExamsView, FriendsView (+8 more)
-
-### Community 10 - "Convex TSConfig"
+### Community 14 - "TS Config (Node)"
 Cohesion: 0.12
 Nodes (15): compilerOptions, allowJs, allowSyntheticDefaultImports, forceConsistentCasingInFileNames, isolatedModules, jsx, lib, module (+7 more)
 
-### Community 11 - "Project Metadata"
-Cohesion: 0.22
-Nodes (9): Auth Provider Domain, Convex Auth Config, Convex Backend, HTTP Router, Build Script, Sitemap Reference, Study Calendar Description, Study Calendar (+1 more)
+### Community 15 - "Border Glow Animation"
+Cohesion: 0.16
+Nodes (11): AnimateOpts, BorderGlow(), BorderGlowProps, buildGlowVars(), buildGradientVars(), COLOR_MAP, DEFAULT_COLORS, DEFAULT_STYLE (+3 more)
 
-### Community 12 - "Session Management"
+### Community 16 - "Timer Hooks & Mobile Header"
+Cohesion: 0.19
+Nodes (10): usePomodoro(), useStopwatch(), MobileHeader(), Props, TITLES, NAV_ITEMS, Sidebar(), App() (+2 more)
+
+### Community 17 - "Convex Component Patterns"
+Cohesion: 0.20
+Nodes (10): Advanced Component Patterns, Class-based Client Wrappers, Convex Create Component Agent, Convex Migration Helper Agent, Function Handles for Callbacks, Static Configuration with Globals Table, Hybrid Convex Components, Packaged Convex Components (+2 more)
+
+### Community 18 - "Subject CRUD"
+Cohesion: 0.22
+Nodes (8): create, list, remove, update, get, update, mutation, query
+
+### Community 19 - "Task CRUD"
+Cohesion: 0.22
+Nodes (8): create, getByDate, listAll, listGeneral, listIncomplete, remove, toggleComplete, update
+
+### Community 20 - "Pomodoro State Reducer"
+Cohesion: 0.25
+Nodes (5): Action, Mode, PomodoroApi, State, Status
+
+### Community 21 - "State Transitions"
 Cohesion: 0.25
 Nodes (7): reason, state, updatedAt, sessionID, sources, background-task, updatedAt
 
-### Community 13 - "DataModel Types"
+### Community 22 - "Habit CRUD"
+Cohesion: 0.29
+Nodes (6): create, getByDate, getByDateRange, list, remove, update
+
+### Community 23 - "Stopwatch State Reducer"
+Cohesion: 0.29
+Nodes (4): Action, Status, StopwatchApi, StopwatchState
+
+### Community 24 - "Background Task State"
+Cohesion: 0.29
+Nodes (6): state, updatedAt, sessionID, sources, background-task, updatedAt
+
+### Community 25 - "Event CRUD"
+Cohesion: 0.33
+Nodes (5): create, getByDate, getByDateRange, remove, update
+
+### Community 26 - "Exam CRUD"
+Cohesion: 0.33
+Nodes (5): create, list, remove, upcoming, update
+
+### Community 27 - "Convex Data Schema"
 Cohesion: 0.33
 Nodes (4): DataModel, Doc, Id, TableNames
 
-### Community 14 - "Convex Server Ctx"
+### Community 28 - "Convex Server Types"
 Cohesion: 0.33
 Nodes (5): ActionCtx, DatabaseReader, DatabaseWriter, MutationCtx, QueryCtx
 
-### Community 15 - "Cryptography Utils"
-Cohesion: 0.60
-Nodes (5): arrayBufferToBase64(), base64ToArrayBuffer(), decryptWithPrivateKey(), encryptWithPublicKey(), generateAndSaveKeys()
+### Community 29 - "Subject Distribution Chart"
+Cohesion: 0.33
+Nodes (4): DistributionItem, Log, Subject, SubjectDistribution()
 
-### Community 16 - "AI State Tracking"
-Cohesion: 0.40
-Nodes (4): agentSkillsSha, agentsMdSectionHash, claudeMdHash, guidelinesHash
-
-### Community 17 - "Skill Icons"
+### Community 30 - "Skill Icon Set"
 Cohesion: 0.40
 Nodes (5): Convex Create Component Icon, Convex Migration Helper Icon, Convex Performance Audit Icon, Convex Quickstart Icon, Convex Setup Auth Icon
 
-### Community 18 - "Generated API/Server"
+### Community 31 - "AI Files Sync State"
+Cohesion: 0.40
+Nodes (4): agentSkillsSha, agentsMdSectionHash, claudeMdHash, guidelinesHash
+
+### Community 33 - "Pomodoro View"
+Cohesion: 0.50
+Nodes (4): formatSeconds(), PomodoroView(), PomodoroViewProps, PRESETS
+
+### Community 34 - "Brand Identity & Logo"
+Cohesion: 0.60
+Nodes (5): Landing page brand text "📚 Study Calendar", Study Calendar Brand Identity, Favicon link in index.html, Study Calendar Brand Logo, Sidebar logo image element
+
+### Community 36 - "Convex Guidelines & README"
 Cohesion: 0.67
 Nodes (4): Convex Guidelines, Convex README Docs, Generated Convex API, Generated Convex Server Types
 
+### Community 37 - "Floating Timer Widget"
+Cohesion: 0.67
+Nodes (3): FloatingTimerWidget(), formatElapsed(), Props
+
 ## Knowledge Gaps
-- **191 isolated node(s):** `tsBuildInfoFile`, `target`, `useDefineForClassFields`, `lib`, `module` (+186 more)
+- **292 isolated node(s):** `tsBuildInfoFile`, `target`, `useDefineForClassFields`, `lib`, `module` (+287 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `query` connect `Backend Data Operations` to `Friend System`?**
+- **Why does `api` connect `Application Core` to `Chart Data Building`, `Theme Customization`, `Chat & Leaderboard Tabs`, `Calendar UI Grid`, `Stats & Badge Cards`, `Timer Hooks & Mobile Header`?**
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Why does `Modal()` connect `Application Core` to `Chart Data Building`, `Chat & Leaderboard Tabs`, `Landing Page Demos`, `Calendar UI Grid`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **Why does `mutation` connect `Backend Data Operations` to `Friend System`?**
+- **Why does `formatDuration()` connect `Chart Data Building` to `Chat & Leaderboard Tabs`, `Calendar UI Grid`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **Are the 3 inferred relationships involving `App` (e.g. with `SignIn` and `Sidebar`) actually correct?**
-  _`App` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `tsBuildInfoFile`, `target`, `useDefineForClassFields` to the rest of the system?**
-  _191 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Backend Data Operations` be split into smaller, more focused modules?**
-  _Cohesion score 0.06666666666666667 - nodes in this community are weakly interconnected._
-- **Should `UI Components & Pages` be split into smaller, more focused modules?**
-  _Cohesion score 0.14126984126984127 - nodes in this community are weakly interconnected._
-- **Should `Convex Agent Skills` be split into smaller, more focused modules?**
+  _292 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Application Core` be split into smaller, more focused modules?**
+  _Cohesion score 0.06914893617021277 - nodes in this community are weakly interconnected._
+- **Should `Chart Data Building` be split into smaller, more focused modules?**
+  _Cohesion score 0.08961593172119488 - nodes in this community are weakly interconnected._
+- **Should `Skill Hashing & Lock` be split into smaller, more focused modules?**
   _Cohesion score 0.06060606060606061 - nodes in this community are weakly interconnected._
