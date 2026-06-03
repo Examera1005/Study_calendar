@@ -139,6 +139,33 @@ body {
   margin-bottom: 16px;
 }
 
+.auth-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  padding: 0 16px;
+}
+.auth-footer-btn {
+  background: none;
+  border: none;
+  color: var(--accent-primary);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+.auth-footer-btn:hover {
+  color: var(--accent-hover);
+}
+
 /* ========== FORMS ========== */
 .form-group { margin-bottom: 16px; }
 .form-group label {
@@ -2355,6 +2382,12 @@ select { cursor: pointer; appearance: none;
   background: transparent;
   padding: 16px 20px;
   max-width: 100%;
+}
+
+.modal .auth-footer {
+  position: static;
+  margin-top: 24px;
+  padding: 0;
 }
 
 @keyframes lpExplode {

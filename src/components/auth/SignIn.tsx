@@ -95,24 +95,12 @@ export function SignIn() {
         </div>
       </div>
 
-      <div style={{
-        position: "absolute",
-        bottom: 20,
-        left: 0,
-        right: 0,
-        display: "flex",
-        justifyContent: "center",
-        gap: 16,
-        fontSize: "0.8rem",
-        color: "var(--text-muted)",
-        flexWrap: "wrap",
-        padding: "0 16px"
-      }}>
+      <div className="auth-footer">
         <span>© {new Date().getFullYear()} Study Calendar</span>
         <span>•</span>
         <button 
           type="button"
-          style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", cursor: "pointer", textDecoration: "underline", padding: 0 }}
+          className="auth-footer-btn"
           onClick={() => setShowLegal("privacy")}
         >
           Privacy Policy
@@ -120,7 +108,7 @@ export function SignIn() {
         <span>•</span>
         <button 
           type="button"
-          style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", cursor: "pointer", textDecoration: "underline", padding: 0 }}
+          className="auth-footer-btn"
           onClick={() => setShowLegal("terms")}
         >
           Terms of Service
