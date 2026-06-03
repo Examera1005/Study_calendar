@@ -140,17 +140,14 @@ body {
 }
 
 .auth-footer {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 0;
   display: flex;
   justify-content: center;
   gap: 16px;
   font-size: 0.8rem;
   color: var(--text-muted);
   flex-wrap: wrap;
-  padding: 0 16px;
+  margin-top: 24px;
+  padding: 0;
 }
 .auth-footer-btn {
   background: none;
@@ -2382,12 +2379,6 @@ select { cursor: pointer; appearance: none;
   background: transparent;
   padding: 16px 20px;
   max-width: 100%;
-}
-
-.modal .auth-footer {
-  position: static;
-  margin-top: 24px;
-  padding: 0;
 }
 
 @keyframes lpExplode {

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://study-calendar.vercel.app/sitemap.xml
+Sitemap: https://study-calendar.thelio.site/sitemap.xml

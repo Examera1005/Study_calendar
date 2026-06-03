@@ -93,26 +93,26 @@ export function SignIn() {
               : "Already have an account? Sign in"}
           </button>
         </div>
-      </div>
 
-      <div className="auth-footer">
-        <span>© {new Date().getFullYear()} Study Calendar</span>
-        <span>•</span>
-        <button 
-          type="button"
-          className="auth-footer-btn"
-          onClick={() => setShowLegal("privacy")}
-        >
-          Privacy Policy
-        </button>
-        <span>•</span>
-        <button 
-          type="button"
-          className="auth-footer-btn"
-          onClick={() => setShowLegal("terms")}
-        >
-          Terms of Service
-        </button>
+        <div className="auth-footer">
+          <span>© {new Date().getFullYear()} Study Calendar</span>
+          <span>•</span>
+          <button 
+            type="button"
+            className="auth-footer-btn"
+            onClick={() => setShowLegal("privacy")}
+          >
+            Privacy Policy
+          </button>
+          <span>•</span>
+          <button 
+            type="button"
+            className="auth-footer-btn"
+            onClick={() => setShowLegal("terms")}
+          >
+            Terms of Service
+          </button>
+        </div>
       </div>
 
       {showLegal === "privacy" && (
