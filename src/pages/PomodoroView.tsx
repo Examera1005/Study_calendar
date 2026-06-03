@@ -14,6 +14,13 @@ interface PomodoroViewProps {
   stopAndLogWork: () => void;
 }
 
+// Format seconds to MM:SS
+const formatSeconds = (totalSecs: number) => {
+  const mins = Math.floor(totalSecs / 60);
+  const secs = totalSecs % 60;
+  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+};
+
 export function PomodoroView({
   pomodoroStatus,
   pomodoroMode,
@@ -27,12 +34,7 @@ export function PomodoroView({
   resetPomodoro,
   stopAndLogWork,
 }: PomodoroViewProps) {
-  // Format seconds to MM:SS
-  const formatSeconds = (totalSecs: number) => {
-    const mins = Math.floor(totalSecs / 60);
-    const secs = totalSecs % 60;
-    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-  };
+
 
   // Calculate circular progress percentage
   const progressPercent = useMemo(() => {
@@ -86,17 +88,13 @@ export function PomodoroView({
       </div>
 
       {/* Main Glassmorphic Timer Card */}
-      <div className="card" style={{
-        width: "100%",
-        padding: "40px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 28,
-        boxShadow: pomodoroStatus === "running" ? `0 0 20px rgba(${pomodoroMode === "work" ? "59, 130, 246" : "16, 185, 129"}, 0.15)` : "var(--shadow-lg)",
-        borderColor: pomodoroStatus === "running" ? currentThemeColor : "var(--border-subtle)",
-        transition: "all var(--transition-normal)",
-      }}>
+      <div 
+        className="card pomodoro-main-card" 
+        style={{
+          boxShadow: pomodoroStatus === "running" ? `0 0 20px rgba(${pomodoroMode === "work" ? "59, 130, 246" : "16, 185, 129"}, 0.15)` : "var(--shadow-lg)",
+          borderColor: pomodoroStatus === "running" ? currentThemeColor : "var(--border-subtle)",
+        }}
+      >
         {/* SVG Circular Ring Clock */}
         <div style={{ position: "relative", width: 220, height: 220 }}>
           <svg viewBox="0 0 200 200" width="100%" height="100%">
@@ -129,25 +127,14 @@ export function PomodoroView({
           </svg>
 
           {/* Clock Text Centered */}
-          <div style={{
-            position: "absolute",
-            top: 0, left: 0, right: 0, bottom: 0,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-            <span style={{
-              fontSize: "0.78rem",
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-              color: currentThemeColor,
-              textTransform: "uppercase",
-              background: pomodoroStatus !== "idle" ? "var(--bg-primary)" : "transparent",
-              padding: "2px 8px",
-              borderRadius: "var(--radius-sm)",
-              transition: "color var(--transition-normal)"
-            }}>
+          <div className="pomodoro-centered-overlay">
+            <span 
+              className="pomodoro-mode-badge"
+              style={{
+                color: currentThemeColor,
+                background: pomodoroStatus !== "idle" ? "var(--bg-primary)" : "transparent",
+              }}
+            >
               {pomodoroStatus === "idle" ? "Prêt" : (pomodoroMode === "work" ? "💻 Étude" : "☕ Pause")}
             </span>
             <span style={{

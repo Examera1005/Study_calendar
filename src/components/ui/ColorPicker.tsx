@@ -137,18 +137,7 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
   const svBackground = `hsl(${hsv.h}, 100%, 50%)`;
 
   return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      gap: 16,
-      background: "var(--bg-elevated)",
-      border: "1px solid var(--border-medium)",
-      borderRadius: "var(--radius-lg)",
-      padding: 16,
-      width: "100%",
-      maxWidth: 280,
-      boxShadow: "var(--shadow-lg)",
-    }}>
+    <div className="color-picker-container">
       {/* Saturation-Value Picker Rectangle */}
       <button
         ref={svContainerRef}
@@ -178,18 +167,9 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
           }
         }}
         aria-label="Color saturation and brightness picker"
+        className="color-picker-rect"
         style={{
-          position: "relative",
-          width: "100%",
-          height: 140,
           backgroundColor: svBackground,
-          borderRadius: "var(--radius-md)",
-          cursor: "crosshair",
-          overflow: "hidden",
-          touchAction: "none",
-          border: "none",
-          padding: 0,
-          outline: "none",
         }}
       >
         {/* White overlay gradient (Saturation) */}
@@ -206,20 +186,15 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
         }} />
         
         {/* Selector handle */}
-        <div style={{
-          position: "absolute",
-          left: `${hsv.s}%`,
-          top: `${100 - hsv.v}%`,
-          width: 14,
-          height: 14,
-          borderRadius: "50%",
-          border: "2px solid #ffffff",
-          boxShadow: "0 0 3px rgba(0,0,0,0.5)",
-          transform: "translate(-7px, -7px)",
-          pointerEvents: "none",
-          backgroundColor: normalizedColor,
-          transition: isDragging.current ? "none" : "left 100ms ease, top 100ms ease",
-        }} />
+        <div 
+          className="color-picker-handle"
+          style={{
+            left: `${hsv.s}%`,
+            top: `${100 - hsv.v}%`,
+            backgroundColor: normalizedColor,
+            transition: isDragging.current ? "none" : "left 100ms ease, top 100ms ease",
+          }} 
+        />
       </button>
 
       {/* Hue Slider */}
@@ -295,15 +270,9 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
                 onClick={() => handlePresetSelect(preset)}
                 aria-label={`Select color ${preset}`}
                 style={{
-                  width: "100%",
-                  paddingTop: "100%", // 1:1 Aspect ratio square
-                  position: "relative",
                   backgroundColor: preset,
                   border: isSelected ? "2px solid var(--text-primary)" : "1px solid var(--border-subtle)",
-                  borderRadius: "var(--radius-sm)",
-                  cursor: "pointer",
                   boxShadow: isSelected ? "0 0 0 1px var(--bg-primary)" : "none",
-                  transition: "transform 150ms ease",
                 }}
                 title={preset}
                 className="color-preset-btn"

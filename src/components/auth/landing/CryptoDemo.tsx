@@ -168,7 +168,7 @@ export function CryptoDemo() {
             {cryptoStage !== "plain" && (
               <div className={`lp-crypto-pipeline-dot ${cryptoStage === "transmitting" ? "animating" : ""}`} />
             )}
-            <span style={{ position: "absolute", bottom: -8, fontSize: "0.75rem", color: "#52525b", textTransform: "uppercase", letterSpacing: "0.05em", background: "#17191d", padding: "0 6px" }}>
+            <span className="lp-crypto-pipeline-label">
               {cryptoStage === "plain" && "Pre-encryption"}
               {cryptoStage === "encrypting" && "Encrypting RSA-2048 Client-Side..."}
               {cryptoStage === "cipher" && "Payload Scrambled"}

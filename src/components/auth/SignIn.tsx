@@ -95,7 +95,7 @@ export function SignIn() {
         </div>
 
         <div className="auth-footer">
-          <span>© {new Date().getFullYear()} Study Calendar</span>
+          <span suppressHydrationWarning>© {new Date().getFullYear()} Study Calendar</span>
           <span>•</span>
           <button 
             type="button"

@@ -405,22 +405,13 @@ export function AnalyticsView() {
 
               {/* Live Tooltip on hover */}
               {hoveredPoint && (
-                <div style={{
-                  position: "absolute",
-                  left: `${(hoveredPoint.x / 500) * 100}%`,
-                  top: `${(hoveredPoint.y / 180) * 100 - 24}%`,
-                  transform: "translate(-50%, -100%)",
-                  background: "var(--bg-elevated)",
-                  border: "1px solid var(--border-medium)",
-                  borderRadius: "var(--radius-sm)",
-                  padding: "4px 8px",
-                  fontSize: "0.75rem",
-                  color: "var(--text-primary)",
-                  boxShadow: "var(--shadow-md)",
-                  pointerEvents: "none",
-                  zIndex: 10,
-                  whiteSpace: "nowrap",
-                }}>
+                <div 
+                  className="chart-tooltip"
+                  style={{
+                    left: `${(hoveredPoint.x / 500) * 100}%`,
+                    top: `${(hoveredPoint.y / 180) * 100 - 24}%`,
+                  }}
+                >
                   <strong>{hoveredPoint.label}</strong> : {formatDuration(hoveredPoint.value)}
                 </div>
               )}
@@ -475,16 +466,9 @@ export function AnalyticsView() {
                     key={item.id}
                     onMouseEnter={() => setHoveredSlice(idx)}
                     onMouseLeave={() => setHoveredSlice(null)}
+                    className="subject-distribution-row"
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      fontSize: "0.82rem",
-                      padding: "4px 8px",
                       background: hoveredSlice === idx ? "var(--bg-primary)" : "transparent",
-                      borderRadius: "var(--radius-sm)",
-                      cursor: "pointer",
-                      transition: "background var(--transition-fast)",
                     }}
                   >
                     <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: item.color }} />
@@ -520,28 +504,17 @@ export function AnalyticsView() {
             return (
               <div
                 key={badge.id}
+                className="badge-item-card"
                 style={{
-                  display: "flex",
-                  gap: 16,
-                  padding: 16,
                   background: badge.unlocked ? "var(--bg-glass)" : "rgba(120, 120, 120, 0.05)",
                   border: badge.unlocked ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
                   boxShadow: badge.unlocked ? "0 0 10px rgba(59, 130, 246, 0.15)" : "none",
-                  borderRadius: "var(--radius-lg)",
-                  alignItems: "center",
                   opacity: badge.unlocked ? 1 : 0.65,
-                  transition: "all var(--transition-normal)",
                 }}
               >
                 <div
+                  className="badge-item-icon"
                   style={{
-                    fontSize: "2.4rem",
-                    width: 64,
-                    height: 64,
-                    borderRadius: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                     background: badge.unlocked ? "var(--accent-light)" : "var(--bg-elevated)",
                     border: badge.unlocked ? "2px solid var(--accent-primary)" : "1px solid var(--border-medium)",
                     boxShadow: badge.unlocked ? "0 0 8px rgba(59, 130, 246, 0.2)" : "none",

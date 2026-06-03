@@ -110,34 +110,28 @@ export function TiltCard({
       }}
     >
       <BorderGlow
-        className={className}
+        className={`${className || ""} tilt-card-glow`.trim()}
         glowColor={theme.glowColor}
         colors={theme.colors}
         backgroundColor="#120F17"
         fillOpacity={0.45}
         style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
           transform: cardTransform,
           transition: cardTransition,
           transformStyle: cardTransformStyle as any,
           willChange: cardWillChange,
           backfaceVisibility: cardBackface as any,
-          WebkitFontSmoothing: "antialiased",
         }}
       >
-        <div style={{ 
-          transform: disableTilt ? "none" : "translateZ(20px)", 
-          transformStyle: cardTransformStyle as any, 
-          height: "100%", 
-          display: "flex", 
-          flexDirection: "column", 
-          flex: 1,
-          willChange: cardWillChange,
-          backfaceVisibility: cardBackface as any
-        }}>
+        <div 
+          className="tilt-card-inner"
+          style={{ 
+            transform: disableTilt ? "none" : "translateZ(20px)", 
+            transformStyle: cardTransformStyle as any, 
+            willChange: cardWillChange,
+            backfaceVisibility: cardBackface as any
+          }}
+        >
           {children}
         </div>
       </BorderGlow>

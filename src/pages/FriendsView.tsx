@@ -617,17 +617,6 @@ export function FriendsView() {
                   <div
                     key={friend.userId}
                     className="friend-row-card"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "12px 16px",
-                      background: "var(--bg-primary)",
-                      borderRadius: "var(--radius-lg)",
-                      border: "1px solid var(--border-subtle)",
-                      flexWrap: "wrap",
-                      gap: 12,
-                    }}
                   >
                     <div style={{ minWidth: 150 }}>
                       <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{friend.username}</div>
@@ -707,12 +696,8 @@ export function FriendsView() {
                           Date: <strong>{exam.date}</strong> · Coeff: {exam.coefficient}
                         </div>
                         <div
+                          className="friend-exam-subject-badge"
                           style={{
-                            fontSize: "0.75rem",
-                            marginTop: 6,
-                            display: "inline-block",
-                            padding: "1px 6px",
-                            borderRadius: 4,
                             background: exam.subjectColor + "1A",
                             color: exam.subjectColor,
                             border: `1px solid ${exam.subjectColor}`,

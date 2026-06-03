@@ -138,7 +138,7 @@ export function Sidebar({
           justifyContent: "center",
           gap: 6
         }}>
-          <span>© {new Date().getFullYear()} Study Calendar</span>
+          <span suppressHydrationWarning>© {new Date().getFullYear()} Study Calendar</span>
         </div>
       </div>
     </aside>

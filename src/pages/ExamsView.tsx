@@ -6,6 +6,22 @@ import { Modal } from "../components/ui/Modal";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import type { Id } from "../../convex/_generated/dataModel";
 
+const daysUntil = (dateStr: string) => {
+  const d = Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
+  if (d < 0) return "Passed";
+  if (d === 0) return "Today";
+  if (d === 1) return "Tomorrow";
+  return `${d} days`;
+};
+
+const countdownClass = (dateStr: string) => {
+  const d = Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
+  if (d < 0) return "";
+  if (d <= 2) return "urgent";
+  if (d <= 7) return "soon";
+  return "comfortable";
+};
+
 export function ExamsView() {
   const exams = useQuery(api.exams.list);
   const subjects = useQuery(api.subjects.list);
@@ -17,21 +33,7 @@ export function ExamsView() {
 
   const getSubject = (id: string) => subjects?.find((s) => s._id === id);
 
-  const daysUntil = (dateStr: string) => {
-    const d = Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
-    if (d < 0) return "Passed";
-    if (d === 0) return "Today";
-    if (d === 1) return "Tomorrow";
-    return `${d} days`;
-  };
 
-  const countdownClass = (dateStr: string) => {
-    const d = Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
-    if (d < 0) return "";
-    if (d <= 2) return "urgent";
-    if (d <= 7) return "soon";
-    return "comfortable";
-  };
 
   const sorted = [...(exams ?? [])].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),

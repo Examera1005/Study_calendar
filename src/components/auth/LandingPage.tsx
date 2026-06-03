@@ -109,7 +109,7 @@ export function LandingPage() {
               <span>👥 Friendship Arena</span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: "0.82rem" }}>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", background: "#3b82f6", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.75rem", color: "#fff" }}>
+              <div className="lp-avatar">
                 A
               </div>
               <div style={{ flex: 1 }}>
@@ -220,7 +220,7 @@ export function LandingPage() {
 
       {/* Footer */}
       <footer className="lp-footer">
-        <div>© {new Date().getFullYear()} Study Calendar. Developed for academic excellence.</div>
+        <div suppressHydrationWarning>© {new Date().getFullYear()} Study Calendar. Developed for academic excellence.</div>
         <div className="lp-footer-links">
           <a className="lp-footer-link" href="#features">Features</a>
           <a className="lp-footer-link" href="#playground">Interactive Sandbox</a>

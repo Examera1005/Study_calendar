@@ -7,6 +7,45 @@ import { useState, useMemo, useEffect } from "react";
 import { calculateStreak } from "../utils/statsUtils";
 import { formatLocalDate, formatDuration } from "../utils/dateUtils";
 
+const renderPercentageBadge = (pct: number) => {
+  if (pct > 0) {
+    return (
+      <span style={{ color: "var(--success)", fontWeight: 600, fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: 2 }}>
+        ▲ +{pct}%
+      </span>
+    );
+  } else if (pct < 0) {
+    return (
+      <span style={{ color: "var(--danger)", fontWeight: 600, fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: 2 }}>
+        ▼ {pct}%
+      </span>
+    );
+  } else {
+    return (
+      <span style={{ color: "var(--text-muted)", fontWeight: 500, fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: 2 }}>
+        0%
+      </span>
+    );
+  }
+};
+
+const daysUntil = (dateStr: string) => {
+  const d = Math.ceil(
+    (new Date(dateStr).getTime() - Date.now()) / 86400000,
+  );
+  if (d === 0) return "Today";
+  if (d === 1) return "Tomorrow";
+  return `${d} days`;
+};
+
+const countdownClass = (dateStr: string) => {
+  const d = Math.ceil(
+    (new Date(dateStr).getTime() - Date.now()) / 86400000,
+  );
+  if (d <= 2) return "urgent";
+  if (d <= 7) return "soon";
+  return "comfortable";
+};
 
 export function Dashboard({
   setView,
@@ -110,27 +149,7 @@ export function Dashboard({
     };
   }, [allLogs]);
 
-  const renderPercentageBadge = (pct: number) => {
-    if (pct > 0) {
-      return (
-        <span style={{ color: "var(--success)", fontWeight: 600, fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: 2 }}>
-          ▲ +{pct}%
-        </span>
-      );
-    } else if (pct < 0) {
-      return (
-        <span style={{ color: "var(--danger)", fontWeight: 600, fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: 2 }}>
-          ▼ {pct}%
-        </span>
-      );
-    } else {
-      return (
-        <span style={{ color: "var(--text-muted)", fontWeight: 500, fontSize: "0.75rem", display: "inline-flex", alignItems: "center", gap: 2 }}>
-          0%
-        </span>
-      );
-    }
-  };
+
 
   const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
   const clickedDayIndex = useMemo(() => {
@@ -229,23 +248,7 @@ export function Dashboard({
       .sort((a, b) => b.minutes - a.minutes);
   })();
 
-  const daysUntil = (dateStr: string) => {
-    const d = Math.ceil(
-      (new Date(dateStr).getTime() - Date.now()) / 86400000,
-    );
-    if (d === 0) return "Today";
-    if (d === 1) return "Tomorrow";
-    return `${d} days`;
-  };
 
-  const countdownClass = (dateStr: string) => {
-    const d = Math.ceil(
-      (new Date(dateStr).getTime() - Date.now()) / 86400000,
-    );
-    if (d <= 2) return "urgent";
-    if (d <= 7) return "soon";
-    return "comfortable";
-  };
 
   const completedTasks = todayTasks?.filter((t) => t.completed).length ?? 0;
   const totalTasks = todayTasks?.length ?? 0;
@@ -307,18 +310,8 @@ export function Dashboard({
         </div>
         <button
           type="button"
-          className="stat-card"
+          className="stat-card stat-card-button"
           onClick={() => setView("analytics")}
-          style={{
-            cursor: "pointer",
-            width: "100%",
-            textAlign: "left",
-            fontFamily: "inherit",
-            color: "inherit",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-          }}
         >
           <div className="stat-value" style={{ display: "flex", alignItems: "center", gap: 6 }}>
             🔥 {streak} {streak > 1 ? "Jours" : "Jour"}
@@ -467,17 +460,7 @@ export function Dashboard({
             </div>
 
             {/* Right: Dynamic Tooltip / Legend */}
-            <div style={{
-              background: "var(--bg-secondary)",
-              padding: "16px",
-              borderRadius: "var(--radius-md)",
-              border: "1px solid var(--border-subtle)",
-              height: "275px",
-              overflowY: "auto",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-            }}>
+            <div className="dashboard-legend-card">
               {displayDayIndex !== null ? (
                 // Day Breakdown Detail
                 <div>

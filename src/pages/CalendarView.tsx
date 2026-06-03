@@ -70,6 +70,11 @@ export function CalendarView({
 
   const getSubject = (id: string) => subjects?.find((s) => s._id === id);
 
+  const handleGoToToday = () => {
+    setCurrentMonth(new Date());
+    setSelectedDate(formatLocalDate());
+  };
+
   // Build day data
   const dayData: Record<
     string,
@@ -151,10 +156,7 @@ export function CalendarView({
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            onClick={() => {
-              setCurrentMonth(new Date());
-              setSelectedDate(formatLocalDate());
-            }}
+            onClick={handleGoToToday}
           >
             Today
           </button>

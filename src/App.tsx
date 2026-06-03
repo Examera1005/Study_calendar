@@ -539,18 +539,7 @@ export default function App() {
                   value={sessionMinutes}
                   onChange={(e) => setSessionMinutes(Math.max(1, Number(e.target.value)))}
                   aria-label="Study duration in minutes"
-                  style={{
-                    width: "110px",
-                    textAlign: "center",
-                    fontSize: "2rem",
-                    fontWeight: 800,
-                    color: "var(--accent-primary)",
-                    fontFamily: "monospace",
-                    background: "var(--bg-primary)",
-                    border: "1px solid var(--border-medium)",
-                    borderRadius: "var(--radius-md)",
-                    padding: "4px 8px"
-                  }}
+                  className="session-duration-input"
                   required
                 />
                 <span style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--text-secondary)" }}>min</span>

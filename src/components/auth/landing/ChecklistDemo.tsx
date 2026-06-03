@@ -61,18 +61,11 @@ export function ChecklistDemo() {
         {/* Particle explosions mapping */}
         {particles.map((p) => (
           <div 
-            key={p.id} 
+            key={p.id}
+            className="lp-particle"
             style={{
-              position: "absolute",
               left: p.x,
               top: p.y,
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: "#3b82f6",
-              pointerEvents: "none",
-              transform: "translate(-50%, -50%)",
-              animation: "lpExplode 0.8s ease-out forwards",
               ["--tx" as any]: `${p.tx}px`,
               ["--ty" as any]: `${p.ty}px`
             }}

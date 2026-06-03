@@ -11,6 +11,23 @@ import {
 } from "../utils/colorUtils";
 import { Modal } from "../components/ui/Modal";
 
+const getPresetsForVariable = (variable: string, themeMode: "light" | "dark") => {
+  if (variable === "--accent-primary" || variable === "--accent-glow") {
+    return [
+      "#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#ef4444", "#f97316",
+      "#f59e0b", "#10b981", "#14b8a6", "#64748b", "#1b1c1d", "#f8fafc"
+    ];
+  }
+  if (variable.includes("--bg-")) {
+    return themeMode === "dark"
+      ? ["#1b1c1d", "#141b2b", "#0f172a", "#1e1e2e", "#121212", "#18181b"]
+      : ["#f8fafc", "#f9fafb", "#f4f4f5", "#fafaf9", "#f5f5f7", "#ffffff"];
+  }
+  return themeMode === "dark"
+    ? ["#ffffff", "#f8fafc", "#e2e8f0", "#cbd5e1", "#94a3b8", "#90a9cb"]
+    : ["#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8"];
+};
+
 export function SettingsView({
   theme,
   setTheme,
@@ -27,22 +44,7 @@ export function SettingsView({
     { key: "--text-secondary", label: "Secondary Text", defaultDark: "#90a9cb", defaultLight: "#475569" },
   ];
 
-  const getPresetsForVariable = (variable: string, themeMode: "light" | "dark") => {
-    if (variable === "--accent-primary" || variable === "--accent-glow") {
-      return [
-        "#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#ef4444", "#f97316",
-        "#f59e0b", "#10b981", "#14b8a6", "#64748b", "#1b1c1d", "#f8fafc"
-      ];
-    }
-    if (variable.includes("--bg-")) {
-      return themeMode === "dark"
-        ? ["#1b1c1d", "#141b2b", "#0f172a", "#1e1e2e", "#121212", "#18181b"]
-        : ["#f8fafc", "#f9fafb", "#f4f4f5", "#fafaf9", "#f5f5f7", "#ffffff"];
-    }
-    return themeMode === "dark"
-      ? ["#ffffff", "#f8fafc", "#e2e8f0", "#cbd5e1", "#94a3b8", "#90a9cb"]
-      : ["#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8"];
-  };
+
 
   const friendsApi = (api as any).friends;
   const profile = useQuery(friendsApi.getProfile);
@@ -327,19 +329,10 @@ export function SettingsView({
                       key={v.key}
                       type="button"
                       onClick={() => setActiveVariable(v.key)}
+                      className="theme-customization-btn"
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "10px 14px",
                         background: isEditing ? "var(--accent-light)" : "var(--bg-primary)",
                         border: isEditing ? "1px solid var(--accent-primary)" : "1px solid var(--border-subtle)",
-                        borderRadius: "var(--radius-md)",
-                        cursor: "pointer",
-                        transition: "all var(--transition-fast)",
-                        width: "100%",
-                        fontFamily: "inherit",
-                        color: "inherit",
                       }}
                     >
                       <span style={{ fontSize: "0.88rem", fontWeight: 500, color: isEditing ? "var(--accent-primary)" : "var(--text-primary)" }}>
@@ -512,20 +505,11 @@ export function SettingsView({
         </div>
 
         {/* Section 4: Legal & About */}
-        <div style={{
-          marginTop: 24,
-          padding: "24px 0 12px 0",
-          borderTop: "1px solid var(--border-subtle)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 10,
-          textAlign: "center"
-        }}>
+        <div className="settings-legal-footer">
           <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
             <button 
               type="button"
-              style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", fontSize: "0.82rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
+              className="legal-link-btn"
               onClick={() => setShowLegal("privacy")}
               id="privacy-link"
             >
@@ -533,14 +517,14 @@ export function SettingsView({
             </button>
             <button 
               type="button"
-              style={{ background: "none", border: "none", color: "var(--accent-primary)", font: "inherit", fontSize: "0.82rem", cursor: "pointer", textDecoration: "underline", padding: 0 }}
+              className="legal-link-btn"
               onClick={() => setShowLegal("terms")}
               id="terms-link"
             >
               Terms of Service
             </button>
           </div>
-          <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+          <span suppressHydrationWarning style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
             © {new Date().getFullYear()} Study Calendar. All rights reserved.
           </span>
         </div>
