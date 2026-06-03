@@ -20,6 +20,7 @@ export function SettingsView({
 }) {
   const COLOR_VARIABLES = [
     { key: "--accent-primary", label: "Primary Accent", defaultDark: "#3b82f6", defaultLight: "#2563eb" },
+    { key: "--accent-glow", label: "Button Glow Shadow", defaultDark: "#3b82f6", defaultLight: "#2563eb" },
     { key: "--bg-primary", label: "App Background", defaultDark: "#1b1c1d", defaultLight: "#f8fafc" },
     { key: "--bg-secondary", label: "Sidebar & Card Background", defaultDark: "#141b2b", defaultLight: "#ffffff" },
     { key: "--text-primary", label: "Primary Text", defaultDark: "#ffffff", defaultLight: "#0f172a" },
@@ -27,7 +28,7 @@ export function SettingsView({
   ];
 
   const getPresetsForVariable = (variable: string, themeMode: "light" | "dark") => {
-    if (variable === "--accent-primary") {
+    if (variable === "--accent-primary" || variable === "--accent-glow") {
       return [
         "#3b82f6", "#6366f1", "#8b5cf6", "#ec4899", "#ef4444", "#f97316",
         "#f59e0b", "#10b981", "#14b8a6", "#64748b", "#1b1c1d", "#f8fafc"

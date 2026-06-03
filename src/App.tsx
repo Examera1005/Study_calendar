@@ -505,9 +505,9 @@ export default function App() {
                 type="button"
                 className="btn btn-primary floating-timer-start-btn"
                 onClick={startStopwatch}
-                style={{ display: "flex", alignItems: "center", gap: 8, boxShadow: "var(--shadow-md)" }}
+                style={{ display: "flex", alignItems: "center", gap: 8 }}
               >
-                ⏱️ Start Session
+                <span className="timer-emoji">⏱️</span> Start Session
               </button>
             )}
           </div>

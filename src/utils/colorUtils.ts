@@ -290,10 +290,23 @@ export function applyThemeCustomizations(theme: "light" | "dark") {
 
   const customizations = loadCustomizations(theme);
 
+  // 1. Determine base primary accent and set default glow
+  const baseAccent = customizations["--accent-primary"] || (theme === "light" ? "#2563eb" : "#3b82f6");
+  const baseRgb = hexToRgb(baseAccent);
+  if (baseRgb) {
+    const defaultGlowOpacity = theme === "light" ? 0.25 : 0.35;
+    const defaultSubtleGlowOpacity = theme === "light" ? 0.1 : 0.15;
+    document.documentElement.style.setProperty("--accent-glow", `rgba(${baseRgb.r}, ${baseRgb.g}, ${baseRgb.b}, ${defaultGlowOpacity})`);
+    document.documentElement.style.setProperty("--accent-glow-subtle", `rgba(${baseRgb.r}, ${baseRgb.g}, ${baseRgb.b}, ${defaultSubtleGlowOpacity})`);
+  }
+
   for (const [variable, value] of Object.entries(customizations)) {
     if (!value) continue;
 
-    document.documentElement.style.setProperty(variable, value);
+    // Do not set the raw hex of --accent-glow directly, we format it as rgba below
+    if (variable !== "--accent-glow" && variable !== "--accent-glow-subtle") {
+      document.documentElement.style.setProperty(variable, value);
+    }
 
     // Dependent properties for accent/primary colors
     if (variable === "--accent-primary") {
@@ -310,6 +323,17 @@ export function applyThemeCustomizations(theme: "light" | "dark") {
 
       document.documentElement.style.setProperty("--accent-gradient", `linear-gradient(135deg, ${value}, ${hoverColor})`);
       document.documentElement.style.setProperty("--accent-gradient-hover", `linear-gradient(135deg, ${hoverColor}, ${evenDarker})`);
+    }
+
+    // Explicit override if user customized the glow color
+    if (variable === "--accent-glow") {
+      const rgb = hexToRgb(value);
+      if (rgb) {
+        const glowOpacity = theme === "light" ? 0.25 : 0.35;
+        const subtleGlowOpacity = theme === "light" ? 0.1 : 0.15;
+        document.documentElement.style.setProperty("--accent-glow", `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${glowOpacity})`);
+        document.documentElement.style.setProperty("--accent-glow-subtle", `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${subtleGlowOpacity})`);
+      }
     }
 
     // Dependent properties for background secondary
