@@ -116,11 +116,17 @@ export function SettingsView({
 
   // Username form state
   const [usernameInput, setUsernameInput] = useState("");
-  const [isChecking, setIsChecking] = useState(false);
-  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const [usernameError, setUsernameError] = useState("");
+  const [{ isChecking, isAvailable, error: usernameError }, setCheckState] = useState({
+    isChecking: false,
+    isAvailable: null as boolean | null,
+    error: "",
+  });
   const [saveSuccess, setSaveSuccess] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+
+  const updateUsernameCheckState = (next: Partial<{ isChecking: boolean; isAvailable: boolean | null; error: string }>) => {
+    setCheckState(prev => ({ ...prev, ...next }));
+  };
 
   // Block by handle state
   const [blockHandleInput, setBlockHandleInput] = useState("");
@@ -148,29 +154,24 @@ export function SettingsView({
     const currentClean = profile.username.replace("@", "");
 
     if (cleanInput === currentClean) {
-      setIsAvailable(true);
-      setUsernameError("");
+      updateUsernameCheckState({ isAvailable: true, error: "", isChecking: false });
       return;
     }
 
     if (cleanInput.length < 3) {
-      setIsAvailable(false);
-      setUsernameError("Username must be at least 3 characters.");
+      updateUsernameCheckState({ isAvailable: false, error: "Username must be at least 3 characters.", isChecking: false });
       return;
     }
 
     const hasInvalid = /[^a-z0-9_]/.test(cleanInput);
     if (hasInvalid) {
-      setIsAvailable(false);
-      setUsernameError("Only letters, numbers, and underscores allowed.");
+      updateUsernameCheckState({ isAvailable: false, error: "Only letters, numbers, and underscores allowed.", isChecking: false });
       return;
     }
 
-    setIsChecking(true);
-    setIsAvailable(null);
-    setUsernameError("");
+    updateUsernameCheckState({ isChecking: true, isAvailable: null, error: "" });
 
-    const delay = setTimeout(async () => {
+    const delay = window.setTimeout(async () => {
       try {
         // We call the check mutation or query directly
         const formatted = "@" + cleanInput;
@@ -178,14 +179,14 @@ export function SettingsView({
         const available = await (api as any).friends.checkUsernameAvailable({
           username: formatted,
         });
-        setIsAvailable(available);
-        if (!available) {
-          setUsernameError("Handle is already taken.");
-        }
+        updateUsernameCheckState({
+          isAvailable: available,
+          error: available ? "" : "Handle is already taken.",
+          isChecking: false
+        });
       } catch (err) {
         console.error(err);
-      } finally {
-        setIsChecking(false);
+        updateUsernameCheckState({ isChecking: false });
       }
     }, 400);
 
@@ -206,7 +207,7 @@ export function SettingsView({
       setSaveSuccess("Profile handle updated successfully!");
       setTimeout(() => setSaveSuccess(""), 3000);
     } catch (err: any) {
-      setUsernameError(err.message || "Failed to update profile.");
+      setCheckState(prev => ({ ...prev, error: err.message || "Failed to update profile." }));
     } finally {
       setIsSaving(false);
     }

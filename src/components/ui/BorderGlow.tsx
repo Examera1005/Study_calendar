@@ -69,10 +69,13 @@ function animateValue({ start = 0, end = 100, duration = 1000, delay = 0, ease =
   setTimeout(() => requestAnimationFrame(tick), delay);
 }
 
+const DEFAULT_STYLE: React.CSSProperties = {};
+const DEFAULT_COLORS = ['#c084fc', '#f472b6', '#38bdf8'];
+
 const BorderGlow: React.FC<BorderGlowProps> = ({
   children,
   className = '',
-  style = {},
+  style = DEFAULT_STYLE,
   edgeSensitivity = 10,
   glowColor = '40 80 80',
   backgroundColor = '#120F17',
@@ -81,7 +84,7 @@ const BorderGlow: React.FC<BorderGlowProps> = ({
   glowIntensity = 2.9,
   coneSpread = 13,
   animated = true,
-  colors = ['#c084fc', '#f472b6', '#38bdf8'],
+  colors = DEFAULT_COLORS,
   fillOpacity = 0.5,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);

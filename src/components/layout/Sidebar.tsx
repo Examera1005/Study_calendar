@@ -131,7 +131,7 @@ export function Sidebar({
 
         <div className="sidebar-footer-info" style={{
           marginTop: 10,
-          fontSize: "0.7rem",
+          fontSize: "0.75rem",
           color: "var(--text-muted)",
           textAlign: "center",
           display: "flex",

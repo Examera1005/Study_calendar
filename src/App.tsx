@@ -213,12 +213,12 @@ export default function App() {
     let timerInterval: any = null;
 
     if (pomodoroStatus === "running") {
-      timerInterval = setInterval(() => {
+      timerInterval = window.setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
             clearInterval(timerInterval);
             // Trigger timer complete asynchronously to prevent infinite state update loops
-            setTimeout(() => handleTimerComplete(), 0);
+            window.setTimeout(() => handleTimerComplete(), 0);
             return 0;
           }
           return prev - 1;
@@ -475,12 +475,12 @@ export default function App() {
                   {stopwatchStatus === "running" ? (
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <span className="pulse-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--danger)" }} />
-                      <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--danger)" }}>STUDYING LIVE</span>
+                      <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--danger)" }}>STUDYING LIVE</span>
                     </div>
                   ) : (
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--warning)" }} />
-                      <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--warning)" }}>PAUSED</span>
+                      <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--warning)" }}>PAUSED</span>
                     </div>
                   )}
                   <div style={{ fontSize: "1.2rem", fontWeight: 800, fontFamily: "monospace", color: "var(--text-primary)" }}>

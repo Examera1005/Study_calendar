@@ -161,7 +161,7 @@ export function PomodoroView({
               {formatSeconds(timeLeft)}
             </span>
             <span style={{
-              fontSize: "0.7rem",
+              fontSize: "0.75rem",
               color: "var(--text-muted)",
               fontWeight: 500
             }}>

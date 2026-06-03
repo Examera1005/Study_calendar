@@ -147,7 +147,7 @@ export function FriendsView() {
               placeholder="e.g. math_wizard"
               required
             />
-            <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 4, display: "block" }}>
+            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 4, display: "block" }}>
               Only letters, numbers, and underscores allowed. We will automatically prepend "@".
             </span>
           </div>
@@ -309,7 +309,7 @@ export function FriendsView() {
                               <span
                                 key={sub.name}
                                 style={{
-                                  fontSize: "0.72rem",
+                                  fontSize: "0.75rem",
                                   padding: "2px 8px",
                                   borderRadius: "var(--radius-md)",
                                   background: sub.color + "1A",
@@ -329,7 +329,7 @@ export function FriendsView() {
 
                         {/* Upcoming exams */}
                         {user.upcomingExams.length > 0 && (
-                          <div style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: 8, display: "flex", gap: 10 }}>
+                          <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: 8, display: "flex", gap: 10 }}>
                             <strong>Preparing for:</strong>
                             {user.upcomingExams.map((ex: any) => (
                               <span key={ex.title}>
@@ -631,7 +631,7 @@ export function FriendsView() {
                   >
                     <div style={{ minWidth: 150 }}>
                       <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{friend.username}</div>
-                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)", marginTop: 4 }}>
+                      <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 4 }}>
                         🔒 End-to-End Cryptography Active
                       </div>
                     </div>
@@ -708,7 +708,7 @@ export function FriendsView() {
                         </div>
                         <div
                           style={{
-                            fontSize: "0.7rem",
+                            fontSize: "0.75rem",
                             marginTop: 6,
                             display: "inline-block",
                             padding: "1px 6px",

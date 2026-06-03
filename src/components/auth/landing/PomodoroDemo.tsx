@@ -1,44 +1,81 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useReducer, useEffect, useRef } from "react";
 import { playSynthSound } from "./sound";
 
+interface PomoState {
+  minutes: number;
+  running: boolean;
+  logs: { id: number; time: string; label: string }[];
+}
+
+type PomoAction =
+  | { type: "TICK" }
+  | { type: "START_PAUSE" }
+  | { type: "RESET" };
+
+function pomoReducer(state: PomoState, action: PomoAction): PomoState {
+  switch (action.type) {
+    case "TICK": {
+      if (state.minutes <= 1) {
+        playSynthSound("success");
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+        return {
+          ...state,
+          running: false,
+          minutes: 25,
+          logs: [
+            {
+              id: Date.now(),
+              time: timeStr,
+              label: "Mock Log: Completed Focus Session (25m)"
+            },
+            ...state.logs
+          ]
+        };
+      }
+      playSynthSound("tick");
+      return {
+        ...state,
+        minutes: state.minutes - 1
+      };
+    }
+    case "START_PAUSE": {
+      playSynthSound("click");
+      return {
+        ...state,
+        running: !state.running
+      };
+    }
+    case "RESET": {
+      playSynthSound("click");
+      return {
+        ...state,
+        running: false,
+        minutes: 25
+      };
+    }
+    default:
+      return state;
+  }
+}
+
 export function PomodoroDemo() {
-  const [pomoMinutes, setPomoMinutes] = useState(25);
-  const [pomoRunning, setPomoRunning] = useState(false);
-  const [pomoLogs, setPomoLogs] = useState<{ id: number; time: string; label: string }[]>([
-    { id: 1, time: "10:15", label: "Completed Chemistry prep (25m)" }
-  ]);
+  const [state, dispatch] = useReducer(pomoReducer, {
+    minutes: 25,
+    running: false,
+    logs: [
+      { id: 1, time: "10:15", label: "Completed Chemistry prep (25m)" }
+    ]
+  });
+
+  const { minutes: pomoMinutes, running: pomoRunning, logs: pomoLogs } = state;
   const pomoTimerRef = useRef<any>(null);
 
   useEffect(() => {
     if (pomoRunning) {
-      pomoTimerRef.current = setInterval(() => {
-        setPomoMinutes((prevMins) => {
-          if (prevMins <= 1) {
-            // Complete timer!
-            if (pomoTimerRef.current) {
-              clearInterval(pomoTimerRef.current);
-              pomoTimerRef.current = null;
-            }
-            setPomoRunning(false);
-            playSynthSound("success");
-            
-            // Add study log entry
-            const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-            setPomoLogs((prev) => [
-              {
-                id: Date.now(),
-                time: timeStr,
-                label: "Mock Log: Completed Focus Session (25m)"
-              },
-              ...prev
-            ]);
-            return 25;
-          }
-          playSynthSound("tick");
-          return prevMins - 1;
-        });
-      }, 1000); // 1 tick per second: counts down 25 virtual minutes in exactly 25 seconds
+      pomoTimerRef.current = window.setInterval(() => {
+        dispatch({ type: "TICK" });
+      }, 1000);
     } else {
       if (pomoTimerRef.current) {
         clearInterval(pomoTimerRef.current);
@@ -55,14 +92,11 @@ export function PomodoroDemo() {
   }, [pomoRunning]);
 
   const handleStartPomo = () => {
-    playSynthSound("click");
-    setPomoRunning((prev) => !prev);
+    dispatch({ type: "START_PAUSE" });
   };
 
   const handleResetPomo = () => {
-    playSynthSound("click");
-    setPomoRunning(false);
-    setPomoMinutes(25);
+    dispatch({ type: "RESET" });
   };
 
   // Radial progress calculations

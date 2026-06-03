@@ -114,7 +114,7 @@ export function LandingPage() {
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontWeight: 600, color: "#fff" }}>Alice (Online)</div>
-                <div style={{ fontSize: "0.72rem", color: "#10b981" }}>Studying Database Systems</div>
+                <div style={{ fontSize: "0.75rem", color: "#10b981" }}>Studying Database Systems</div>
               </div>
               <span style={{ fontSize: "1.1rem" }}>⚡ 5d</span>
             </div>

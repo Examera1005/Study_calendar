@@ -414,7 +414,7 @@ export function AnalyticsView() {
                   border: "1px solid var(--border-medium)",
                   borderRadius: "var(--radius-sm)",
                   padding: "4px 8px",
-                  fontSize: "0.72rem",
+                  fontSize: "0.75rem",
                   color: "var(--text-primary)",
                   boxShadow: "var(--shadow-md)",
                   pointerEvents: "none",
@@ -574,7 +574,7 @@ export function AnalyticsView() {
                         transition: "width 0.4s ease",
                       }} />
                     </div>
-                    <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text-muted)", minWidth: 40, textAlign: "right" }}>
+                    <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-muted)", minWidth: 40, textAlign: "right" }}>
                       {badge.unlocked
                         ? `${badge.target}/${badge.target}`
                         : `${Math.round(badge.current)}/${badge.target}`}

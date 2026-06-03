@@ -335,7 +335,7 @@ export function Dashboard({
           <div className="stat-label" style={{ display: "flex", justifyContent: "space-between" }}>
             <span>{activeDate === today ? "Study Time Today" : "Study Time for Day"}</span>
             {yesterdayLogs !== undefined && (
-              <span style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>
+              <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
                 {activeDate === today ? "VS  Yesterday" : "VS  Previous Day"}
               </span>
             )}
@@ -519,7 +519,7 @@ export function Dashboard({
                     {allLogs !== undefined && (
                       <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                         {renderPercentageBadge(comparisonData.totalChangePct)}
-                        <span style={{ fontSize: "0.68rem", color: "var(--text-muted)" }}>vs last week</span>
+                        <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>vs last week</span>
                       </div>
                     )}
                   </div>
