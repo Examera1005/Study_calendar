@@ -35,7 +35,7 @@ export function ExamsView() {
 
 
 
-  const sorted = [...(exams ?? [])].sort(
+  const sorted = (exams ?? []).toSorted(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 

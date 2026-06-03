@@ -21,6 +21,13 @@ const formatSeconds = (totalSecs: number) => {
   return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 };
 
+const PRESETS = [
+  { label: "Classique (25m / 5m)", work: 25, break: 5 },
+  { label: "Productif (50m / 10m)", work: 50, break: 10 },
+  { label: "Sprint (15m / 3m)", work: 15, break: 3 },
+  { label: "Continu (30m / 0m)", work: 30, break: 0 },
+];
+
 export function PomodoroView({
   pomodoroStatus,
   pomodoroMode,
@@ -49,13 +56,7 @@ export function PomodoroView({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - progressPercent * circumference;
 
-  // Preset Configurations
-  const presets = [
-    { label: "Classique (25m / 5m)", work: 25, break: 5 },
-    { label: "Productif (50m / 10m)", work: 50, break: 10 },
-    { label: "Sprint (15m / 3m)", work: 15, break: 3 },
-    { label: "Continu (30m / 0m)", work: 30, break: 0 },
-  ];
+
 
   const handlePresetSelect = (w: number, b: number) => {
     if (pomodoroStatus !== "idle") {
@@ -218,12 +219,12 @@ export function PomodoroView({
               disabled={pomodoroStatus !== "idle"}
               onChange={(e) => setWorkDuration(Number(e.target.value))}
               aria-label="Work duration in minutes"
+              className="pomodoro-range-input"
               style={{
                 width: "100%",
                 height: 6,
                 background: "var(--bg-primary)",
                 borderRadius: 3,
-                outline: "none",
                 cursor: pomodoroStatus === "idle" ? "pointer" : "not-allowed",
                 opacity: pomodoroStatus === "idle" ? 1 : 0.5
               }}
@@ -247,12 +248,12 @@ export function PomodoroView({
               disabled={pomodoroStatus !== "idle"}
               onChange={(e) => setBreakDuration(Number(e.target.value))}
               aria-label="Break duration in minutes"
+              className="pomodoro-range-input"
               style={{
                 width: "100%",
                 height: 6,
                 background: "var(--bg-primary)",
                 borderRadius: 3,
-                outline: "none",
                 cursor: pomodoroStatus === "idle" ? "pointer" : "not-allowed",
                 opacity: pomodoroStatus === "idle" ? 1 : 0.5
               }}
@@ -270,9 +271,9 @@ export function PomodoroView({
             gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
             gap: 10
           }}>
-            {presets.map((preset, idx) => (
+            {PRESETS.map((preset) => (
               <button
-                key={idx}
+                key={preset.label}
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => handlePresetSelect(preset.work, preset.break)}
