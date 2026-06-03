@@ -33,7 +33,7 @@ export function SubjectsView() {
         {!subjects || subjects.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">📚</div>
-            <p>No subjects yet — add your courses to get started</p>
+            <p>No subjects yet. Add your courses to get started!</p>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -67,6 +67,7 @@ export function SubjectsView() {
                   type="button"
                   className="btn-icon"
                   style={{ width: 28, height: 28 }}
+                  aria-label={`Delete ${s.name}`}
                   onClick={() => {
                     if (confirm(`Delete "${s.name}"?`)) {
                       void removeSubject({ id: s._id });
@@ -97,15 +98,15 @@ export function SubjectsView() {
             }}
           >
             <div className="form-group">
-              <label>Name</label>
-              <input name="name" required placeholder="Mathematics" />
+              <label htmlFor="add-subject-name">Name</label>
+              <input id="add-subject-name" name="name" required placeholder="Mathematics" />
             </div>
             <div className="form-group">
-              <label>Icon (emoji)</label>
-              <input name="icon" placeholder="📐" maxLength={4} />
+              <label htmlFor="add-subject-icon">Icon (emoji)</label>
+              <input id="add-subject-icon" name="icon" placeholder="📐" maxLength={4} />
             </div>
             <div className="form-group">
-              <label>Color</label>
+              <span className="form-label">Color</span>
               <ColorPicker value={newColor} onChange={setNewColor} />
             </div>
             <div className="modal-actions">
@@ -132,15 +133,15 @@ export function SubjectsView() {
             }}
           >
             <div className="form-group">
-              <label>Name</label>
-              <input name="name" required defaultValue={editingSubject.name} />
+              <label htmlFor="edit-subject-name">Name</label>
+              <input id="edit-subject-name" name="name" required defaultValue={editingSubject.name} />
             </div>
             <div className="form-group">
-              <label>Icon (emoji)</label>
-              <input name="icon" defaultValue={editingSubject.icon ?? ""} maxLength={4} />
+              <label htmlFor="edit-subject-icon">Icon (emoji)</label>
+              <input id="edit-subject-icon" name="icon" defaultValue={editingSubject.icon ?? ""} maxLength={4} />
             </div>
             <div className="form-group">
-              <label>Color</label>
+              <span className="form-label">Color</span>
               <ColorPicker value={editColor} onChange={setEditColor} />
             </div>
             <div className="modal-actions">

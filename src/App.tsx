@@ -369,7 +369,7 @@ export default function App() {
         )}
         <div className={`app-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
           <div className="mobile-header">
-            <button type="button" className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
+            <button type="button" className="hamburger-btn" aria-label="Open navigation menu" onClick={() => setSidebarOpen(true)}>
               <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -538,6 +538,7 @@ export default function App() {
                   min="1"
                   value={sessionMinutes}
                   onChange={(e) => setSessionMinutes(Math.max(1, Number(e.target.value)))}
+                  aria-label="Study duration in minutes"
                   style={{
                     width: "110px",
                     textAlign: "center",
@@ -556,13 +557,13 @@ export default function App() {
               </div>
             </div>
             <div className="form-group">
-              <label>What did you study?</label>
-              <textarea name="content" required placeholder="Summarize your study session progress..." rows={3} />
+              <label htmlFor="session-log-content">What did you study?</label>
+              <textarea id="session-log-content" name="content" required placeholder="Summarize your study session progress..." rows={3} />
             </div>
             {subjects && subjects.length > 0 && (
               <div className="form-group">
-                <label>Subject</label>
-                <select name="subjectId" defaultValue="">
+                <label htmlFor="session-log-subject">Subject</label>
+                <select id="session-log-subject" name="subjectId" defaultValue="">
                   <option value="">None</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>{s.icon} {s.name}</option>

@@ -230,6 +230,7 @@ export function PomodoroView({
               value={workDuration}
               disabled={pomodoroStatus !== "idle"}
               onChange={(e) => setWorkDuration(Number(e.target.value))}
+              aria-label="Work duration in minutes"
               style={{
                 width: "100%",
                 height: 6,
@@ -258,6 +259,7 @@ export function PomodoroView({
               value={breakDuration}
               disabled={pomodoroStatus !== "idle"}
               onChange={(e) => setBreakDuration(Number(e.target.value))}
+              aria-label="Break duration in minutes"
               style={{
                 width: "100%",
                 height: 6,

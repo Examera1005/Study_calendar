@@ -235,6 +235,7 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
             max={360}
             value={hsv.h}
             onChange={(e) => handleHueChange(Number(e.target.value))}
+            aria-label="Color hue"
             style={{
               width: "100%",
               height: 10,
@@ -265,6 +266,7 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
             value={hexInput}
             onChange={handleHexInputChange}
             placeholder="#3B82F6"
+            aria-label="Hex color code"
             style={{
               padding: "6px 8px",
               fontSize: "0.85rem",
@@ -291,6 +293,7 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
                 key={preset}
                 type="button"
                 onClick={() => handlePresetSelect(preset)}
+                aria-label={`Select color ${preset}`}
                 style={{
                   width: "100%",
                   paddingTop: "100%", // 1:1 Aspect ratio square

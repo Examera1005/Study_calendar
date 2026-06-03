@@ -52,6 +52,7 @@ export function Sidebar({
           type="button"
           className="sidebar-collapse-toggle"
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{ transition: "transform var(--transition-normal)", transform: sidebarCollapsed ? "rotate(180deg)" : "none" }}>

@@ -45,11 +45,11 @@ export function DailyLogView({
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-        <button type="button" className="btn-icon" onClick={() => navDate(-1)}>◀</button>
+        <button type="button" className="btn-icon" aria-label="Previous day" onClick={() => navDate(-1)}>◀</button>
         <h2 style={{ fontSize: "1.1rem" }}>
           {format(new Date(selectedDate + "T00:00:00"), "EEEE, MMMM d, yyyy")}
         </h2>
-        <button type="button" className="btn-icon" onClick={() => navDate(1)}>▶</button>
+        <button type="button" className="btn-icon" aria-label="Next day" onClick={() => navDate(1)}>▶</button>
         <button
           type="button"
           className="btn btn-secondary btn-sm"
@@ -87,8 +87,8 @@ export function DailyLogView({
                   </div>
                 </div>
                 <div className="item-actions" style={{ display: "flex", gap: 4 }}>
-                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingLog(log)}>✏️</button>
-                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeLog({ id: log._id })}>🗑</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Edit log: ${log.content}`} onClick={() => setEditingLog(log)}>✏️</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Delete log: ${log.content}`} onClick={() => void removeLog({ id: log._id })}>🗑</button>
                 </div>
               </div>
             );
@@ -112,17 +112,17 @@ export function DailyLogView({
             }}
           >
             <div className="form-group">
-              <label>What did you study?</label>
-              <textarea name="content" required placeholder="Reviewed chapter 5 on thermodynamics..." />
+              <label htmlFor="add-log-content">What did you study?</label>
+              <textarea id="add-log-content" name="content" required placeholder="Reviewed chapter 5 on thermodynamics..." />
             </div>
             <div className="form-group">
-              <label>Duration (minutes)</label>
-              <input name="duration" type="number" min="1" placeholder="45" />
+              <label htmlFor="add-log-duration">Duration (minutes)</label>
+              <input id="add-log-duration" name="duration" type="number" min="1" placeholder="45" />
             </div>
             {subjects && subjects.length > 0 && (
               <div className="form-group">
-                <label>Subject (optional)</label>
-                <select name="subjectId" defaultValue="">
+                <label htmlFor="add-log-subject">Subject (optional)</label>
+                <select id="add-log-subject" name="subjectId" defaultValue="">
                   <option value="">None</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
@@ -154,17 +154,17 @@ export function DailyLogView({
             }}
           >
             <div className="form-group">
-              <label>What did you study?</label>
-              <textarea name="content" defaultValue={editingLog.content} required />
+              <label htmlFor="edit-log-content">What did you study?</label>
+              <textarea id="edit-log-content" name="content" defaultValue={editingLog.content} required />
             </div>
             <div className="form-group">
-              <label>Duration (minutes)</label>
-              <input name="duration" type="number" min="1" defaultValue={editingLog.duration} />
+              <label htmlFor="edit-log-duration">Duration (minutes)</label>
+              <input id="edit-log-duration" name="duration" type="number" min="1" defaultValue={editingLog.duration} />
             </div>
             {subjects && subjects.length > 0 && (
               <div className="form-group">
-                <label>Subject</label>
-                <select name="subjectId" defaultValue={editingLog.subjectId || ""}>
+                <label htmlFor="edit-log-subject">Subject</label>
+                <select id="edit-log-subject" name="subjectId" defaultValue={editingLog.subjectId || ""}>
                   <option value="">None</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>{s.icon} {s.name}</option>

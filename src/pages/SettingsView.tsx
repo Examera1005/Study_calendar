@@ -411,10 +411,11 @@ export function SettingsView({
           ) : (
             <form onSubmit={handleSaveUsername}>
               <div className="form-group" style={{ marginBottom: 16 }}>
-                <label>Change @username</label>
+                <label htmlFor="settings-username">Change @username</label>
                 <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
                   <span style={{ position: "absolute", left: 12, color: "var(--text-muted)", fontWeight: 600 }}>@</span>
                   <input
+                    id="settings-username"
                     type="text"
                     value={usernameInput}
                     onChange={(e) => setUsernameInput(e.target.value)}
@@ -465,6 +466,7 @@ export function SettingsView({
               placeholder="Block user by @username..."
               value={blockHandleInput}
               onChange={(e) => setBlockHandleInput(e.target.value)}
+              aria-label="Block user by username"
               style={{ flex: 1 }}
               required
             />

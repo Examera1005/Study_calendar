@@ -59,7 +59,7 @@ function EditTaskModal({
         }}
       >
         <div className="form-group">
-          <label>Type</label>
+          <span className="form-label">Type</span>
           <div className="task-tabs" style={{ marginBottom: 0 }}>
             <button
               type="button"
@@ -78,17 +78,18 @@ function EditTaskModal({
           </div>
         </div>
         <div className="form-group">
-          <label>Title</label>
-          <input name="title" defaultValue={task.title} required />
+          <label htmlFor="edit-task-title">Title</label>
+          <input id="edit-task-title" name="title" defaultValue={task.title} required />
         </div>
         <div className="form-group">
-          <label>Description</label>
-          <textarea name="description" defaultValue={task.description} />
+          <label htmlFor="edit-task-description">Description</label>
+          <textarea id="edit-task-description" name="description" defaultValue={task.description} />
         </div>
         {editType === "daily" && (
           <div className="form-group">
-            <label>Date</label>
+            <label htmlFor="edit-task-date">Date</label>
             <input
+              id="edit-task-date"
               name="date"
               type="date"
               defaultValue={task.date || selectedDate}
@@ -97,8 +98,8 @@ function EditTaskModal({
           </div>
         )}
         <div className="form-group">
-          <label>Priority</label>
-          <select name="priority" defaultValue={task.priority}>
+          <label htmlFor="edit-task-priority">Priority</label>
+          <select id="edit-task-priority" name="priority" defaultValue={task.priority}>
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
@@ -106,8 +107,9 @@ function EditTaskModal({
         </div>
         {subjects && subjects.length > 0 && (
           <div className="form-group">
-            <label>Subject</label>
+            <label htmlFor="edit-task-subject">Subject</label>
             <select
+              id="edit-task-subject"
               name="subjectId"
               defaultValue={task.subjectId || ""}
             >
@@ -234,6 +236,7 @@ export function TasksView({
             type="button"
             className="btn-icon"
             style={{ width: 28, height: 28 }}
+            aria-label={`Edit ${task.title}`}
             onClick={() => setEditingTask(task)}
           >
             ✏️
@@ -242,6 +245,7 @@ export function TasksView({
             type="button"
             className="btn-icon"
             style={{ width: 28, height: 28 }}
+            aria-label={`Delete ${task.title}`}
             onClick={() => void removeTask({ id: task._id })}
           >
             🗑
@@ -312,7 +316,7 @@ export function TasksView({
       {/* Date navigation — for daily and done tabs */}
       {(activeTab === "daily" || activeTab === "done") && (
         <div className="tasks-date-nav">
-          <button type="button" className="btn-icon" onClick={() => navDate(-1)}>
+          <button type="button" className="btn-icon" aria-label="Previous day" onClick={() => navDate(-1)}>
             ◀
           </button>
           <h2 style={{ fontSize: "1.1rem" }}>
@@ -321,7 +325,7 @@ export function TasksView({
               "EEEE, MMMM d, yyyy",
             )}
           </h2>
-          <button type="button" className="btn-icon" onClick={() => navDate(1)}>
+          <button type="button" className="btn-icon" aria-label="Next day" onClick={() => navDate(1)}>
             ▶
           </button>
           <button
@@ -340,7 +344,7 @@ export function TasksView({
       {activeTab === "general" && (
         <div style={{ marginBottom: 20 }}>
           <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-            These tasks aren't tied to any specific day — your ongoing to-do
+            These tasks aren't tied to any specific day: your ongoing to-do
             list.
           </p>
         </div>
@@ -453,7 +457,7 @@ export function TasksView({
             }}
           >
             <div className="form-group">
-              <label>Type</label>
+              <span className="form-label">Type</span>
               <div className="task-tabs" style={{ marginBottom: 0 }}>
                 <button
                   type="button"
@@ -473,16 +477,16 @@ export function TasksView({
               <input type="hidden" name="taskType" value={activeTab} />
             </div>
             <div className="form-group">
-              <label>Title</label>
-              <input name="title" required />
+              <label htmlFor="add-task-title">Title</label>
+              <input id="add-task-title" name="title" required />
             </div>
             <div className="form-group">
-              <label>Description</label>
-              <textarea name="description" />
+              <label htmlFor="add-task-description">Description</label>
+              <textarea id="add-task-description" name="description" />
             </div>
             <div className="form-group">
-              <label>Priority</label>
-              <select name="priority" defaultValue="medium">
+              <label htmlFor="add-task-priority">Priority</label>
+              <select id="add-task-priority" name="priority" defaultValue="medium">
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
@@ -490,8 +494,8 @@ export function TasksView({
             </div>
             {subjects && subjects.length > 0 && (
               <div className="form-group">
-                <label>Subject (optional)</label>
-                <select name="subjectId" defaultValue="">
+                <label htmlFor="add-task-subject">Subject (optional)</label>
+                <select id="add-task-subject" name="subjectId" defaultValue="">
                   <option value="">None</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>

@@ -58,7 +58,7 @@ export function ExamsView() {
         <div className="card">
           <div className="empty-state">
             <div className="empty-icon">🎯</div>
-            <p>No exams yet — add your first exam above</p>
+            <p>No exams yet. Add your first exam above!</p>
           </div>
         </div>
       ) : (
@@ -111,8 +111,8 @@ export function ExamsView() {
                           ✓ Done
                         </button>
                       )}
-                      <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingExam(exam)}>✏️</button>
-                      <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeExam({ id: exam._id })}>🗑</button>
+                      <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Edit ${exam.title}`} onClick={() => setEditingExam(exam)}>✏️</button>
+                      <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Delete ${exam.title}`} onClick={() => void removeExam({ id: exam._id })}>🗑</button>
                     </div>
                   </div>
                 </div>
@@ -139,12 +139,12 @@ export function ExamsView() {
             }}
           >
             <div className="form-group">
-              <label>Title</label>
-              <input name="title" required placeholder="Final Exam" />
+              <label htmlFor="add-exam-title">Title</label>
+              <input id="add-exam-title" name="title" required placeholder="Final Exam" />
             </div>
             <div className="form-group">
-              <label>Subject</label>
-              <select name="subjectId" required>
+              <label htmlFor="add-exam-subject">Subject</label>
+              <select id="add-exam-subject" name="subjectId" required>
                 <option value="">Select a subject</option>
                 {subjects.map((s) => (
                   <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
@@ -153,17 +153,17 @@ export function ExamsView() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <div className="form-group">
-                <label>Date</label>
-                <input name="date" type="date" required />
+                <label htmlFor="add-exam-date">Date</label>
+                <input id="add-exam-date" name="date" type="date" required />
               </div>
               <div className="form-group">
-                <label>Coefficient</label>
-                <input name="coefficient" type="number" step="0.5" min="0.5" defaultValue="1" required />
+                <label htmlFor="add-exam-coeff">Coefficient</label>
+                <input id="add-exam-coeff" name="coefficient" type="number" step="0.5" min="0.5" defaultValue="1" required />
               </div>
             </div>
             <div className="form-group">
-              <label>Notes (optional)</label>
-              <textarea name="notes" placeholder="Chapters to review..." />
+              <label htmlFor="add-exam-notes">Notes (optional)</label>
+              <textarea id="add-exam-notes" name="notes" placeholder="Chapters to review..." />
             </div>
             <div className="modal-actions">
               <button type="button" className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>
@@ -192,12 +192,12 @@ export function ExamsView() {
             }}
           >
             <div className="form-group">
-              <label>Title</label>
-              <input name="title" defaultValue={editingExam.title} required placeholder="Final Exam" />
+              <label htmlFor="edit-exam-title">Title</label>
+              <input id="edit-exam-title" name="title" defaultValue={editingExam.title} required placeholder="Final Exam" />
             </div>
             <div className="form-group">
-              <label>Subject</label>
-              <select name="subjectId" defaultValue={editingExam.subjectId} required>
+              <label htmlFor="edit-exam-subject">Subject</label>
+              <select id="edit-exam-subject" name="subjectId" defaultValue={editingExam.subjectId} required>
                 <option value="">Select a subject</option>
                 {subjects.map((s) => (
                   <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
@@ -206,30 +206,30 @@ export function ExamsView() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <div className="form-group">
-                <label>Date</label>
-                <input name="date" type="date" defaultValue={editingExam.date} required />
+                <label htmlFor="edit-exam-date">Date</label>
+                <input id="edit-exam-date" name="date" type="date" defaultValue={editingExam.date} required />
               </div>
               <div className="form-group">
-                <label>Coefficient</label>
-                <input name="coefficient" type="number" step="0.5" min="0.5" defaultValue={editingExam.coefficient} required />
+                <label htmlFor="edit-exam-coeff">Coefficient</label>
+                <input id="edit-exam-coeff" name="coefficient" type="number" step="0.5" min="0.5" defaultValue={editingExam.coefficient} required />
               </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <div className="form-group">
-                <label>Status</label>
-                <select name="completed" defaultValue={editingExam.completed ? "true" : "false"}>
+                <label htmlFor="edit-exam-status">Status</label>
+                <select id="edit-exam-status" name="completed" defaultValue={editingExam.completed ? "true" : "false"}>
                   <option value="false">Upcoming</option>
                   <option value="true">Completed</option>
                 </select>
               </div>
               <div className="form-group">
-                <label>Grade (optional)</label>
-                <input name="grade" type="number" step="0.1" defaultValue={editingExam.grade} placeholder="e.g. 16" />
+                <label htmlFor="edit-exam-grade">Grade (optional)</label>
+                <input id="edit-exam-grade" name="grade" type="number" step="0.1" defaultValue={editingExam.grade} placeholder="e.g. 16" />
               </div>
             </div>
             <div className="form-group">
-              <label>Notes (optional)</label>
-              <textarea name="notes" defaultValue={editingExam.notes || ""} placeholder="Chapters to review..." />
+              <label htmlFor="edit-exam-notes">Notes (optional)</label>
+              <textarea id="edit-exam-notes" name="notes" defaultValue={editingExam.notes || ""} placeholder="Chapters to review..." />
             </div>
             <div className="modal-actions">
               <button type="button" className="btn btn-secondary" onClick={() => setEditingExam(null)}>Cancel</button>

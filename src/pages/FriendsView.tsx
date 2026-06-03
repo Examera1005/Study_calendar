@@ -138,8 +138,9 @@ export function FriendsView() {
 
         <form onSubmit={handleCreateProfile}>
           <div className="form-group">
-            <label>Choose @username</label>
+            <label htmlFor="friends-username">Choose @username</label>
             <input
+              id="friends-username"
               type="text"
               value={usernameInput}
               onChange={(e) => setUsernameInput(e.target.value)}
@@ -393,7 +394,7 @@ export function FriendsView() {
                       type="button"
                       className="mobile-back-btn"
                       onClick={() => setActiveChatFriend(null)}
-                      title="Back to conversations list"
+                      aria-label="Back to conversations list"
                     >
                       ⬅️
                     </button>
@@ -434,6 +435,7 @@ export function FriendsView() {
                     placeholder="Type an encrypted message..."
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
+                    aria-label="Type an encrypted message"
                     required
                   />
                   <button type="submit" className="btn btn-primary">Send</button>
@@ -466,6 +468,7 @@ export function FriendsView() {
                   placeholder="Search @username..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search friends by username"
                   style={{
                     flex: 1,
                     padding: "8px 12px",

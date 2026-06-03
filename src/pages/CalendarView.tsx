@@ -145,7 +145,7 @@ export function CalendarView({
       <div className="calendar-header">
         <h2>{format(currentMonth, "MMMM yyyy")}</h2>
         <div className="calendar-nav">
-          <button type="button" className="btn-icon" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+          <button type="button" className="btn-icon" aria-label="Previous month" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
             ◀
           </button>
           <button
@@ -158,7 +158,7 @@ export function CalendarView({
           >
             Today
           </button>
-          <button type="button" className="btn-icon" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+          <button type="button" className="btn-icon" aria-label="Next month" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
             ▶
           </button>
         </div>
@@ -287,8 +287,8 @@ export function CalendarView({
                   {task.description && <div className="task-desc">{task.description}</div>}
                 </div>
                 <div className="item-actions" style={{ display: "flex", gap: 4 }}>
-                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingTask(task)}>✏️</button>
-                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeTask({ id: task._id })}>🗑</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Edit ${task.title}`} onClick={() => setEditingTask(task)}>✏️</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Delete ${task.title}`} onClick={() => void removeTask({ id: task._id })}>🗑</button>
                 </div>
               </div>
             ))
@@ -308,7 +308,7 @@ export function CalendarView({
                   <div className="event-title">{ev.title}</div>
                 </div>
                 <div className="item-actions">
-                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeEvent({ id: ev._id })}>🗑</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Delete ${ev.title}`} onClick={() => void removeEvent({ id: ev._id })}>🗑</button>
                 </div>
               </div>
             ))
@@ -333,8 +333,8 @@ export function CalendarView({
                     </div>
                   </div>
                   <div className="item-actions" style={{ display: "flex", gap: 4 }}>
-                    <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => setEditingLog(log)}>✏️</button>
-                    <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => void removeLog({ id: log._id })}>🗑</button>
+                    <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Edit study log: ${log.content}`} onClick={() => setEditingLog(log)}>✏️</button>
+                    <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Delete study log: ${log.content}`} onClick={() => void removeLog({ id: log._id })}>🗑</button>
                   </div>
                 </div>
               );
@@ -362,16 +362,16 @@ export function CalendarView({
             }}
           >
             <div className="form-group">
-              <label>Title</label>
-              <input name="title" required />
+              <label htmlFor="cal-add-task-title">Title</label>
+              <input id="cal-add-task-title" name="title" required />
             </div>
             <div className="form-group">
-              <label>Description</label>
-              <textarea name="description" />
+              <label htmlFor="cal-add-task-desc">Description</label>
+              <textarea id="cal-add-task-desc" name="description" />
             </div>
             <div className="form-group">
-              <label>Priority</label>
-              <select name="priority" defaultValue="medium">
+              <label htmlFor="cal-add-task-priority">Priority</label>
+              <select id="cal-add-task-priority" name="priority" defaultValue="medium">
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
@@ -379,8 +379,8 @@ export function CalendarView({
             </div>
             {subjects && subjects.length > 0 && (
               <div className="form-group">
-                <label>Subject (optional)</label>
-                <select name="subjectId" defaultValue="">
+                <label htmlFor="cal-add-task-subject">Subject (optional)</label>
+                <select id="cal-add-task-subject" name="subjectId" defaultValue="">
                   <option value="">None</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
@@ -414,22 +414,22 @@ export function CalendarView({
             }}
           >
             <div className="form-group">
-              <label>Title</label>
-              <input name="title" required />
+              <label htmlFor="cal-add-event-title">Title</label>
+              <input id="cal-add-event-title" name="title" required />
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <div className="form-group">
-                <label>Start Time</label>
-                <input name="startTime" type="time" />
+                <label htmlFor="cal-add-event-start">Start Time</label>
+                <input id="cal-add-event-start" name="startTime" type="time" />
               </div>
               <div className="form-group">
-                <label>End Time</label>
-                <input name="endTime" type="time" />
+                <label htmlFor="cal-add-event-end">End Time</label>
+                <input id="cal-add-event-end" name="endTime" type="time" />
               </div>
             </div>
             <div className="form-group">
-              <label>Description</label>
-              <textarea name="description" />
+              <label htmlFor="cal-add-event-desc">Description</label>
+              <textarea id="cal-add-event-desc" name="description" />
             </div>
             <div className="modal-actions">
               <button type="button" className="btn btn-secondary" onClick={() => setShowEventModal(false)}>Cancel</button>
@@ -456,17 +456,17 @@ export function CalendarView({
             }}
           >
             <div className="form-group">
-              <label>What did you study?</label>
-              <textarea name="content" required />
+              <label htmlFor="cal-add-log-content">What did you study?</label>
+              <textarea id="cal-add-log-content" name="content" required />
             </div>
             <div className="form-group">
-              <label>Duration (minutes)</label>
-              <input name="duration" type="number" min="1" />
+              <label htmlFor="cal-add-log-duration">Duration (minutes)</label>
+              <input id="cal-add-log-duration" name="duration" type="number" min="1" />
             </div>
             {subjects && subjects.length > 0 && (
               <div className="form-group">
-                <label>Subject (optional)</label>
-                <select name="subjectId" defaultValue="">
+                <label htmlFor="cal-add-log-subject">Subject (optional)</label>
+                <select id="cal-add-log-subject" name="subjectId" defaultValue="">
                   <option value="">None</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
@@ -500,20 +500,20 @@ export function CalendarView({
             }}
           >
             <div className="form-group">
-              <label>Title</label>
-              <input name="title" defaultValue={editingTask.title} required />
+              <label htmlFor="cal-edit-task-title">Title</label>
+              <input id="cal-edit-task-title" name="title" defaultValue={editingTask.title} required />
             </div>
             <div className="form-group">
-              <label>Description</label>
-              <textarea name="description" defaultValue={editingTask.description} />
+              <label htmlFor="cal-edit-task-desc">Description</label>
+              <textarea id="cal-edit-task-desc" name="description" defaultValue={editingTask.description} />
             </div>
             <div className="form-group">
-              <label>Date</label>
-              <input name="date" type="date" defaultValue={editingTask.date} required />
+              <label htmlFor="cal-edit-task-date">Date</label>
+              <input id="cal-edit-task-date" name="date" type="date" defaultValue={editingTask.date} required />
             </div>
             <div className="form-group">
-              <label>Priority</label>
-              <select name="priority" defaultValue={editingTask.priority}>
+              <label htmlFor="cal-edit-task-priority">Priority</label>
+              <select id="cal-edit-task-priority" name="priority" defaultValue={editingTask.priority}>
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
@@ -521,8 +521,8 @@ export function CalendarView({
             </div>
             {subjects && subjects.length > 0 && (
               <div className="form-group">
-                <label>Subject</label>
-                <select name="subjectId" defaultValue={editingTask.subjectId || ""}>
+                <label htmlFor="cal-edit-task-subject">Subject</label>
+                <select id="cal-edit-task-subject" name="subjectId" defaultValue={editingTask.subjectId || ""}>
                   <option value="">None</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
@@ -554,17 +554,17 @@ export function CalendarView({
             }}
           >
             <div className="form-group">
-              <label>What did you study?</label>
-              <textarea name="content" defaultValue={editingLog.content} required />
+              <label htmlFor="cal-edit-log-content">What did you study?</label>
+              <textarea id="cal-edit-log-content" name="content" defaultValue={editingLog.content} required />
             </div>
             <div className="form-group">
-              <label>Duration (minutes)</label>
-              <input name="duration" type="number" min="1" defaultValue={editingLog.duration} />
+              <label htmlFor="cal-edit-log-duration">Duration (minutes)</label>
+              <input id="cal-edit-log-duration" name="duration" type="number" min="1" defaultValue={editingLog.duration} />
             </div>
             {subjects && subjects.length > 0 && (
               <div className="form-group">
-                <label>Subject</label>
-                <select name="subjectId" defaultValue={editingLog.subjectId || ""}>
+                <label htmlFor="cal-edit-log-subject">Subject</label>
+                <select id="cal-edit-log-subject" name="subjectId" defaultValue={editingLog.subjectId || ""}>
                   <option value="">None</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
