@@ -1527,6 +1527,23 @@ select { cursor: pointer; appearance: none;
   transform: scale(1.15);
 }
 
+.color-picker-slider:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.pomodoro-range-input:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.donut-slice {
+  transform: rotate(-90deg);
+  transform-origin: 80px 80px;
+  cursor: pointer;
+  transition: stroke-width 150ms ease;
+}
+
 /* ========== FLOATING TIMER WIDGET ========== */
 .floating-timer-widget {
   position: fixed;
@@ -2919,6 +2936,10 @@ select { cursor: pointer; appearance: none;
   display: flex;
   flex-direction: column;
   -webkit-font-smoothing: antialiased;
+  will-change: auto;
+}
+.tilt-card-glow:hover {
+  will-change: transform;
 }
 
 .tilt-card-inner {
@@ -2926,6 +2947,10 @@ select { cursor: pointer; appearance: none;
   display: flex;
   flex-direction: column;
   flex: 1;
+  will-change: auto;
+}
+.tilt-card-inner:hover {
+  will-change: transform;
 }
 
 .friend-row-card {

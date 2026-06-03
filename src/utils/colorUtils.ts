@@ -16,7 +16,7 @@ export interface HSL {
   l: number; // 0-100
 }
 
-export const CUSTOMIZABLE_VARIABLES = [
+const CUSTOMIZABLE_VARIABLES = [
   "--accent-primary",
   "--accent-hover",
   "--accent-light",
@@ -46,7 +46,7 @@ export function hexToRgb(hex: string): RGB | null {
 }
 
 // Convert RGB to Hex
-export function rgbToHex(r: number, g: number, b: number): string {
+function rgbToHex(r: number, g: number, b: number): string {
   const toHex = (c: number) => {
     const hex = Math.max(0, Math.min(255, Math.round(c))).toString(16);
     return hex.length === 1 ? "0" + hex : hex;
@@ -55,7 +55,7 @@ export function rgbToHex(r: number, g: number, b: number): string {
 }
 
 // Convert RGB to HSV
-export function rgbToHsv(r: number, g: number, b: number): HSV {
+function rgbToHsv(r: number, g: number, b: number): HSV {
   r /= 255;
   g /= 255;
   b /= 255;
@@ -88,7 +88,7 @@ export function rgbToHsv(r: number, g: number, b: number): HSV {
 }
 
 // Convert HSV to RGB
-export function hsvToRgb(h: number, s: number, v: number): RGB {
+function hsvToRgb(h: number, s: number, v: number): RGB {
   h /= 360;
   s /= 100;
   v /= 100;
@@ -153,7 +153,7 @@ export function hsvToHex(h: number, s: number, v: number): string {
 }
 
 // Adjust lightness of a hex color
-export function adjustColorLightness(hex: string, amount: number): string {
+function adjustColorLightness(hex: string, amount: number): string {
   // Amount is a percentage change: e.g. -10 for 10% darker, +10 for 10% lighter
   const rgb = hexToRgb(hex);
   if (!rgb) return hex;

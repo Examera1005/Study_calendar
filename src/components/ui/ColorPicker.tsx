@@ -35,12 +35,13 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
   const svContainerRef = useRef<HTMLButtonElement>(null);
   const isDragging = useRef(false);
 
-  // Sync state if color prop changes externally
-  useEffect(() => {
-    const nextHsv = hexToHsv(normalizedColor);
-    setHsv(nextHsv);
+  // Sync state if color prop changes externally (render-phase reset)
+  const prevColorRef = useRef(normalizedColor);
+  if (normalizedColor !== prevColorRef.current) {
+    prevColorRef.current = normalizedColor;
+    setHsv(hexToHsv(normalizedColor));
     setHexInput(normalizedColor.toUpperCase());
-  }, [normalizedColor]);
+  }
 
   // Update both state and parent callback
   const updateColor = (newHsv: { h: number; s: number; v: number }) => {
@@ -102,7 +103,7 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
     };
 
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
-    window.addEventListener("touchend", handleTouchEnd);
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
   };
 
   const handleHueChange = (hue: number) => {
@@ -217,7 +218,6 @@ export function ColorPicker({ color, value, onChange, presets = DEFAULT_PRESETS 
               borderRadius: 5,
               background: "linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)",
               appearance: "none",
-              outline: "none",
               cursor: "pointer",
             }}
             className="color-picker-slider"

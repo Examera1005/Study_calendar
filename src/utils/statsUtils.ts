@@ -9,7 +9,7 @@ export interface Badge {
 }
 
 // Format local date string as YYYY-MM-DD
-export function getLocalDateString(d: Date = new Date()): string {
+function getLocalDateString(d: Date = new Date()): string {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
@@ -22,9 +22,12 @@ export function calculateStreak(logs: { date: string; duration?: number }[]): nu
 
   // Extract unique study dates with duration > 0
   const studyDates = new Set(
-    logs
-      .filter((l) => l.duration && l.duration > 0)
-      .map((l) => l.date)
+    logs.reduce<string[]>((acc, l) => {
+      if (l.duration && l.duration > 0) {
+        acc.push(l.date);
+      }
+      return acc;
+    }, [])
   );
 
   if (studyDates.size === 0) return 0;

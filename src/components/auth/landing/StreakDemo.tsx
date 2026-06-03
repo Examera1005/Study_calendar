@@ -42,7 +42,7 @@ export function StreakDemo() {
             </div>
             
             {showBadge ? (
-              <div className="lp-badge-unlocked" style={{ animation: "lpScaleIn 300ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
+              <div className="lp-badge-unlocked" style={{ animation: "lpScaleIn 300ms cubic-bezier(0.16, 1, 0.3, 1)" }}>
                 🏆 Unlocked: Academic Champion (5d)
               </div>
             ) : (

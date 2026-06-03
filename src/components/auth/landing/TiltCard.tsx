@@ -92,7 +92,6 @@ export function TiltCard({
         ? "transform 0.15s cubic-bezier(0.25, 1, 0.5, 1)" 
         : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)");
   const cardTransformStyle = disableTilt ? "flat" : "preserve-3d";
-  const cardWillChange = disableTilt ? "auto" : "transform";
   const cardBackface = disableTilt ? "visible" : "hidden";
 
   return (
@@ -119,7 +118,6 @@ export function TiltCard({
           transform: cardTransform,
           transition: cardTransition,
           transformStyle: cardTransformStyle as any,
-          willChange: cardWillChange,
           backfaceVisibility: cardBackface as any,
         }}
       >
@@ -128,7 +126,6 @@ export function TiltCard({
           style={{ 
             transform: disableTilt ? "none" : "translateZ(20px)", 
             transformStyle: cardTransformStyle as any, 
-            willChange: cardWillChange,
             backfaceVisibility: cardBackface as any
           }}
         >
