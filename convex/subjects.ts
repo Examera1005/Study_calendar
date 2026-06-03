@@ -69,11 +69,14 @@ export const remove = mutation({
       .query("exams")
       .withIndex("by_userId", (q) => q.eq("userId", userId))
       .collect();
-    for (const exam of examsToDelete) {
-      if (exam.subjectId === args.id) {
-        await ctx.db.delete(exam._id);
-      }
-    }
+    await Promise.all(
+      examsToDelete.reduce<Promise<any>[]>((acc, exam) => {
+        if (exam.subjectId === args.id) {
+          acc.push(ctx.db.delete(exam._id));
+        }
+        return acc;
+      }, [])
+    );
 
     // 2. Unset subjectId for tasks
     const tasksToUpdate = await ctx.db
@@ -81,9 +84,9 @@ export const remove = mutation({
       .withIndex("by_userId", (q) => q.eq("userId", userId))
       .filter((q) => q.eq(q.field("subjectId"), args.id))
       .collect();
-    for (const task of tasksToUpdate) {
-      await ctx.db.patch(task._id, { subjectId: undefined });
-    }
+    await Promise.all(
+      tasksToUpdate.map((task) => ctx.db.patch(task._id, { subjectId: undefined }))
+    );
 
     // 3. Unset subjectId for events
     const eventsToUpdate = await ctx.db
@@ -91,9 +94,9 @@ export const remove = mutation({
       .withIndex("by_userId_and_date", (q) => q.eq("userId", userId))
       .filter((q) => q.eq(q.field("subjectId"), args.id))
       .collect();
-    for (const ev of eventsToUpdate) {
-      await ctx.db.patch(ev._id, { subjectId: undefined });
-    }
+    await Promise.all(
+      eventsToUpdate.map((ev) => ctx.db.patch(ev._id, { subjectId: undefined }))
+    );
 
     // 4. Unset subjectId for dailyLogs
     const logsToUpdate = await ctx.db
@@ -101,9 +104,9 @@ export const remove = mutation({
       .withIndex("by_userId_and_date", (q) => q.eq("userId", userId))
       .filter((q) => q.eq(q.field("subjectId"), args.id))
       .collect();
-    for (const log of logsToUpdate) {
-      await ctx.db.patch(log._id, { subjectId: undefined });
-    }
+    await Promise.all(
+      logsToUpdate.map((log) => ctx.db.patch(log._id, { subjectId: undefined }))
+    );
 
     // Finally delete the subject itself
     await ctx.db.delete(args.id);

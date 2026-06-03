@@ -5,18 +5,20 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 
 // Helper to check if two users have blocked each other
 async function hasBlock(ctx: any, user1: string, user2: string) {
-  const b1 = await ctx.db
-    .query("blocks")
-    .withIndex("by_userId_and_blockedUserId", (q: any) =>
-      q.eq("userId", user1).eq("blockedUserId", user2)
-    )
-    .first();
-  const b2 = await ctx.db
-    .query("blocks")
-    .withIndex("by_userId_and_blockedUserId", (q: any) =>
-      q.eq("userId", user2).eq("blockedUserId", user1)
-    )
-    .first();
+  const [b1, b2] = await Promise.all([
+    ctx.db
+      .query("blocks")
+      .withIndex("by_userId_and_blockedUserId", (q: any) =>
+        q.eq("userId", user1).eq("blockedUserId", user2)
+      )
+      .first(),
+    ctx.db
+      .query("blocks")
+      .withIndex("by_userId_and_blockedUserId", (q: any) =>
+        q.eq("userId", user2).eq("blockedUserId", user1)
+      )
+      .first()
+  ]);
   return !!(b1 || b2);
 }
 
@@ -26,18 +28,20 @@ async function assertIsFriends(ctx: any, user1: string, user2: string) {
   if (await hasBlock(ctx, user1, user2)) {
     throw new Error("Blocked.");
   }
-  const friendship = await ctx.db
-    .query("friendships")
-    .withIndex("by_user1_and_user2", (q: any) =>
-      q.eq("user1", user1).eq("user2", user2)
-    )
-    .first();
-  const friendshipReverse = await ctx.db
-    .query("friendships")
-    .withIndex("by_user1_and_user2", (q: any) =>
-      q.eq("user1", user2).eq("user2", user1)
-    )
-    .first();
+  const [friendship, friendshipReverse] = await Promise.all([
+    ctx.db
+      .query("friendships")
+      .withIndex("by_user1_and_user2", (q: any) =>
+        q.eq("user1", user1).eq("user2", user2)
+      )
+      .first(),
+    ctx.db
+      .query("friendships")
+      .withIndex("by_user1_and_user2", (q: any) =>
+        q.eq("user1", user2).eq("user2", user1)
+      )
+      .first()
+  ]);
 
   const f = friendship || friendshipReverse;
   if (!f || f.status !== "accepted") {
@@ -127,12 +131,12 @@ export const searchProfile = query({
       .take(50);
 
     const results = [];
-    for (const p of matches) {
-      if (p.userId === userId) continue;
-      // Filter out if blocked
-      const blocked = await hasBlock(ctx, userId, p.userId);
-      if (!blocked) {
-        results.push(p);
+    const blockChecks = await Promise.all(
+      matches.map((p) => (p.userId === userId ? Promise.resolve(true) : hasBlock(ctx, userId, p.userId)))
+    );
+    for (let i = 0; i < matches.length; i++) {
+      if (!blockChecks[i]) {
+        results.push(matches[i]);
       }
     }
     return results;
@@ -169,19 +173,20 @@ export const sendFriendRequest = mutation({
     }
 
     // Check if friendship already exists
-    const friendship = await ctx.db
-      .query("friendships")
-      .withIndex("by_user1_and_user2", (q) =>
-        q.eq("user1", userId).eq("user2", targetProfile.userId)
-      )
-      .first();
-
-    const friendshipReverse = await ctx.db
-      .query("friendships")
-      .withIndex("by_user1_and_user2", (q) =>
-        q.eq("user1", targetProfile.userId).eq("user2", userId)
-      )
-      .first();
+    const [friendship, friendshipReverse] = await Promise.all([
+      ctx.db
+        .query("friendships")
+        .withIndex("by_user1_and_user2", (q) =>
+          q.eq("user1", userId).eq("user2", targetProfile.userId)
+        )
+        .first(),
+      ctx.db
+        .query("friendships")
+        .withIndex("by_user1_and_user2", (q) =>
+          q.eq("user1", targetProfile.userId).eq("user2", userId)
+        )
+        .first()
+    ]);
 
     if (friendship || friendshipReverse) {
       throw new Error("Friend request is already pending or accepted.");
@@ -202,15 +207,16 @@ export const getFriendships = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return { accepted: [], pendingReceived: [], pendingSent: [] };
 
-    const f1 = await ctx.db
-      .query("friendships")
-      .withIndex("by_user1", (q) => q.eq("user1", userId))
-      .collect();
-
-    const f2 = await ctx.db
-      .query("friendships")
-      .withIndex("by_user2", (q) => q.eq("user2", userId))
-      .collect();
+    const [f1, f2] = await Promise.all([
+      ctx.db
+        .query("friendships")
+        .withIndex("by_user1", (q) => q.eq("user1", userId))
+        .collect(),
+      ctx.db
+        .query("friendships")
+        .withIndex("by_user2", (q) => q.eq("user2", userId))
+        .collect()
+    ]);
 
     const allFriendships = [...f1, ...f2];
 
@@ -218,34 +224,38 @@ export const getFriendships = query({
     const pendingReceived: any[] = [];
     const pendingSent: any[] = [];
 
-    for (const f of allFriendships) {
-      const otherUserId = f.user1 === userId ? f.user2 : f.user1;
-      
-      // Filter out if blocked
-      if (await hasBlock(ctx, userId, otherUserId)) {
-        continue;
-      }
+    const items = await Promise.all(
+      allFriendships.map(async (f) => {
+        const otherUserId = f.user1 === userId ? f.user2 : f.user1;
+        const [blocked, otherProfile] = await Promise.all([
+          hasBlock(ctx, userId, otherUserId),
+          ctx.db
+            .query("userProfiles")
+            .withIndex("by_userId", (q) => q.eq("userId", otherUserId))
+            .unique()
+        ]);
+        if (blocked || !otherProfile) return null;
+        return {
+          friendshipId: f._id,
+          userId: otherUserId,
+          username: otherProfile.username,
+          publicKey: otherProfile.publicKey,
+          status: f.status,
+          senderId: f.senderId,
+        };
+      })
+    );
 
-      const otherProfile = await ctx.db
-        .query("userProfiles")
-        .withIndex("by_userId", (q) => q.eq("userId", otherUserId))
-        .unique();
-
-      if (!otherProfile) continue;
-
-      const item = {
-        friendshipId: f._id,
-        userId: otherUserId,
-        username: otherProfile.username,
-        publicKey: otherProfile.publicKey,
-      };
-
-      if (f.status === "accepted") {
-        accepted.push(item);
-      } else if (f.senderId === userId) {
-        pendingSent.push(item);
+    for (const item of items) {
+      if (!item) continue;
+      const { friendshipId, userId: uid, username, publicKey, status, senderId } = item;
+      const formatted = { friendshipId, userId: uid, username, publicKey };
+      if (status === "accepted") {
+        accepted.push(formatted);
+      } else if (senderId === userId) {
+        pendingSent.push(formatted);
       } else {
-        pendingReceived.push(item);
+        pendingReceived.push(formatted);
       }
     }
 
@@ -295,26 +305,29 @@ export const getFriendsLeaderboard = query({
     if (!userId) return [];
 
     // Get all friends
-    const f1 = await ctx.db
-      .query("friendships")
-      .withIndex("by_user1", (q) => q.eq("user1", userId))
-      .collect();
-    const f2 = await ctx.db
-      .query("friendships")
-      .withIndex("by_user2", (q) => q.eq("user2", userId))
-      .collect();
+    const [f1, f2] = await Promise.all([
+      ctx.db
+        .query("friendships")
+        .withIndex("by_user1", (q) => q.eq("user1", userId))
+        .collect(),
+      ctx.db
+        .query("friendships")
+        .withIndex("by_user2", (q) => q.eq("user2", userId))
+        .collect()
+    ]);
 
-    const acceptedFriendCandidates = [...f1, ...f2]
-      .filter((f) => f.status === "accepted")
-      .map((f) => (f.user1 === userId ? f.user2 : f.user1));
+    const acceptedFriendCandidates = [...f1, ...f2].reduce<string[]>((acc, f) => {
+      if (f.status === "accepted") {
+        acc.push(f.user1 === userId ? f.user2 : f.user1);
+      }
+      return acc;
+    }, []);
 
     // Filter out any blocked users (defense-in-depth)
-    const acceptedFriends: string[] = [];
-    for (const friendId of acceptedFriendCandidates) {
-      if (!(await hasBlock(ctx, userId, friendId))) {
-        acceptedFriends.push(friendId);
-      }
-    }
+    const blockChecks = await Promise.all(
+      acceptedFriendCandidates.map((friendId) => hasBlock(ctx, userId, friendId))
+    );
+    const acceptedFriends = acceptedFriendCandidates.filter((_, idx) => !blockChecks[idx]);
 
     // Include self
     const userIds = [userId, ...acceptedFriends];
@@ -330,72 +343,80 @@ export const getFriendsLeaderboard = query({
 
     const leaderboard: any[] = [];
 
-    for (const uid of userIds) {
-      const profile = await ctx.db
-        .query("userProfiles")
-        .withIndex("by_userId", (q) => q.eq("userId", uid))
-        .unique();
+    const userDetails = await Promise.all(
+      userIds.map(async (uid) => {
+        const profile = await ctx.db
+          .query("userProfiles")
+          .withIndex("by_userId", (q) => q.eq("userId", uid))
+          .unique();
 
-      if (!profile) continue;
+        if (!profile) return null;
 
-      // Query study logs in the past 7 days
-      const logs = await ctx.db
-        .query("dailyLogs")
-        .withIndex("by_userId_and_date", (q) =>
-          q.eq("userId", uid).gte("date", minDate)
-        )
-        .collect();
+        // Query study logs in the past 7 days
+        const logs = await ctx.db
+          .query("dailyLogs")
+          .withIndex("by_userId_and_date", (q) =>
+            q.eq("userId", uid).gte("date", minDate)
+          )
+          .collect();
 
-      let totalDuration = 0;
-      const subjectsStudiedMap = new Map<string, number>();
+        let totalDuration = 0;
+        const subjectsStudiedMap = new Map<string, number>();
 
-      for (const log of logs) {
-        if (log.duration) {
-          totalDuration += log.duration;
-          if (log.subjectId) {
-            subjectsStudiedMap.set(
-              log.subjectId,
-              (subjectsStudiedMap.get(log.subjectId) || 0) + log.duration
-            );
+        for (const log of logs) {
+          if (log.duration) {
+            totalDuration += log.duration;
+            if (log.subjectId) {
+              subjectsStudiedMap.set(
+                log.subjectId,
+                (subjectsStudiedMap.get(log.subjectId) || 0) + log.duration
+              );
+            }
           }
         }
-      }
 
-      // Convert subject durations to details
-      const subjectDetails: any[] = [];
-      for (const [subId, dur] of subjectsStudiedMap.entries()) {
-        const sub = await ctx.db.get(subId as Id<"subjects">);
-        if (sub) {
-          subjectDetails.push({
-            name: sub.name,
-            icon: sub.icon,
-            color: sub.color,
-            duration: dur,
-          });
-        }
-      }
+        // Convert subject durations to details
+        const subjectDetailsRaw = await Promise.all(
+          Array.from(subjectsStudiedMap.entries()).map(async ([subId, dur]) => {
+            const sub = await ctx.db.get(subId as Id<"subjects">);
+            if (sub) {
+              return {
+                name: sub.name,
+                icon: sub.icon,
+                color: sub.color,
+                duration: dur,
+              };
+            }
+            return null;
+          })
+        );
+        const subjectDetails = subjectDetailsRaw.filter(Boolean);
 
-      // Query exams for this user to show "what exams they are preparing for"
-      const exams = await ctx.db
-        .query("exams")
-        .withIndex("by_userId", (q) => q.eq("userId", uid))
-        .collect();
+        // Query exams for this user to show "what exams they are preparing for"
+        const exams = await ctx.db
+          .query("exams")
+          .withIndex("by_userId", (q) => q.eq("userId", uid))
+          .collect();
 
-      const upcomingExams = exams
-        .filter((e) => !e.completed)
-        .map((e) => ({
-          title: e.title,
-          date: e.date,
-        }))
-        .slice(0, 3); // top 3 upcoming exams
+        const upcomingExams = exams.reduce<{ title: string; date: string }[]>((acc, e) => {
+          if (!e.completed && acc.length < 3) {
+            acc.push({ title: e.title, date: e.date });
+          }
+          return acc;
+        }, []);
 
-      leaderboard.push({
-        userId: uid,
-        username: profile.username,
-        totalDuration,
-        subjectsStudied: subjectDetails,
-        upcomingExams,
-      });
+        return {
+          userId: uid,
+          username: profile.username,
+          totalDuration,
+          subjectsStudied: subjectDetails,
+          upcomingExams,
+        };
+      })
+    );
+
+    for (const d of userDetails) {
+      if (d) leaderboard.push(d);
     }
 
     // Sort descending by total study minutes
@@ -418,16 +439,17 @@ export const getFriendExams = query({
       .collect();
 
     // Map subject details
-    const result: any[] = [];
-    for (const exam of exams) {
-      const subject = await ctx.db.get(exam.subjectId);
-      result.push({
-        ...exam,
-        subjectName: subject?.name || "Unknown",
-        subjectIcon: subject?.icon || "📚",
-        subjectColor: subject?.color || "#94a3b8",
-      });
-    }
+    const result = await Promise.all(
+      exams.map(async (exam) => {
+        const subject = await ctx.db.get(exam.subjectId);
+        return {
+          ...exam,
+          subjectName: subject?.name || "Unknown",
+          subjectIcon: subject?.icon || "📚",
+          subjectColor: subject?.color || "#94a3b8",
+        };
+      })
+    );
 
     return result;
   },
@@ -492,21 +514,21 @@ export const getMessages = query({
 
     await assertIsFriends(ctx, userId, args.friendUserId);
 
-    // Messages where A sent to B
-    const sent = await ctx.db
-      .query("messages")
-      .withIndex("by_conversation", (q) =>
-        q.eq("senderId", userId).eq("receiverId", args.friendUserId)
-      )
-      .collect();
-
-    // Messages where B sent to A
-    const received = await ctx.db
-      .query("messages")
-      .withIndex("by_conversation", (q) =>
-        q.eq("senderId", args.friendUserId).eq("receiverId", userId)
-      )
-      .collect();
+    // Messages where A sent to B and B sent to A in parallel
+    const [sent, received] = await Promise.all([
+      ctx.db
+        .query("messages")
+        .withIndex("by_conversation", (q) =>
+          q.eq("senderId", userId).eq("receiverId", args.friendUserId)
+        )
+        .collect(),
+      ctx.db
+        .query("messages")
+        .withIndex("by_conversation", (q) =>
+          q.eq("senderId", args.friendUserId).eq("receiverId", userId)
+        )
+        .collect()
+    ]);
 
     return [...sent, ...received].sort((a, b) => a.timestamp - b.timestamp);
   },
@@ -635,19 +657,23 @@ export const getBlockedUsers = query({
       .withIndex("by_userId", (q) => q.eq("userId", userId))
       .collect();
 
-    const results = [];
-    for (const b of blocks) {
-      const profile = await ctx.db
-        .query("userProfiles")
-        .withIndex("by_userId", (q) => q.eq("userId", b.blockedUserId))
-        .unique();
-      if (profile) {
-        results.push({
-          userId: profile.userId,
-          username: profile.username,
+    const profiles = await Promise.all(
+      blocks.map((b) =>
+        ctx.db
+          .query("userProfiles")
+          .withIndex("by_userId", (q) => q.eq("userId", b.blockedUserId))
+          .unique()
+      )
+    );
+    const results = profiles.reduce<{ userId: string; username: string }[]>((acc, p) => {
+      if (p) {
+        acc.push({
+          userId: p.userId,
+          username: p.username,
         });
       }
-    }
+      return acc;
+    }, []);
     return results;
   },
 });
