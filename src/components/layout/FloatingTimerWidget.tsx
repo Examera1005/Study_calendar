@@ -1,3 +1,5 @@
+import type { TimerCorner } from "../settings/TimerWidgetSettingsCard";
+
 type Props = {
   status: "idle" | "running" | "paused";
   elapsedSeconds: number;
@@ -5,6 +7,8 @@ type Props = {
   onPause: () => void;
   onResume: () => void;
   onStop: () => void;
+  corner?: TimerCorner;
+  scale?: number;
 };
 
 function formatElapsed(totalSeconds: number): string {
@@ -17,10 +21,41 @@ function formatElapsed(totalSeconds: number): string {
   return `${minutes}:${seconds}`;
 }
 
-export function FloatingTimerWidget({ status, elapsedSeconds, onStart, onPause, onResume, onStop }: Props) {
+function getPositionStyle(corner: TimerCorner): React.CSSProperties {
+  const pos: React.CSSProperties = { position: "fixed", zIndex: 1000 };
+  if (corner.includes("bottom")) {
+    pos.bottom = 24;
+  } else {
+    pos.top = 24;
+  }
+  if (corner.includes("right")) {
+    pos.right = 24;
+  } else {
+    pos.left = 24;
+  }
+  return pos;
+}
+
+export function FloatingTimerWidget({
+  status,
+  elapsedSeconds,
+  onStart,
+  onPause,
+  onResume,
+  onStop,
+  corner = "bottom-right",
+  scale = 1,
+}: Props) {
+  const positionStyle = getPositionStyle(corner);
+  const widgetStyle: React.CSSProperties = {
+    ...positionStyle,
+    transform: scale !== 1 ? `scale(${scale})` : undefined,
+    transformOrigin: corner.replace("-", " "),
+  };
+
   if (status === "idle") {
     return (
-      <div className="floating-timer-widget">
+      <div className="floating-timer-widget" style={widgetStyle}>
         <button
           type="button"
           className="btn btn-primary floating-timer-start-btn"
@@ -34,7 +69,7 @@ export function FloatingTimerWidget({ status, elapsedSeconds, onStart, onPause, 
   }
 
   return (
-    <div className="floating-timer-widget">
+    <div className="floating-timer-widget" style={widgetStyle}>
       <div className="floating-timer-active">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
           {status === "running" ? (

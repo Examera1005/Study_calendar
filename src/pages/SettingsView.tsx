@@ -6,13 +6,22 @@ import { ThemeSettingsCard } from "../components/settings/ThemeSettingsCard";
 import { ProfileHandleCard } from "../components/settings/ProfileHandleCard";
 import { BlockedUsersCard } from "../components/settings/BlockedUsersCard";
 import { SettingsFooter } from "../components/settings/SettingsFooter";
+import { TimerWidgetSettingsCard, type TimerCorner } from "../components/settings/TimerWidgetSettingsCard";
 
 export function SettingsView({
   theme,
   setTheme,
+  timerCorner,
+  timerScale,
+  onTimerCornerChange,
+  onTimerScaleChange,
 }: {
   theme: "light" | "dark";
   setTheme: (t: "light" | "dark") => void;
+  timerCorner: TimerCorner;
+  timerScale: number;
+  onTimerCornerChange: (c: TimerCorner) => void;
+  onTimerScaleChange: (s: number) => void;
 }) {
   const friendsApi = (api as any).friends;
   const userEmail = useQuery(friendsApi.getUserEmail);
@@ -51,6 +60,14 @@ export function SettingsView({
 
         {/* Theme Settings Card */}
         <ThemeSettingsCard theme={theme} setTheme={setTheme} />
+
+        {/* Timer Widget Settings Card */}
+        <TimerWidgetSettingsCard
+          corner={timerCorner}
+          scale={timerScale}
+          onCornerChange={onTimerCornerChange}
+          onScaleChange={onTimerScaleChange}
+        />
 
         {/* Profile Handle Card */}
         <ProfileHandleCard />

@@ -25,6 +25,7 @@ import { usePomodoro } from "./hooks/usePomodoro";
 import { MobileHeader } from "./components/layout/MobileHeader";
 import { FloatingTimerWidget } from "./components/layout/FloatingTimerWidget";
 import { SaveTimerModal } from "./components/study/SaveTimerModal";
+import type { TimerCorner } from "./components/settings/TimerWidgetSettingsCard";
 
 export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "subjects" | "settings" | "friends" | "analytics" | "pomodoro";
 
@@ -51,6 +52,23 @@ export default function App() {
     return localStorage.getItem("sidebarCollapsed") === "true";
   });
   const [saveModal, dispatchSaveModal] = useReducer(saveModalReducer, { open: false, minutes: 0, openId: 0 });
+
+  const [timerCorner, setTimerCorner] = useState<TimerCorner>(() => {
+    return (localStorage.getItem("timerCorner") as TimerCorner) || "bottom-right";
+  });
+  const [timerScale, setTimerScale] = useState<number>(() => {
+    const saved = localStorage.getItem("timerScale");
+    return saved ? parseFloat(saved) : 1;
+  });
+
+  const handleTimerCornerChange = (c: TimerCorner) => {
+    setTimerCorner(c);
+    localStorage.setItem("timerCorner", c);
+  };
+  const handleTimerScaleChange = (s: number) => {
+    setTimerScale(s);
+    localStorage.setItem("timerScale", String(s));
+  };
 
   const subjects = useQuery(api.subjects.list);
   const createLog = useMutation(api.dailyLogs.create);
@@ -182,7 +200,16 @@ export default function App() {
               />
             )}
             {view === "subjects" && <SubjectsView />}
-            {view === "settings" && <SettingsView theme={theme} setTheme={handleSetTheme} />}
+            {view === "settings" && (
+              <SettingsView
+                theme={theme}
+                setTheme={handleSetTheme}
+                timerCorner={timerCorner}
+                timerScale={timerScale}
+                onTimerCornerChange={handleTimerCornerChange}
+                onTimerScaleChange={handleTimerScaleChange}
+              />
+            )}
             {view === "friends" && <FriendsView />}
             {view === "analytics" && <AnalyticsView />}
             {view === "pomodoro" && (
@@ -209,6 +236,8 @@ export default function App() {
             onPause={stopwatch.pause}
             onResume={stopwatch.resume}
             onStop={handleStopwatchStop}
+            corner={timerCorner}
+            scale={timerScale}
           />
         </div>
       </Authenticated>

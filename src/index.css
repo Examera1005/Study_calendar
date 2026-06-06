@@ -1549,10 +1549,61 @@ select { cursor: pointer; appearance: none;
 
 /* ========== FLOATING TIMER WIDGET ========== */
 .floating-timer-widget {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 1000;
+  /* position, insets, z-index, and transform are set via inline styles */
+  transition: transform var(--transition-normal);
+}
+
+/* ========== TIMER WIDGET SETTINGS ========== */
+.timer-corner-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.timer-corner-btn {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--skeuo-input-shadow);
+}
+.timer-corner-btn:hover {
+  border-color: var(--border-medium);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+.timer-corner-btn.active {
+  background: var(--accent-gradient);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  font-weight: 700;
+}
+
+.timer-preview-box {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--skeuo-input-shadow);
+}
+.timer-preview-dot {
+  position: absolute;
+  width: 32px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-gradient);
+  box-shadow: 0 2px 8px var(--accent-glow-subtle);
+  transition: all var(--transition-normal);
 }
 .floating-timer-active {
   background: var(--bg-surface);
