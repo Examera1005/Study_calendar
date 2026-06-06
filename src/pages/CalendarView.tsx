@@ -123,6 +123,12 @@ export function CalendarView({
     d = addDays(d, 1);
   }
 
+  const handleGoToToday = () => {
+    const today = new Date();
+    setCurrentMonth(today);
+    setSelectedDate(formatLocalDate());
+  };
+
   return (
     <div>
       <div className="page-header">
@@ -138,10 +144,7 @@ export function CalendarView({
           <button
             type="button"
             className="btn btn-secondary btn-sm"
-            onClick={() => {
-              setCurrentMonth(new Date());
-              setSelectedDate(formatLocalDate());
-            }}
+            onClick={handleGoToToday}
           >
             Today
           </button>

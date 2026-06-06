@@ -17,6 +17,8 @@ type Props = {
 };
 
 export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScaleChange }: Props) {
+  const scaleId = "timer-widget-scale";
+
   return (
     <div className="card">
       <h3 style={{ marginBottom: 12 }}>⏱️ Study Session Widget</h3>
@@ -24,11 +26,12 @@ export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScale
         Personnalise la position et la taille du bouton "Study Session" flottant.
       </p>
 
-      {/* Corner selector */}
-      <div style={{ marginBottom: 20 }}>
-        <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 8, display: "block" }}>
+      {/* Corner selector — uses a fieldset/legend instead of a floating <label> so each
+          button inside the group is properly associated with its own text content. */}
+      <fieldset style={{ border: "none", padding: 0, margin: "0 0 20px", minInlineSize: 0 }}>
+        <legend style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 8, display: "block" }}>
           Position à l'écran
-        </label>
+        </legend>
         <div className="timer-corner-grid">
           {CORNERS.map((c) => (
             <button
@@ -41,13 +44,13 @@ export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScale
             </button>
           ))}
         </div>
-      </div>
+      </fieldset>
 
       {/* Visual mini-preview */}
       <div style={{ marginBottom: 20 }}>
-        <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 8, display: "block" }}>
+        <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 8, display: "block" }}>
           Aperçu
-        </label>
+        </span>
         <div className="timer-preview-box">
           <div
             className="timer-preview-dot"
@@ -60,10 +63,10 @@ export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScale
         </div>
       </div>
 
-      {/* Scale slider */}
+      {/* Scale slider — label wraps both the text and the input so they're associated */}
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <label style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
+          <label htmlFor={scaleId} style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
             Taille du widget
           </label>
           <span style={{
@@ -78,24 +81,25 @@ export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScale
           </span>
         </div>
         <input
+          id={scaleId}
           type="range"
           min="0.6"
           max="1.5"
           step="0.05"
           value={scale}
           onChange={(e) => onScaleChange(parseFloat(e.target.value))}
+          aria-label="Taille du widget"
           className="color-picker-slider"
           style={{
             width: "100%",
             height: 6,
             borderRadius: 3,
-            outline: "none",
             appearance: "none",
             WebkitAppearance: "none",
             background: `linear-gradient(to right, var(--accent-primary) 0%, var(--accent-primary) ${((scale - 0.6) / 0.9) * 100}%, var(--border-medium) ${((scale - 0.6) / 0.9) * 100}%, var(--border-medium) 100%)`,
           }}
         />
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 4 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 4 }}>
           <span>60%</span>
           <span>100%</span>
           <span>150%</span>

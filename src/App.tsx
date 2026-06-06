@@ -1,5 +1,5 @@
 import { Authenticated, Unauthenticated, AuthLoading, useQuery, useMutation } from "convex/react";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 import { SignIn } from "./components/auth/SignIn";
 import { LandingPage } from "./components/auth/LandingPage";
 import { Sidebar } from "./components/layout/Sidebar";
@@ -41,34 +41,81 @@ function saveModalReducer(state: SaveModalState, action: SaveModalAction): SaveM
   }
 }
 
+type UiState = {
+  view: View;
+  sidebarOpen: boolean;
+  sidebarCollapsed: boolean;
+  selectedDate: string;
+};
+
+type UiAction =
+  | { type: "setView"; view: View }
+  | { type: "setSidebarOpen"; open: boolean }
+  | { type: "setSidebarCollapsed"; collapsed: boolean }
+  | { type: "setSelectedDate"; date: string };
+
+function uiReducer(state: UiState, action: UiAction): UiState {
+  switch (action.type) {
+    case "setView": {
+      localStorage.setItem("currentView", action.view);
+      return { ...state, view: action.view };
+    }
+    case "setSidebarOpen":
+      return { ...state, sidebarOpen: action.open };
+    case "setSidebarCollapsed": {
+      localStorage.setItem("sidebarCollapsed", String(action.collapsed));
+      return { ...state, sidebarCollapsed: action.collapsed };
+    }
+    case "setSelectedDate":
+      return { ...state, selectedDate: action.date };
+  }
+}
+
+type TimerPrefsState = { corner: TimerCorner; scale: number };
+type TimerPrefsAction =
+  | { type: "setCorner"; corner: TimerCorner }
+  | { type: "setScale"; scale: number };
+
+function timerPrefsReducer(state: TimerPrefsState, action: TimerPrefsAction): TimerPrefsState {
+  switch (action.type) {
+    case "setCorner": {
+      localStorage.setItem("timerCorner", action.corner);
+      return { ...state, corner: action.corner };
+    }
+    case "setScale": {
+      localStorage.setItem("timerScale", String(action.scale));
+      return { ...state, scale: action.scale };
+    }
+  }
+}
+
 export default function App() {
-  const [view, setView] = useState<View>(() => {
-    const saved = localStorage.getItem("currentView");
-    return (saved as View) || "dashboard";
-  });
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string>(() => formatLocalDate());
-  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
-    return localStorage.getItem("sidebarCollapsed") === "true";
-  });
+  const [ui, dispatchUi] = useReducer(uiReducer, undefined, () => ({
+    view: (localStorage.getItem("currentView") as View) || "dashboard",
+    sidebarOpen: false,
+    sidebarCollapsed: localStorage.getItem("sidebarCollapsed") === "true",
+    selectedDate: formatLocalDate(),
+  }));
+
+  const { view, sidebarOpen, sidebarCollapsed, selectedDate } = ui;
+  const setView = (v: View) => dispatchUi({ type: "setView", view: v });
+  const setSidebarOpen = (open: boolean) => dispatchUi({ type: "setSidebarOpen", open });
+  const setSidebarCollapsed = (collapsed: boolean) => dispatchUi({ type: "setSidebarCollapsed", collapsed });
+  const setSelectedDate = (date: string) => dispatchUi({ type: "setSelectedDate", date });
+
+  const [timerPrefs, dispatchTimerPrefs] = useReducer(timerPrefsReducer, undefined, () => ({
+    corner: ((localStorage.getItem("timerCorner") as TimerCorner) || "bottom-right"),
+    scale: (() => {
+      const s = localStorage.getItem("timerScale");
+      return s ? parseFloat(s) : 1;
+    })(),
+  }));
+
+  const { corner: timerCorner, scale: timerScale } = timerPrefs;
+  const handleTimerCornerChange = (corner: TimerCorner) => dispatchTimerPrefs({ type: "setCorner", corner });
+  const handleTimerScaleChange = (scale: number) => dispatchTimerPrefs({ type: "setScale", scale });
+
   const [saveModal, dispatchSaveModal] = useReducer(saveModalReducer, { open: false, minutes: 0, openId: 0 });
-
-  const [timerCorner, setTimerCorner] = useState<TimerCorner>(() => {
-    return (localStorage.getItem("timerCorner") as TimerCorner) || "bottom-right";
-  });
-  const [timerScale, setTimerScale] = useState<number>(() => {
-    const saved = localStorage.getItem("timerScale");
-    return saved ? parseFloat(saved) : 1;
-  });
-
-  const handleTimerCornerChange = (c: TimerCorner) => {
-    setTimerCorner(c);
-    localStorage.setItem("timerCorner", c);
-  };
-  const handleTimerScaleChange = (s: number) => {
-    setTimerScale(s);
-    localStorage.setItem("timerScale", String(s));
-  };
 
   const subjects = useQuery(api.subjects.list);
   const createLog = useMutation(api.dailyLogs.create);
@@ -77,14 +124,6 @@ export default function App() {
 
   const stopwatch = useStopwatch();
   const pomodoro = usePomodoro();
-
-  useEffect(() => {
-    localStorage.setItem("currentView", view);
-  }, [view]);
-
-  useEffect(() => {
-    localStorage.setItem("sidebarCollapsed", String(sidebarCollapsed));
-  }, [sidebarCollapsed]);
 
   const theme: "light" | "dark" = (() => {
     if (userSettings?.theme) return userSettings.theme as "light" | "dark";
