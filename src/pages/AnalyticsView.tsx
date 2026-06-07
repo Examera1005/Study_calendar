@@ -18,6 +18,16 @@ export function AnalyticsView() {
   const allTasks = useQuery(api.tasks.listAll) as Task[] | undefined;
 
   const [timeRange, setTimeRange] = useState<7 | 30>(7);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
+
+  const selectedSubject = useMemo(() => {
+    if (!selectedSubjectId || !subjects) return null;
+    return subjects.find((s) => (s._id as string) === selectedSubjectId) ?? null;
+  }, [selectedSubjectId, subjects]);
+
+  const chartTitle = selectedSubject
+    ? `📈 Progression — ${selectedSubject.icon || "📚"} ${selectedSubject.name}`
+    : "📈 Progression du Temps d'Étude";
 
   const stats = useMemo(() => {
     if (!allLogs || !allTasks) return { totalHours: 0, totalSessions: 0, completedTasks: 0, streak: 0 };
@@ -49,12 +59,28 @@ export function AnalyticsView() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24, marginBottom: 24 }}>
         <div className="card">
-          <h3 style={{ marginBottom: 16 }}>📈 Progression du Temps d'Étude</h3>
-          <ProgressionChart allLogs={allLogs || []} timeRange={timeRange} />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <h3 style={{ margin: 0 }}>{chartTitle}</h3>
+            {selectedSubjectId && (
+              <button
+                type="button"
+                onClick={() => setSelectedSubjectId(null)}
+                className="analytics-reset-btn"
+              >
+                ✕ Voir tout
+              </button>
+            )}
+          </div>
+          <ProgressionChart allLogs={allLogs || []} timeRange={timeRange} selectedSubjectId={selectedSubjectId} />
         </div>
         <div className="card">
           <h3 style={{ marginBottom: 16 }}>📊 Répartition par Matière</h3>
-          <SubjectDistribution allLogs={allLogs} subjects={subjects} />
+          <SubjectDistribution
+            allLogs={allLogs}
+            subjects={subjects}
+            selectedSubjectId={selectedSubjectId}
+            onSelectSubject={setSelectedSubjectId}
+          />
         </div>
       </div>
 
@@ -72,3 +98,4 @@ export function AnalyticsView() {
     </div>
   );
 }
+

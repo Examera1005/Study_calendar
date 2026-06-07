@@ -49,7 +49,17 @@ function buildDistribution(allLogs: Log[] | undefined, subjects: Subject[] | und
   return data.filter((d) => d.minutes > 0).sort((a, b) => b.minutes - a.minutes);
 }
 
-export function SubjectDistribution({ allLogs, subjects }: { allLogs: Log[] | undefined; subjects: Subject[] | undefined }) {
+export function SubjectDistribution({
+  allLogs,
+  subjects,
+  selectedSubjectId,
+  onSelectSubject,
+}: {
+  allLogs: Log[] | undefined;
+  subjects: Subject[] | undefined;
+  selectedSubjectId: string | null;
+  onSelectSubject: (subjectId: string | null) => void;
+}) {
   const [hoveredSlice, setHoveredSlice] = useState<number | null>(null);
   const distribution = useMemo(() => buildDistribution(allLogs, subjects), [allLogs, subjects]);
 
@@ -68,6 +78,14 @@ export function SubjectDistribution({ allLogs, subjects }: { allLogs: Log[] | un
     });
   }, [distribution]);
 
+  const handleClick = (item: DistributionItem) => {
+    if (selectedSubjectId === item.id) {
+      onSelectSubject(null);
+    } else {
+      onSelectSubject(item.id);
+    }
+  };
+
   if (distribution.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: "40px 0", color: "var(--text-muted)" }}>
@@ -80,45 +98,60 @@ export function SubjectDistribution({ allLogs, subjects }: { allLogs: Log[] | un
     <div className="analytics-donut-layout">
       <div style={{ position: "relative", width: 130, height: 130 }}>
         <svg viewBox="0 0 160 160" width="100%" height="100%">
-          {paths.map((slice, idx) => (
-            <circle
-              key={slice.id}
-              cx={slice.cx} cy={slice.cy} r={slice.r}
-              fill="transparent"
-              stroke={slice.color}
-              strokeWidth={hoveredSlice === idx ? slice.strokeWidth + 2 : slice.strokeWidth}
-              strokeDasharray={slice.strokeDasharray}
-              strokeDashoffset={slice.strokeDashoffset}
-              className="donut-slice"
-              onMouseEnter={() => setHoveredSlice(idx)}
-              onMouseLeave={() => setHoveredSlice(null)}
-            />
-          ))}
+          {paths.map((slice, idx) => {
+            const isSelected = selectedSubjectId === slice.id;
+            const isActive = hoveredSlice === idx || isSelected;
+            return (
+              <circle
+                key={slice.id}
+                cx={slice.cx} cy={slice.cy} r={slice.r}
+                fill="transparent"
+                stroke={slice.color}
+                strokeWidth={isActive ? slice.strokeWidth + 3 : slice.strokeWidth}
+                strokeDasharray={slice.strokeDasharray}
+                strokeDashoffset={slice.strokeDashoffset}
+                className="donut-slice"
+                style={{ cursor: "pointer", opacity: selectedSubjectId && !isSelected ? 0.35 : 1 }}
+                onMouseEnter={() => setHoveredSlice(idx)}
+                onMouseLeave={() => setHoveredSlice(null)}
+                onClick={() => handleClick(distribution[idx])}
+              />
+            );
+          })}
           <text x="80" y="83" textAnchor="middle" fill="var(--text-primary)" fontSize="0.75rem" fontWeight="700">
-            {hoveredSlice !== null ? `${distribution[hoveredSlice].percentage}%` : "Total"}
+            {hoveredSlice !== null ? `${distribution[hoveredSlice].percentage}%` : selectedSubjectId ? `${distribution.find(d => d.id === selectedSubjectId)?.percentage ?? 0}%` : "Total"}
           </text>
           <text x="80" y="96" textAnchor="middle" fill="var(--text-muted)" fontSize="0.55rem" fontWeight="600">
-            {hoveredSlice !== null ? distribution[hoveredSlice].name : "Matières"}
+            {hoveredSlice !== null ? distribution[hoveredSlice].name : selectedSubjectId ? distribution.find(d => d.id === selectedSubjectId)?.name ?? "" : "Matières"}
           </text>
         </svg>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {distribution.map((item, idx) => (
-          <div
-            key={item.id}
-            onMouseEnter={() => setHoveredSlice(idx)}
-            onMouseLeave={() => setHoveredSlice(null)}
-            className="subject-distribution-row"
-            style={{ background: hoveredSlice === idx ? "var(--bg-primary)" : "transparent" }}
-          >
-            <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: item.color }} />
-            <span style={{ fontSize: "0.9rem" }}>{item.icon}</span>
-            <span style={{ flex: 1, fontWeight: 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {item.name}
-            </span>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: 600 }}>{item.percentage}%</span>
-          </div>
-        ))}
+        {distribution.map((item, idx) => {
+          const isSelected = selectedSubjectId === item.id;
+          return (
+            <button
+              type="button"
+              key={item.id}
+              onMouseEnter={() => setHoveredSlice(idx)}
+              onMouseLeave={() => setHoveredSlice(null)}
+              onClick={() => handleClick(item)}
+              className={`subject-distribution-row ${isSelected ? "subject-distribution-row--active" : ""}`}
+              style={{
+                background: isSelected ? "var(--bg-primary)" : hoveredSlice === idx ? "var(--bg-primary)" : "transparent",
+                opacity: selectedSubjectId && !isSelected ? 0.5 : 1,
+                transition: "background 0.2s ease, opacity 0.2s ease",
+              }}
+            >
+              <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: item.color }} />
+              <span style={{ fontSize: "0.9rem" }}>{item.icon}</span>
+              <span style={{ flex: 1, fontWeight: isSelected ? 600 : 500, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {item.name}
+              </span>
+              <span style={{ fontSize: "0.85rem", color: "var(--text-muted)", fontWeight: 600 }}>{item.percentage}%</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

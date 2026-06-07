@@ -97,9 +97,13 @@ function buildChartElements(progressionData: { label: string; minutes: number }[
   };
 }
 
-export function ProgressionChart({ allLogs, timeRange }: { allLogs: Log[]; timeRange: number }) {
+export function ProgressionChart({ allLogs, timeRange, selectedSubjectId }: { allLogs: Log[]; timeRange: number; selectedSubjectId?: string | null }) {
   const [hoveredPoint, setHoveredPoint] = useState<Point | null>(null);
-  const progressionData = useMemo(() => buildChartData(allLogs, timeRange), [allLogs, timeRange]);
+  const filteredLogs = useMemo(() => {
+    if (!selectedSubjectId) return allLogs;
+    return allLogs.filter((l) => l.subjectId === selectedSubjectId);
+  }, [allLogs, selectedSubjectId]);
+  const progressionData = useMemo(() => buildChartData(filteredLogs, timeRange), [filteredLogs, timeRange]);
   const elements = useMemo(() => buildChartElements(progressionData), [progressionData]);
 
   if (!elements || progressionData.length === 0) {

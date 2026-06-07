@@ -2858,7 +2858,39 @@ select { cursor: pointer; appearance: none;
   padding: 4px 8px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: background var(--transition-fast), opacity 0.2s ease;
+  border: none;
+  border-left: 3px solid transparent;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+}
+
+.subject-distribution-row--active {
+  border-left-color: var(--accent-primary);
+  background: var(--bg-primary) !important;
+}
+
+.analytics-reset-btn {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: inherit;
+}
+
+.analytics-reset-btn:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .badge-item-card {
