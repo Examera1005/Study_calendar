@@ -1,5 +1,6 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
+import { internal } from "./_generated/api";
 import { Doc, Id } from "./_generated/dataModel";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
@@ -721,6 +722,27 @@ export const markMessagesAsRead = mutation({
       if (!msg.read) {
         await ctx.db.patch(msg._id, { read: true });
       }
+    }
+    return true;
+  },
+});
+
+export const deleteOldMessages = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const seventyTwoHoursAgo = Date.now() - 72 * 60 * 60 * 1000;
+
+    const oldMessages = await ctx.db
+      .query("messages")
+      .withIndex("by_timestamp", (q) => q.lt("timestamp", seventyTwoHoursAgo))
+      .take(100);
+
+    for (const msg of oldMessages) {
+      await ctx.db.delete(msg._id);
+    }
+
+    if (oldMessages.length === 100) {
+      await ctx.scheduler.runAfter(0, internal.friends.deleteOldMessages, {});
     }
     return true;
   },

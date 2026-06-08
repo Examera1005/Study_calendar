@@ -95,7 +95,8 @@ export default defineSchema({
     read: v.optional(v.boolean()),
   })
     .index("by_conversation", ["senderId", "receiverId"])
-    .index("by_receiverId", ["receiverId"]),
+    .index("by_receiverId", ["receiverId"])
+    .index("by_timestamp", ["timestamp"]),
 
   blocks: defineTable({
     userId: v.string(),
