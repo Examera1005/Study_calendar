@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { decryptWithPrivateKey } from "../../utils/crypto";
+import { decryptMessage } from "../../utils/crypto";
 
 // Sub-component for decrypting message rows asynchronously
 function ChatMessageRow({
@@ -20,7 +20,7 @@ function ChatMessageRow({
     let active = true;
     async function decrypt() {
       const ciphertext = isMe ? senderEncryptedBody : encryptedBody;
-      const decrypted = await decryptWithPrivateKey(ciphertext);
+      const decrypted = await decryptMessage(ciphertext);
       if (active) {
         setBody(decrypted);
       }

@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import React, { useReducer, useEffect, useRef } from "react";
-import { generateAndSaveKeys, encryptWithPublicKey } from "../utils/crypto";
+import { generateAndSaveKeys, encryptMessage, hasPrivateKey } from "../utils/crypto";
 
 // Sub-components
 import { ProfileSetup } from "../components/friends/ProfileSetup";
@@ -22,6 +22,7 @@ interface FriendsState {
   chatInput: string;
   viewExamsFriend: any | null;
   importSuccessId: string | null;
+  keyRecovered: boolean;
 }
 
 type FriendsAction =
@@ -36,7 +37,8 @@ type FriendsAction =
   | { type: "SET_ACTIVE_CHAT_FRIEND"; payload: any | null }
   | { type: "SET_CHAT_INPUT"; payload: string }
   | { type: "SET_VIEW_EXAMS_FRIEND"; payload: any | null }
-  | { type: "SET_IMPORT_SUCCESS_ID"; payload: string | null };
+  | { type: "SET_IMPORT_SUCCESS_ID"; payload: string | null }
+  | { type: "SET_KEY_RECOVERED"; payload: boolean };
 
 const initialState: FriendsState = {
   activeTab: "leaderboard",
@@ -50,6 +52,7 @@ const initialState: FriendsState = {
   chatInput: "",
   viewExamsFriend: null,
   importSuccessId: null,
+  keyRecovered: false,
 };
 
 function friendsReducer(state: FriendsState, action: FriendsAction): FriendsState {
@@ -78,6 +81,8 @@ function friendsReducer(state: FriendsState, action: FriendsAction): FriendsStat
       return { ...state, viewExamsFriend: action.payload };
     case "SET_IMPORT_SUCCESS_ID":
       return { ...state, importSuccessId: action.payload };
+    case "SET_KEY_RECOVERED":
+      return { ...state, keyRecovered: action.payload };
     default:
       return state;
   }
@@ -119,6 +124,32 @@ export function FriendsView() {
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
+
+  // ── Key recovery: regenerate keypair if private key is missing ────
+  useEffect(() => {
+    let timerId: ReturnType<typeof setTimeout> | undefined;
+    if (profile && !hasPrivateKey()) {
+      (async () => {
+        try {
+          const newPubKey = await generateAndSaveKeys();
+          await createProfile({
+            username: profile.username,
+            publicKey: newPubKey,
+          });
+          dispatch({ type: "SET_KEY_RECOVERED", payload: true });
+          // Auto-dismiss after 8 seconds
+          timerId = setTimeout(() => dispatch({ type: "SET_KEY_RECOVERED", payload: false }), 8000);
+        } catch (err) {
+          console.error("Key recovery failed:", err);
+        }
+      })();
+    }
+    return () => {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+    };
+  }, [profile, createProfile, dispatch]);
 
   if (profile === undefined) {
     return <div className="loading-spinner"><div className="spinner" /></div>;
@@ -192,10 +223,10 @@ export function FriendsView() {
     dispatch({ type: "SET_CHAT_INPUT", payload: "" });
 
     try {
-      // 1. Parallel Encryption
+      // 1. Parallel hybrid encryption (AES-GCM + RSA-OAEP key wrapping)
       const [receiverCiphertext, senderCiphertext] = await Promise.all([
-        encryptWithPublicKey(messageText, state.activeChatFriend.publicKey),
-        encryptWithPublicKey(messageText, profile.publicKey),
+        encryptMessage(messageText, state.activeChatFriend.publicKey),
+        encryptMessage(messageText, profile.publicKey),
       ]);
 
       // 2. Send ciphertexts to Convex
@@ -236,6 +267,12 @@ export function FriendsView() {
 
   return (
     <div>
+      {state.keyRecovered && (
+        <div className="key-recovery-banner">
+          <span style={{ fontSize: "1.2rem" }}>🔑</span>
+          <span>Encryption keys regenerated. Messages from previous sessions may not be decryptable.</span>
+        </div>
+      )}
       <div className="page-header">
         <div>
           <h1>Study Guild</h1>

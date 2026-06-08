@@ -3121,6 +3121,15 @@ select option {
   background: var(--accent-light);
   border-color: var(--accent-primary);
 }
-
-
-
+.key-recovery-banner {
+  background: linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.10));
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
