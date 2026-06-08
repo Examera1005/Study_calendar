@@ -40,8 +40,18 @@ type FriendsAction =
   | { type: "SET_IMPORT_SUCCESS_ID"; payload: string | null }
   | { type: "SET_KEY_RECOVERED"; payload: boolean };
 
+const getInitialActiveTab = (): "leaderboard" | "chat" | "manage" => {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("friendsActiveTab");
+    if (saved === "leaderboard" || saved === "chat" || saved === "manage") {
+      return saved;
+    }
+  }
+  return "leaderboard";
+};
+
 const initialState: FriendsState = {
-  activeTab: "leaderboard",
+  activeTab: getInitialActiveTab(),
   usernameInput: "",
   isSubmittingProfile: false,
   profileError: "",
@@ -58,6 +68,9 @@ const initialState: FriendsState = {
 function friendsReducer(state: FriendsState, action: FriendsAction): FriendsState {
   switch (action.type) {
     case "SET_ACTIVE_TAB":
+      if (typeof window !== "undefined") {
+        localStorage.setItem("friendsActiveTab", action.payload);
+      }
       return { ...state, activeTab: action.payload };
     case "SET_USERNAME_INPUT":
       return { ...state, usernameInput: action.payload };
@@ -95,6 +108,8 @@ export function FriendsView() {
   const profile = useQuery(friendsApi.getProfile);
   const friendships = useQuery(friendsApi.getFriendships);
   const leaderboard = useQuery(friendsApi.getFriendsLeaderboard);
+
+  const totalUnreadMessages = friendships?.accepted?.reduce((acc: number, f: any) => acc + (f.unreadCount || 0), 0) || 0;
 
   const createProfile = useMutation(friendsApi.createOrUpdateProfile);
   const sendRequest = useMutation(friendsApi.sendFriendRequest);
@@ -305,8 +320,12 @@ export function FriendsView() {
           type="button"
           className={`friend-tab-btn ${state.activeTab === "chat" ? "active" : ""}`}
           onClick={() => dispatch({ type: "SET_ACTIVE_TAB", payload: "chat" })}
+          style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
         >
           💬 Secure Chat
+          {totalUnreadMessages > 0 && (
+            <span className="chat-tab-unread-badge">{totalUnreadMessages}</span>
+          )}
         </button>
         <button
           type="button"

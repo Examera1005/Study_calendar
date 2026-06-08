@@ -3171,3 +3171,18 @@ select option {
   line-height: 1;
   flex-shrink: 0;
 }
+.chat-tab-unread-badge {
+  background: var(--danger);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  min-width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+  flex-shrink: 0;
+}
