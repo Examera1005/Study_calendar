@@ -62,7 +62,11 @@ export function FloatingTimerWidget({
           onClick={onStart}
           style={{ display: "flex", alignItems: "center", gap: 8 }}
         >
-          <span className="timer-emoji">⏱️</span> Start Session
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "16px", height: "16px" }}>
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          Start Session
         </button>
       </div>
     );
@@ -75,25 +79,41 @@ export function FloatingTimerWidget({
           {status === "running" ? (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span className="pulse-dot" style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--danger)" }} />
-              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--danger)" }}>STUDYING LIVE</span>
+              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--danger)", letterSpacing: "0.03em" }}>STUDYING LIVE</span>
             </div>
           ) : (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--warning)" }} />
-              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--warning)" }}>PAUSED</span>
+              <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--warning)", letterSpacing: "0.03em" }}>PAUSED</span>
             </div>
           )}
-          <div style={{ fontSize: "1.2rem", fontWeight: 800, fontFamily: "monospace", color: "var(--text-primary)" }}>
+          <div style={{ fontSize: "1.25rem", fontWeight: 800, fontFamily: "monospace", color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
             {formatElapsed(elapsedSeconds)}
           </div>
         </div>
         <div style={{ display: "flex", gap: 6 }}>
           {status === "running" ? (
-            <button type="button" className="btn btn-secondary btn-sm" onClick={onPause} style={{ flex: 1 }}>⏸️ Pause</button>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={onPause} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "12px", height: "12px" }}>
+                <rect x="14" y="4" width="4" height="16" rx="1" />
+                <rect x="6" y="4" width="4" height="16" rx="1" />
+              </svg>
+              Pause
+            </button>
           ) : (
-            <button type="button" className="btn btn-primary btn-sm" onClick={onResume} style={{ flex: 1 }}>▶️ Resume</button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={onResume} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "12px", height: "12px" }}>
+                <polygon points="6 3 20 12 6 21 6 3" />
+              </svg>
+              Resume
+            </button>
           )}
-          <button type="button" className="btn btn-danger btn-sm" onClick={onStop} style={{ flex: 1 }}>⏹ Stop</button>
+          <button type="button" className="btn btn-danger btn-sm" onClick={onStop} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "12px", height: "12px" }}>
+              <rect x="4" y="4" width="16" height="16" rx="1" />
+            </svg>
+            Stop
+          </button>
         </div>
       </div>
     </div>

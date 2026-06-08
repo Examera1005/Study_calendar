@@ -149,7 +149,7 @@ export function ExamsView() {
               <select id="add-exam-subject" name="subjectId" required>
                 <option value="">Select a subject</option>
                 {subjects.map((s) => (
-                  <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
+                  <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
                 ))}
               </select>
             </div>
@@ -202,7 +202,7 @@ export function ExamsView() {
               <select id="edit-exam-subject" name="subjectId" defaultValue={editingExam.subjectId} required>
                 <option value="">Select a subject</option>
                 {subjects.map((s) => (
-                  <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
+                  <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
                 ))}
               </select>
             </div>

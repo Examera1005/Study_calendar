@@ -80,7 +80,7 @@ export function AddTaskModal({ selectedDate, defaultType, subjects, onClose, onC
               <option value="">None</option>
               {subjects.map((s) => (
                 <option key={s._id} value={s._id}>
-                  {s.icon} {s.name}
+                  {s.icon ? `${s.icon} ` : ""}{s.name}
                 </option>
               ))}
             </select>

@@ -100,7 +100,7 @@ export function EditTaskModal({ task, subjects, selectedDate, onSave, onClose }:
               <option value="">None</option>
               {subjects.map((s) => (
                 <option key={s._id} value={s._id}>
-                  {s.icon} {s.name}
+                  {s.icon ? `${s.icon} ` : ""}{s.name}
                 </option>
               ))}
             </select>

@@ -12,7 +12,7 @@ function SubjectOptions({ subjects, name, defaultValue }: { subjects: Doc<"subje
       <select id={`${name}-subject`} name="subjectId" defaultValue={defaultValue ?? ""}>
         <option value="">None</option>
         {subjects.map((s) => (
-          <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
+          <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
         ))}
       </select>
     </div>

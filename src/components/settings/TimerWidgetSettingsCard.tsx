@@ -83,7 +83,7 @@ export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScale
         <input
           id={scaleId}
           type="range"
-          min="0.6"
+          min="0.5"
           max="1.5"
           step="0.05"
           value={scale}
@@ -96,11 +96,11 @@ export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScale
             borderRadius: 3,
             appearance: "none",
             WebkitAppearance: "none",
-            background: `linear-gradient(to right, var(--accent-primary) 0%, var(--accent-primary) ${((scale - 0.6) / 0.9) * 100}%, var(--border-medium) ${((scale - 0.6) / 0.9) * 100}%, var(--border-medium) 100%)`,
+            background: `linear-gradient(to right, var(--accent-primary) 0%, var(--accent-primary) ${(scale - 0.5) * 100}%, var(--border-medium) ${(scale - 0.5) * 100}%, var(--border-medium) 100%)`,
           }}
         />
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 4 }}>
-          <span>60%</span>
+          <span>50%</span>
           <span>100%</span>
           <span>150%</span>
         </div>

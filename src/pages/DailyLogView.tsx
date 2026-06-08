@@ -125,7 +125,7 @@ export function DailyLogView({
                 <select id="add-log-subject" name="subjectId" defaultValue="">
                   <option value="">None</option>
                   {subjects.map((s) => (
-                    <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
+                    <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
                   ))}
                 </select>
               </div>
@@ -167,7 +167,7 @@ export function DailyLogView({
                 <select id="edit-log-subject" name="subjectId" defaultValue={editingLog.subjectId || ""}>
                   <option value="">None</option>
                   {subjects.map((s) => (
-                    <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
+                    <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
                   ))}
                 </select>
               </div>

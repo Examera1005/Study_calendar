@@ -37,18 +37,61 @@ type Stats = {
 
 export function KpiCards({ stats }: { stats: Stats }) {
   const cards = [
-    { icon: "⏱️", value: `${stats.totalHours}h`, label: "Temps Total" },
-    { icon: "🔥", value: `${stats.streak} Jours`, label: "Série d'Études" },
-    { icon: "📝", value: stats.totalSessions, label: "Sessions Loggées" },
-    { icon: "⚡", value: stats.completedTasks, label: "Tâches Complétées" },
+    { 
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "22px", height: "22px", color: "var(--accent-primary)" }}>
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+      ), 
+      value: `${stats.totalHours}h`, 
+      label: "Temps Total",
+      bg: "var(--accent-light)"
+    },
+    { 
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "22px", height: "22px", color: "var(--warning)" }}>
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+        </svg>
+      ), 
+      value: `${stats.streak} ${stats.streak > 1 ? "Jours" : "Jour"}`, 
+      label: "Série d'Études",
+      bg: "rgba(245, 158, 11, 0.08)"
+    },
+    { 
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "22px", height: "22px", color: "var(--success)" }}>
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+        </svg>
+      ), 
+      value: stats.totalSessions, 
+      label: "Sessions Loggées",
+      bg: "rgba(16, 185, 129, 0.08)"
+    },
+    { 
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "22px", height: "22px", color: "var(--accent-primary)" }}>
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+          <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+      ), 
+      value: stats.completedTasks, 
+      label: "Tâches Complétées",
+      bg: "var(--accent-light)"
+    },
   ];
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 24 }}>
+    <div className="kpi-grid">
       {cards.map((c) => (
-        <div key={c.label} className="card" style={{ padding: 20, textAlign: "center" }}>
-          <div style={{ fontSize: "2rem", marginBottom: 6 }}>{c.icon}</div>
-          <div style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--text-primary)" }}>{c.value}</div>
-          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600 }}>{c.label}</div>
+        <div key={c.label} className="card kpi-card">
+          <div className="kpi-icon-wrapper" style={{ background: c.bg }}>
+            {c.icon}
+          </div>
+          <div className="kpi-value">{c.value}</div>
+          <div className="kpi-label">{c.label}</div>
         </div>
       ))}
     </div>

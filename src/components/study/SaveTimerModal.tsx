@@ -59,7 +59,7 @@ export function SaveTimerModal({ defaultMinutes, subjects, onClose, onSaved }: P
             <select id="session-log-subject" name="subjectId" defaultValue="">
               <option value="">None</option>
               {subjects.map((s) => (
-                <option key={s._id} value={s._id}>{s.icon} {s.name}</option>
+                <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
               ))}
             </select>
           </div>

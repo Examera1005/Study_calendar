@@ -3,18 +3,32 @@ import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 import { Modal } from "../components/ui/Modal";
 import { ColorPicker } from "../components/ui/ColorPicker";
+import { EmojiPicker } from "../components/ui/EmojiPicker";
 
 export function SubjectsView() {
   const subjects = useQuery(api.subjects.list);
   const createSubject = useMutation(api.subjects.create);
   const updateSubject = useMutation(api.subjects.update);
   const removeSubject = useMutation(api.subjects.remove);
-  const [showAdd, setShowAdd] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [newColor, setNewColor] = useState("#7c3aed");
-  const [editColor, setEditColor] = useState("#7c3aed");
 
-  const editingSubject = subjects?.find((s) => s._id === editId);
+  // Grouped state variables to satisfy the `prefer-useReducer` / related useState audit
+  const [addForm, setAddForm] = useState({
+    isOpen: false,
+    color: "#7c3aed",
+    icon: "",
+  });
+
+  const [editForm, setEditForm] = useState<{
+    id: string | null;
+    color: string;
+    icon: string;
+  }>({
+    id: null,
+    color: "#7c3aed",
+    icon: "",
+  });
+
+  const editingSubject = subjects?.find((s) => s._id === editForm.id);
 
   return (
     <div>
@@ -25,7 +39,12 @@ export function SubjectsView() {
       <div className="card">
         <div className="card-header">
           <h3>📚 Manage Subjects</h3>
-          <button type="button" className="btn btn-primary btn-sm" onClick={() => setShowAdd(true)} id="add-subject-btn">
+          <button
+            type="button"
+            className="btn btn-primary btn-sm"
+            onClick={() => setAddForm({ isOpen: true, color: "#7c3aed", icon: "" })}
+            id="add-subject-btn"
+          >
             + Add Subject
           </button>
         </div>
@@ -51,14 +70,17 @@ export function SubjectsView() {
                 }}
               >
                 <div style={{ width: 12, height: 12, borderRadius: "50%", background: s.color, flexShrink: 0 }} />
-                <span style={{ fontSize: "1rem" }}>{s.icon}</span>
+                {s.icon && <span style={{ fontSize: "1rem" }}>{s.icon}</span>}
                 <span style={{ flex: 1, fontWeight: 500 }}>{s.name}</span>
                 <button
                   type="button"
                   className="btn btn-ghost btn-sm"
                   onClick={() => {
-                    setEditId(s._id);
-                    setEditColor(s.color);
+                    setEditForm({
+                      id: s._id,
+                      color: s.color,
+                      icon: s.icon ?? "",
+                    });
                   }}
                 >
                   Edit
@@ -82,19 +104,18 @@ export function SubjectsView() {
         )}
       </div>
 
-      {showAdd && (
-        <Modal title="Add Subject" onClose={() => setShowAdd(false)}>
+      {addForm.isOpen && (
+        <Modal title="Add Subject" onClose={() => setAddForm((prev) => ({ ...prev, isOpen: false }))}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
               const fd = new FormData(e.currentTarget);
               void createSubject({
                 name: fd.get("name") as string,
-                color: newColor,
+                color: addForm.color,
                 icon: (fd.get("icon") as string) || undefined,
               });
-              setShowAdd(false);
-              setNewColor("#7c3aed");
+              setAddForm({ isOpen: false, color: "#7c3aed", icon: "" });
             }}
           >
             <div className="form-group">
@@ -103,14 +124,29 @@ export function SubjectsView() {
             </div>
             <div className="form-group">
               <label htmlFor="add-subject-icon">Icon (emoji)</label>
-              <input id="add-subject-icon" name="icon" placeholder="📐" maxLength={4} />
+              <EmojiPicker
+                id="add-subject-icon"
+                value={addForm.icon}
+                onChange={(icon) => setAddForm((prev) => ({ ...prev, icon }))}
+                placeholder="📐"
+              />
+              <input type="hidden" name="icon" value={addForm.icon} />
             </div>
             <div className="form-group">
               <span className="form-label">Color</span>
-              <ColorPicker value={newColor} onChange={setNewColor} />
+              <ColorPicker
+                value={addForm.color}
+                onChange={(color) => setAddForm((prev) => ({ ...prev, color }))}
+              />
             </div>
             <div className="modal-actions">
-              <button type="button" className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setAddForm((prev) => ({ ...prev, isOpen: false }))}
+              >
+                Cancel
+              </button>
               <button type="submit" className="btn btn-primary">Add Subject</button>
             </div>
           </form>
@@ -118,7 +154,7 @@ export function SubjectsView() {
       )}
 
       {editingSubject && (
-        <Modal title="Edit Subject" onClose={() => setEditId(null)}>
+        <Modal title="Edit Subject" onClose={() => setEditForm({ id: null, color: "#7c3aed", icon: "" })}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -126,10 +162,10 @@ export function SubjectsView() {
               void updateSubject({
                 id: editingSubject._id,
                 name: fd.get("name") as string,
-                color: editColor,
+                color: editForm.color,
                 icon: (fd.get("icon") as string) || undefined,
               });
-              setEditId(null);
+              setEditForm({ id: null, color: "#7c3aed", icon: "" });
             }}
           >
             <div className="form-group">
@@ -138,14 +174,29 @@ export function SubjectsView() {
             </div>
             <div className="form-group">
               <label htmlFor="edit-subject-icon">Icon (emoji)</label>
-              <input id="edit-subject-icon" name="icon" defaultValue={editingSubject.icon ?? ""} maxLength={4} />
+              <EmojiPicker
+                id="edit-subject-icon"
+                value={editForm.icon}
+                onChange={(icon) => setEditForm((prev) => ({ ...prev, icon }))}
+                placeholder={editingSubject.icon ?? "📐"}
+              />
+              <input type="hidden" name="icon" value={editForm.icon} />
             </div>
             <div className="form-group">
               <span className="form-label">Color</span>
-              <ColorPicker value={editColor} onChange={setEditColor} />
+              <ColorPicker
+                value={editForm.color}
+                onChange={(color) => setEditForm((prev) => ({ ...prev, color }))}
+              />
             </div>
             <div className="modal-actions">
-              <button type="button" className="btn btn-secondary" onClick={() => setEditId(null)}>Cancel</button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setEditForm({ id: null, color: "#7c3aed", icon: "" })}
+              >
+                Cancel
+              </button>
               <button type="submit" className="btn btn-primary">Save</button>
             </div>
           </form>
