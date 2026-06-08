@@ -92,6 +92,7 @@ export default defineSchema({
     encryptedBody: v.string(),
     senderEncryptedBody: v.string(),
     timestamp: v.number(),
+    read: v.optional(v.boolean()),
   })
     .index("by_conversation", ["senderId", "receiverId"])
     .index("by_receiverId", ["receiverId"]),

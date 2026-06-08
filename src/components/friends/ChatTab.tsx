@@ -81,9 +81,12 @@ export function ChatTab({
                 type="button"
                 className={`nav-item ${activeChatFriend?.userId === friend.userId ? "active" : ""}`}
                 onClick={() => setActiveChatFriend(friend)}
-                style={{ justifyContent: "space-between" }}
+                style={{ justifyContent: "space-between", alignItems: "center" }}
               >
                 <span>💬 {friend.username}</span>
+                {friend.unreadCount > 0 && (
+                  <span className="chat-unread-badge">{friend.unreadCount}</span>
+                )}
               </button>
             ))
           ) : (

@@ -1,5 +1,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import type { View } from "../../App";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 
 const DashboardIcon = () => (
@@ -116,6 +118,8 @@ export function Sidebar({
   setSidebarCollapsed: (c: boolean) => void;
 }) {
   const { signOut } = useAuthActions();
+  const friendships = useQuery((api as any).friends.getFriendships);
+  const unreadFriendsCount = friendships?.accepted?.filter((f: any) => f.unreadCount > 0).length || 0;
 
   return (
     <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} id="sidebar">
@@ -153,11 +157,15 @@ export function Sidebar({
                 setSidebarOpen(false);
               }}
               id={`nav-${item.id}`}
+              style={{ position: "relative" }}
             >
               <span className="nav-icon" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
                 <Icon />
               </span>
               <span className="nav-label">{item.label}</span>
+              {item.id === "friends" && unreadFriendsCount > 0 && (
+                <span className="sidebar-unread-badge">{unreadFriendsCount}</span>
+              )}
             </button>
           );
         })}

@@ -235,6 +235,18 @@ export const getFriendships = query({
             .unique()
         ]);
         if (blocked || !otherProfile) return null;
+
+        let unreadCount = 0;
+        if (f.status === "accepted") {
+          const receivedMessages = await ctx.db
+            .query("messages")
+            .withIndex("by_conversation", (q) =>
+              q.eq("senderId", otherUserId).eq("receiverId", userId)
+            )
+            .collect();
+          unreadCount = receivedMessages.filter((m) => !m.read).length;
+        }
+
         return {
           friendshipId: f._id,
           userId: otherUserId,
@@ -242,14 +254,15 @@ export const getFriendships = query({
           publicKey: otherProfile.publicKey,
           status: f.status,
           senderId: f.senderId,
+          unreadCount,
         };
       })
     );
 
     for (const item of items) {
       if (!item) continue;
-      const { friendshipId, userId: uid, username, publicKey, status, senderId } = item;
-      const formatted = { friendshipId, userId: uid, username, publicKey };
+      const { friendshipId, userId: uid, username, publicKey, status, senderId, unreadCount } = item;
+      const formatted = { friendshipId, userId: uid, username, publicKey, unreadCount };
       if (status === "accepted") {
         accepted.push(formatted);
       } else if (senderId === userId) {
@@ -553,6 +566,7 @@ export const sendMessage = mutation({
       encryptedBody: args.encryptedBody,
       senderEncryptedBody: args.senderEncryptedBody,
       timestamp: Date.now(),
+      read: false,
     });
   },
 });
@@ -685,5 +699,29 @@ export const getUserEmail = query({
     if (!userId) return null;
     const user = await ctx.db.get(userId);
     return user?.email ?? null;
+  },
+});
+
+export const markMessagesAsRead = mutation({
+  args: { friendUserId: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    await assertIsFriends(ctx, userId, args.friendUserId);
+
+    const unreadMessages = await ctx.db
+      .query("messages")
+      .withIndex("by_conversation", (q) =>
+        q.eq("senderId", args.friendUserId).eq("receiverId", userId)
+      )
+      .collect();
+
+    for (const msg of unreadMessages) {
+      if (!msg.read) {
+        await ctx.db.patch(msg._id, { read: true });
+      }
+    }
+    return true;
   },
 });

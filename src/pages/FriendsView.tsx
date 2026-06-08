@@ -102,6 +102,7 @@ export function FriendsView() {
   const sendMessage = useMutation(friendsApi.sendMessage);
   const importExam = useMutation(friendsApi.importFriendExam);
   const blockUser = useMutation(friendsApi.blockUser);
+  const markMessagesAsRead = useMutation(friendsApi.markMessagesAsRead);
 
   const searchResults = useQuery(
     friendsApi.searchProfile,
@@ -124,6 +125,18 @@ export function FriendsView() {
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
+
+  // ── Mark active chat messages as read ────────────────────────────────
+  useEffect(() => {
+    if (state.activeChatFriend && chatMessages && chatMessages.length > 0) {
+      const hasUnread = chatMessages.some(
+        (msg: any) => msg.senderId === state.activeChatFriend.userId && !msg.read
+      );
+      if (hasUnread) {
+        void markMessagesAsRead({ friendUserId: state.activeChatFriend.userId });
+      }
+    }
+  }, [state.activeChatFriend, chatMessages, markMessagesAsRead]);
 
   // ── Key recovery: regenerate keypair if private key is missing ────
   useEffect(() => {

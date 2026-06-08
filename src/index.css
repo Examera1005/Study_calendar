@@ -3133,3 +3133,41 @@ select option {
   font-size: 0.85rem;
   color: var(--text-primary);
 }
+.sidebar-unread-badge {
+  background: var(--danger);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  min-width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  margin-left: auto;
+  line-height: 1;
+}
+.sidebar-collapsed .sidebar-unread-badge {
+  position: absolute;
+  top: 4px;
+  right: 12px;
+  margin-left: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+.chat-unread-badge {
+  background: var(--danger);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  min-width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  margin-left: 8px;
+  line-height: 1;
+  flex-shrink: 0;
+}
