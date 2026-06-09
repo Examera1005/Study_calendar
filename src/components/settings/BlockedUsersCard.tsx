@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { useLanguage } from "../../hooks/useLanguage";
 
 export function BlockedUsersCard() {
   const friendsApi = (api as any).friends;
   const blockedUsers = useQuery(friendsApi.getBlockedUsers);
   const unblockUser = useMutation(friendsApi.unblockUser);
   const blockUserMut = useMutation(friendsApi.blockUser);
+  const { t, language } = useLanguage();
 
   const [blockHandleInput, setBlockHandleInput] = useState("");
   const [blockError, setBlockError] = useState("");
@@ -30,16 +32,16 @@ export function BlockedUsersCard() {
     try {
       const match = searchProfile?.find((u: any) => u.username === formatted);
       if (!match) {
-        setBlockError("User not found with this handle.");
+        setBlockError(t.settings.blockedUsersUserNotFound);
         return;
       }
 
       await blockUserMut({ blockedUserId: match.userId });
-      setBlockSuccess(`Successfully blocked ${formatted}`);
+      setBlockSuccess(t.settings.blockedUsersBlockSuccess(formatted));
       setBlockHandleInput("");
       setTimeout(() => setBlockSuccess(""), 3000);
     } catch (err: any) {
-      setBlockError(err.message || "Failed to block user.");
+      setBlockError(err.message || t.settings.blockedUsersBlockFailed);
     }
   };
 
@@ -47,35 +49,37 @@ export function BlockedUsersCard() {
     try {
       await unblockUser({ blockedUserId });
     } catch (err: any) {
-      alert("Failed to unblock: " + err.message);
+      alert(t.settings.blockedUsersUnblockFailed + err.message);
     }
   };
 
   return (
     <div className="card">
-      <h3 style={{ marginBottom: 12 }}>🚫 Blocked Users</h3>
+      <h3 style={{ marginBottom: 12 }}>{t.settings.blockedUsersTitle}</h3>
       <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 20 }}>
-        Blocked users cannot search for you, see your leaderboard stats, view your exams, or send you messages.
+        {t.settings.blockedUsersDesc}
       </p>
 
       <form onSubmit={handleBlockUser} style={{ display: "flex", gap: 10, marginBottom: 20 }}>
         <input
           type="text"
-          placeholder="Block user by @username..."
+          placeholder={t.settings.blockedUsersSearchPlaceholder}
           value={blockHandleInput}
           onChange={(e) => setBlockHandleInput(e.target.value)}
           aria-label="Block user by username"
           style={{ flex: 1 }}
           required
         />
-        <button type="submit" className="btn btn-danger">Block User</button>
+        <button type="submit" className="btn btn-danger">{t.friends.blockUserBtn}</button>
       </form>
 
       {blockError && <div className="error-msg" style={{ fontSize: "0.8rem", marginBottom: 12 }}>{blockError}</div>}
       {blockSuccess && <div style={{ color: "var(--success)", fontSize: "0.8rem", fontWeight: 500, marginBottom: 12 }}>{blockSuccess}</div>}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        <h4 style={{ fontSize: "0.82rem", color: "var(--text-secondary)", marginBottom: 4 }}>Blocked List</h4>
+        <h4 style={{ fontSize: "0.82rem", color: "var(--text-secondary)", marginBottom: 4 }}>
+          {t.settings.blockedUsersListTitle}
+        </h4>
         {blockedUsers && blockedUsers.length > 0 ? (
           blockedUsers.map((user: any) => (
             <div
@@ -96,13 +100,13 @@ export function BlockedUsersCard() {
                 className="btn btn-secondary btn-sm"
                 onClick={() => handleUnblock(user.userId)}
               >
-                Unblock
+                {t.friends.unblockUserBtn}
               </button>
             </div>
           ))
         ) : (
           <div style={{ fontSize: "0.8rem", color: "var(--text-muted)", padding: "8px 0" }}>
-            No blocked users.
+            {t.friends.noBlockedUsers}
           </div>
         )}
       </div>

@@ -2,6 +2,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import React, { useReducer, useEffect, useRef } from "react";
 import { generateAndSaveKeys, encryptMessage, hasPrivateKey } from "../utils/crypto";
+import { useLanguage } from "../hooks/useLanguage";
 
 // Sub-components
 import { ProfileSetup } from "../components/friends/ProfileSetup";
@@ -102,6 +103,7 @@ function friendsReducer(state: FriendsState, action: FriendsAction): FriendsStat
 }
 
 export function FriendsView() {
+  const { t } = useLanguage();
   const [state, dispatch] = useReducer(friendsReducer, initialState);
   const friendsApi = (api as any).friends;
 
@@ -201,7 +203,7 @@ export function FriendsView() {
     } catch (err: any) {
       dispatch({
         type: "SUBMIT_PROFILE_ERROR",
-        payload: err.message || "Failed to create profile. Choose a unique username.",
+        payload: err.message || t.friends.setupProfileError,
       });
     }
   };
@@ -226,7 +228,7 @@ export function FriendsView() {
     dispatch({ type: "SET_REQUEST_SUCCESS", payload: "" });
     try {
       await sendRequest({ username: state.searchQuery });
-      dispatch({ type: "SET_REQUEST_SUCCESS", payload: `Friend request sent to ${state.searchQuery}!` });
+      dispatch({ type: "SET_REQUEST_SUCCESS", payload: t.friends.friendRequestSent(state.searchQuery) });
       dispatch({ type: "SET_SEARCH_QUERY", payload: "" });
     } catch (err: any) {
       dispatch({ type: "SET_REQUEST_ERROR", payload: err.message || "Failed to send request." });
@@ -238,7 +240,7 @@ export function FriendsView() {
     try {
       await respondRequest({ friendshipId, action });
     } catch (err: any) {
-      alert("Error responding: " + err.message);
+      alert(t.common.error + ": " + err.message);
     }
   };
 
@@ -275,20 +277,20 @@ export function FriendsView() {
       dispatch({ type: "SET_IMPORT_SUCCESS_ID", payload: examId });
       setTimeout(() => dispatch({ type: "SET_IMPORT_SUCCESS_ID", payload: null }), 2500);
     } catch (err: any) {
-      alert("Import failed: " + err.message);
+      alert(t.common.error + ": " + err.message);
     }
   };
 
   // Block friend
   const handleBlockFriend = async (blockedUserId: string, username: string) => {
-    if (confirm(`Are you sure you want to block ${username}?`)) {
+    if (confirm(t.friends.confirmBlockUser(username))) {
       try {
         await blockUser({ blockedUserId });
         if (state.activeChatFriend?.userId === blockedUserId) {
           dispatch({ type: "SET_ACTIVE_CHAT_FRIEND", payload: null });
         }
       } catch (err: any) {
-        alert("Failed to block: " + err.message);
+        alert(t.common.error + ": " + err.message);
       }
     }
   };
@@ -298,13 +300,13 @@ export function FriendsView() {
       {state.keyRecovered && (
         <div className="key-recovery-banner">
           <span style={{ fontSize: "1.2rem" }}>🔑</span>
-          <span>Encryption keys regenerated. Messages from previous sessions may not be decryptable.</span>
+          <span>{t.friends.keysRegenerated}</span>
         </div>
       )}
       <div className="page-header">
         <div>
-          <h1>Study Guild</h1>
-          <div className="date-display">Logged in as {profile.username}</div>
+          <h1>{t.friends.title}</h1>
+          <div className="date-display">{t.friends.loggedInAs(profile.username)}</div>
         </div>
       </div>
 
@@ -314,7 +316,7 @@ export function FriendsView() {
           className={`friend-tab-btn ${state.activeTab === "leaderboard" ? "active" : ""}`}
           onClick={() => dispatch({ type: "SET_ACTIVE_TAB", payload: "leaderboard" })}
         >
-          🏆 Leaderboard
+          {t.friends.leaderboardTab}
         </button>
         <button
           type="button"
@@ -322,7 +324,7 @@ export function FriendsView() {
           onClick={() => dispatch({ type: "SET_ACTIVE_TAB", payload: "chat" })}
           style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
         >
-          💬 Secure Chat
+          {t.friends.chatTab}
           {totalUnreadMessages > 0 && (
             <span className="chat-tab-unread-badge">{totalUnreadMessages}</span>
           )}
@@ -332,7 +334,7 @@ export function FriendsView() {
           className={`friend-tab-btn ${state.activeTab === "manage" ? "active" : ""}`}
           onClick={() => dispatch({ type: "SET_ACTIVE_TAB", payload: "manage" })}
         >
-          👥 Friends & Search
+          {t.friends.manageTab}
         </button>
       </div>
 

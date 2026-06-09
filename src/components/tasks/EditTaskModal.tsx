@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Modal } from "../ui/Modal";
+import { useLanguage } from "../../hooks/useLanguage";
 
 type TaskType = "daily" | "general";
 
@@ -23,10 +24,11 @@ type Props = {
 };
 
 export function EditTaskModal({ task, subjects, selectedDate, onSave, onClose }: Props) {
+  const { t } = useLanguage();
   const [editType, setEditType] = useState<TaskType>((task.taskType as TaskType) || "daily");
 
   return (
-    <Modal title="Edit Task" onClose={onClose}>
+    <Modal title={t.tasks.editTask} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -43,35 +45,46 @@ export function EditTaskModal({ task, subjects, selectedDate, onSave, onClose }:
         }}
       >
         <div className="form-group">
-          <span className="form-label">Type</span>
+          <span className="form-label">{t.tasks.typeLabel}</span>
           <div className="task-tabs" style={{ marginBottom: 0 }}>
             <button
               type="button"
               className={`task-tab ${editType === "daily" ? "active" : ""}`}
               onClick={() => setEditType("daily")}
             >
-              📅 Daily
+              📅 {t.tasks.dailyTab}
             </button>
             <button
               type="button"
               className={`task-tab ${editType === "general" ? "active" : ""}`}
               onClick={() => setEditType("general")}
             >
-              📋 General
+              📋 {t.tasks.generalTab}
             </button>
           </div>
         </div>
         <div className="form-group">
-          <label htmlFor="edit-task-title">Title</label>
-          <input id="edit-task-title" name="title" defaultValue={task.title} required />
+          <label htmlFor="edit-task-title">{t.common.title}</label>
+          <input
+            id="edit-task-title"
+            name="title"
+            defaultValue={task.title}
+            required
+            placeholder={t.tasks.taskTitlePlaceholder}
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="edit-task-description">Description</label>
-          <textarea id="edit-task-description" name="description" defaultValue={task.description} />
+          <label htmlFor="edit-task-description">{t.tasks.descriptionLabel}</label>
+          <textarea
+            id="edit-task-description"
+            name="description"
+            defaultValue={task.description}
+            placeholder={t.tasks.taskNotesPlaceholder}
+          />
         </div>
         {editType === "daily" && (
           <div className="form-group">
-            <label htmlFor="edit-task-date">Date</label>
+            <label htmlFor="edit-task-date">{t.common.date}</label>
             <input
               id="edit-task-date"
               name="date"
@@ -82,22 +95,22 @@ export function EditTaskModal({ task, subjects, selectedDate, onSave, onClose }:
           </div>
         )}
         <div className="form-group">
-          <label htmlFor="edit-task-priority">Priority</label>
+          <label htmlFor="edit-task-priority">{t.tasks.priorityLabel}</label>
           <select id="edit-task-priority" name="priority" defaultValue={task.priority}>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="low">{t.tasks.priorityLow}</option>
+            <option value="medium">{t.tasks.priorityMedium}</option>
+            <option value="high">{t.tasks.priorityHigh}</option>
           </select>
         </div>
         {subjects && subjects.length > 0 && (
           <div className="form-group">
-            <label htmlFor="edit-task-subject">Subject</label>
+            <label htmlFor="edit-task-subject">{t.tasks.subjectLabel}</label>
             <select
               id="edit-task-subject"
               name="subjectId"
               defaultValue={task.subjectId || ""}
             >
-              <option value="">None</option>
+              <option value="">{t.common.none}</option>
               {subjects.map((s) => (
                 <option key={s._id} value={s._id}>
                   {s.icon ? `${s.icon} ` : ""}{s.name}
@@ -108,10 +121,10 @@ export function EditTaskModal({ task, subjects, selectedDate, onSave, onClose }:
         )}
         <div className="modal-actions">
           <button type="button" className="btn btn-secondary" onClick={onClose}>
-            Cancel
+            {t.common.cancel}
           </button>
           <button type="submit" className="btn btn-primary">
-            Save Changes
+            {t.common.saveChanges}
           </button>
         </div>
       </form>

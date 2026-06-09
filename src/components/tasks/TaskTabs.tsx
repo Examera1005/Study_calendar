@@ -1,3 +1,5 @@
+import { useLanguage } from "../../hooks/useLanguage";
+
 type Tab = "daily" | "general" | "done";
 
 type Props = {
@@ -8,6 +10,8 @@ type Props = {
 };
 
 export function TaskTabs({ activeTab, onChange, generalIncompleteCount, doneCount }: Props) {
+  const { t } = useLanguage();
+
   return (
     <div className="task-tabs" style={{ marginBottom: 20 }}>
       <button
@@ -17,7 +21,7 @@ export function TaskTabs({ activeTab, onChange, generalIncompleteCount, doneCoun
         id="task-tab-daily"
       >
         <span className="task-tab-icon">📅</span>
-        Daily
+        {t.tasks.dailyTab}
       </button>
       <button
         type="button"
@@ -26,7 +30,7 @@ export function TaskTabs({ activeTab, onChange, generalIncompleteCount, doneCoun
         id="task-tab-general"
       >
         <span className="task-tab-icon">📋</span>
-        General
+        {t.tasks.generalTab}
         {generalIncompleteCount > 0 && (
           <span className="task-tab-badge">{generalIncompleteCount}</span>
         )}
@@ -38,7 +42,7 @@ export function TaskTabs({ activeTab, onChange, generalIncompleteCount, doneCoun
         id="task-tab-done"
       >
         <span className="task-tab-icon">✓</span>
-        Done
+        {t.tasks.doneTab}
         {doneCount > 0 && (
           <span className="task-tab-badge done-badge">{doneCount}</span>
         )}

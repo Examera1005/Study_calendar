@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { playSynthSound } from "./sound";
+import { useLanguage } from "../../../hooks/useLanguage";
+
+const createChecklistTasks = (taskTexts: string[]) =>
+  taskTexts.map((text, index) => ({
+    id: index + 1,
+    text,
+    completed: index === 1,
+  }));
 
 export function ChecklistDemo() {
-  const [tasks, setTasks] = useState([
-    { id: 1, text: "Revise Math formula sheet", completed: false },
-    { id: 2, text: "Design slide deck draft", completed: true },
-    { id: 3, text: "Prepare Physics workbook exercise 4", completed: false },
-    { id: 4, text: "Review SQL database schemas", completed: false }
-  ]);
+  const { t } = useLanguage();
+
+  const [tasks, setTasks] = useState(() => createChecklistTasks(t.landingPage.checklistTasks));
   const [particles, setParticles] = useState<{ id: number; x: number; y: number; tx: number; ty: number }[]>([]);
+
+  // Update tasks array on language change to reflect translations
+  useEffect(() => {
+    setTasks(createChecklistTasks(t.landingPage.checklistTasks));
+  }, [t.landingPage.checklistTasks]);
 
   const handleToggleTask = (id: number, e: React.MouseEvent | React.KeyboardEvent) => {
     playSynthSound("pop");
@@ -51,26 +61,28 @@ export function ChecklistDemo() {
 
   return (
     <>
-      <span className="lp-demo-tag lp-tag-checklist">Task Checklist</span>
-      <h3>Interactive Task Checklist</h3>
+      <span className="lp-demo-tag lp-tag-checklist">
+        {t.landingPage.checklistTag}
+      </span>
+      <h3>
+        {t.landingPage.demoChecklistTitle}
+      </h3>
       <p className="lp-demo-desc">
-        Mark off tasks to update your daily progress bar. Satisfaction guaranteed with subtle micro-animations.
+        {t.landingPage.demoChecklistDesc}
       </p>
       
       <div className="lp-demo-interactive" style={{ position: "relative" }}>
         {/* Particle explosions mapping */}
-        {particles.map((p) => (
-          <div 
-            key={p.id}
-            className="lp-particle"
-            style={{
-              left: p.x,
-              top: p.y,
-              ["--tx" as any]: `${p.tx}px`,
-              ["--ty" as any]: `${p.ty}px`
-            }}
-          />
-        ))}
+        {particles.map((p) => {
+          const particleStyle: React.CSSProperties & Record<"--tx" | "--ty", string> = {
+            left: p.x,
+            top: p.y,
+            "--tx": `${p.tx}px`,
+            "--ty": `${p.ty}px`,
+          };
+
+          return <div key={p.id} className="lp-particle" style={particleStyle} />;
+        })}
 
         <div className="lp-check-list">
           {tasks.map((task) => (
@@ -90,7 +102,7 @@ export function ChecklistDemo() {
 
         <div className="lp-check-progress-container">
           <span style={{ fontSize: "0.82rem", color: "#a1a1aa", fontWeight: 600 }}>
-            Daily Completion:
+            {t.landingPage.checklistProgressLabel}
           </span>
           <div className="lp-check-progress-bar-bg">
             <div className="lp-check-progress-bar-fill" style={{ width: `${progressPercent}%` }} />

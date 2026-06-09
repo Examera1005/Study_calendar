@@ -2,12 +2,14 @@ import { format } from "date-fns";
 import type { View } from "../../App";
 import { SubjectBadge } from "../ui/SubjectBadge";
 import { formatDuration } from "../../utils/dateUtils";
+import { useLanguage } from "../../hooks/useLanguage";
 
-const daysUntil = (dateStr: string) => {
+const daysUntil = (dateStr: string, t: any) => {
   const d = Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
-  if (d === 0) return "Today";
-  if (d === 1) return "Tomorrow";
-  return `${d} days`;
+  if (d < 0) return t.exams.passed;
+  if (d === 0) return t.exams.today;
+  if (d === 1) return t.exams.tomorrow;
+  return t.exams.daysCount(d);
 };
 
 const countdownClass = (dateStr: string) => {
@@ -46,6 +48,8 @@ export function DashboardCardGrid({
   getSubject,
   generalIncomplete,
 }: DashboardCardGridProps) {
+  const { t, language, dateLocale } = useLanguage();
+
   return (
     <div className="card-grid">
       {/* Upcoming Exams */}
@@ -57,16 +61,16 @@ export function DashboardCardGrid({
               <circle cx="12" cy="12" r="6" />
               <circle cx="12" cy="12" r="2" />
             </svg>
-            Upcoming Exams
+            {t.dashboard.upcomingExams}
           </h3>
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => setView("exams")}>
-            View all
+            {t.analytics.viewAllBtn}
           </button>
         </div>
         {!upcomingExams || upcomingExams.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">🎉</div>
-            <p>No upcoming exams</p>
+            <p>{t.dashboard.noExams}</p>
           </div>
         ) : (
           upcomingExams.map((exam) => {
@@ -88,12 +92,12 @@ export function DashboardCardGrid({
                           icon={subj.icon}
                         />
                       )}
-                      <span>{format(new Date(exam.date), "MMM d")}</span>
+                      <span>{format(new Date(exam.date), "MMM d", { locale: dateLocale })}</span>
                       <span className="coeff-badge">×{exam.coefficient}</span>
                     </div>
                   </div>
                   <span className={`countdown ${countdownClass(exam.date)}`}>
-                    {daysUntil(exam.date)}
+                    {daysUntil(exam.date, t)}
                   </span>
                 </div>
               </div>
@@ -109,7 +113,7 @@ export function DashboardCardGrid({
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "16px", height: "16px", color: "var(--success)" }}>
               <polyline points="20 6 9 17 4 12" />
             </svg>
-            {activeDate === today ? "Today's Tasks" : "Tasks of the Day"}
+            {activeDate === today ? t.dashboard.todaysTasks : t.dashboard.tasksOfDay}
           </h3>
           <button
             type="button"
@@ -119,13 +123,13 @@ export function DashboardCardGrid({
               setView("tasks");
             }}
           >
-            View all
+            {t.analytics.viewAllBtn}
           </button>
         </div>
         {!todayTasks || todayTasks.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">📋</div>
-            <p>{activeDate === today ? "No tasks for today" : "No tasks for this day"}</p>
+            <p>{activeDate === today ? t.dashboard.noTasksToday : t.tasks.noTasksForDay}</p>
           </div>
         ) : (
           todayTasks.slice(0, 5).map((task) => (
@@ -150,20 +154,20 @@ export function DashboardCardGrid({
               <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
               <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
             </svg>
-            General Tasks
+            {t.dashboard.generalTasks}
           </h3>
           <button
             type="button"
             className="btn btn-ghost btn-sm"
             onClick={() => setView("tasks")}
           >
-            View all
+            {t.analytics.viewAllBtn}
           </button>
         </div>
         {!generalTasks || generalTasks.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">📋</div>
-            <p>No general tasks</p>
+            <p>{t.dashboard.noGeneralTasks}</p>
           </div>
         ) : (
           generalTasks.filter((t) => !t.completed).slice(0, 5).map((task) => (
@@ -180,7 +184,7 @@ export function DashboardCardGrid({
         )}
         {generalIncomplete > 0 && (
           <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 8 }}>
-            {generalIncomplete} remaining
+            {generalIncomplete} {t.common.remaining}
           </div>
         )}
       </div>
@@ -195,13 +199,13 @@ export function DashboardCardGrid({
               <line x1="8" y1="2" x2="8" y2="6" />
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            {activeDate === today ? "Today's Events" : "Events for Selected Day"}
+            {activeDate === today ? t.dashboard.todaysEvents : t.dashboard.eventsForSelectedDay}
           </h3>
         </div>
         {!todayEvents || todayEvents.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">🗓️</div>
-            <p>{activeDate === today ? "No events scheduled" : "No events scheduled for this day"}</p>
+            <p>{activeDate === today ? t.dashboard.noEventsScheduled : t.calendar.noEventsForDay}</p>
           </div>
         ) : (
           todayEvents.map((ev) => (
@@ -229,7 +233,7 @@ export function DashboardCardGrid({
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "16px", height: "16px", color: "var(--text-secondary)" }}>
               <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
             </svg>
-            {activeDate === today ? "Study Log" : "Study Log for Selected Day"}
+            {activeDate === today ? t.sidebar.dailyLog : t.dashboard.studyLogForSelectedDay}
           </h3>
           <button
             type="button"
@@ -239,13 +243,13 @@ export function DashboardCardGrid({
               setView("log");
             }}
           >
-            Add entry
+            {t.dailyLog.addLog}
           </button>
         </div>
         {!todayLogs || todayLogs.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">✏️</div>
-            <p>{activeDate === today ? "No study entries yet today" : "No study entries for this day"}</p>
+            <p>{activeDate === today ? t.dashboard.noStudyEntriesYetToday : t.dailyLog.noLogsYet}</p>
           </div>
         ) : (
           todayLogs.slice(0, 4).map((log) => {
@@ -262,7 +266,7 @@ export function DashboardCardGrid({
                     />
                   )}
                   {log.duration && (
-                    <span className="duration-badge">⏱ {log.duration}min</span>
+                    <span className="duration-badge">⏱ {log.duration}{t.common.minutesUnit}</span>
                   )}
                 </div>
               </div>
@@ -280,13 +284,13 @@ export function DashboardCardGrid({
               <line x1="12" y1="20" x2="12" y2="4" />
               <line x1="6" y1="20" x2="6" y2="14" />
             </svg>
-            Study Time by Subject
+            {t.analytics.subjectDistributionTitle}
           </h3>
         </div>
         {subjectBreakdown.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">📊</div>
-            <p>No study logs recorded yet</p>
+            <p>{t.analytics.noStudyData}</p>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

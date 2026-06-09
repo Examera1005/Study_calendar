@@ -1,5 +1,6 @@
 import React, { useReducer, useEffect, useRef } from "react";
 import { playSynthSound } from "./sound";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 interface PomoState {
   minutes: number;
@@ -10,7 +11,8 @@ interface PomoState {
 type PomoAction =
   | { type: "TICK" }
   | { type: "START_PAUSE" }
-  | { type: "RESET" };
+  | { type: "RESET" }
+  | { type: "SET_TRANSLATED_LOGS"; payload: { id: number; time: string; label: string }[] };
 
 function pomoReducer(state: PomoState, action: PomoAction): PomoState {
   switch (action.type) {
@@ -27,7 +29,7 @@ function pomoReducer(state: PomoState, action: PomoAction): PomoState {
             {
               id: Date.now(),
               time: timeStr,
-              label: "Mock Log: Completed Focus Session (25m)"
+              label: "MOCK_LOG_COMPLETED_FOCUS"
             },
             ...state.logs
           ]
@@ -54,22 +56,30 @@ function pomoReducer(state: PomoState, action: PomoAction): PomoState {
         minutes: 25
       };
     }
+    case "SET_TRANSLATED_LOGS": {
+      return {
+        ...state,
+        logs: action.payload
+      };
+    }
     default:
       return state;
   }
 }
 
 export function PomodoroDemo() {
+  const { t } = useLanguage();
+
   const [state, dispatch] = useReducer(pomoReducer, {
     minutes: 25,
     running: false,
     logs: [
-      { id: 1, time: "10:15", label: "Completed Chemistry prep (25m)" }
+      { id: 1, time: "10:15", label: "MOCK_LOG_CHEMISTRY" }
     ]
   });
 
   const { minutes: pomoMinutes, running: pomoRunning, logs: pomoLogs } = state;
-  const pomoTimerRef = useRef<any>(null);
+  const pomoTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (pomoRunning) {
@@ -77,15 +87,15 @@ export function PomodoroDemo() {
         dispatch({ type: "TICK" });
       }, 1000);
     } else {
-      if (pomoTimerRef.current) {
-        clearInterval(pomoTimerRef.current);
+      if (pomoTimerRef.current !== null) {
+        window.clearInterval(pomoTimerRef.current);
         pomoTimerRef.current = null;
       }
     }
 
     return () => {
-      if (pomoTimerRef.current) {
-        clearInterval(pomoTimerRef.current);
+      if (pomoTimerRef.current !== null) {
+        window.clearInterval(pomoTimerRef.current);
         pomoTimerRef.current = null;
       }
     };
@@ -103,12 +113,26 @@ export function PomodoroDemo() {
   const pomoProgressPercent = 1 - pomoMinutes / 25;
   const strokeDashoffset = 314 - 314 * pomoProgressPercent;
 
+  const getLogLabel = (label: string) => {
+    if (label === "MOCK_LOG_CHEMISTRY") {
+      return t.landingPage.pomodoroChemistryLog;
+    }
+    if (label === "MOCK_LOG_COMPLETED_FOCUS") {
+      return t.landingPage.pomodoroCompletedFocusLog;
+    }
+    return label;
+  };
+
   return (
     <>
-      <span className="lp-demo-tag lp-tag-pomodoro">Focus Engine</span>
-      <h3>Pomodoro & Logging Simulator</h3>
+      <span className="lp-demo-tag lp-tag-pomodoro">
+        {t.landingPage.pomodoroTag}
+      </span>
+      <h3>
+        {t.landingPage.demoPomodoroTitle}
+      </h3>
       <p className="lp-demo-desc">
-        Start the focus session. The 25-minute countdown is accelerated to complete in exactly 25 seconds (1 minute per second) to show the log sync.
+        {t.landingPage.pomodoroDesc}
       </p>
       
       <div className="lp-demo-interactive">
@@ -132,24 +156,24 @@ export function PomodoroDemo() {
 
           <div className="lp-pomo-controls">
             <span className="lp-pomo-state-text">
-              {pomoRunning ? "🔥 Focus Active (Simulated)" : "⏱️ Session Idle"}
+              {pomoRunning ? t.landingPage.pomodoroActive : t.landingPage.pomodoroIdle}
             </span>
             <div style={{ display: "flex", gap: 8 }}>
               <button 
                 type="button"
                 className="btn btn-primary btn-sm" 
                 onClick={handleStartPomo}
-                aria-label={pomoRunning ? "Pause Pomodoro Timer" : "Start Pomodoro Timer"}
+                aria-label={pomoRunning ? t.landingPage.pomodoroPause : t.landingPage.pomodoroStart}
               >
-                {pomoRunning ? "⏸️ Pause" : "▶️ Start"}
+                {pomoRunning ? t.landingPage.pomodoroPause : t.landingPage.pomodoroStart}
               </button>
               <button 
                 type="button"
                 className="btn btn-secondary btn-sm" 
                 onClick={handleResetPomo}
-                aria-label="Reset Pomodoro Timer"
+                aria-label={t.landingPage.pomodoroReset}
               >
-                Reset
+                {t.landingPage.pomodoroReset}
               </button>
             </div>
           </div>
@@ -157,11 +181,11 @@ export function PomodoroDemo() {
 
         <div className="lp-pomo-logs">
           <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#71717a", textTransform: "uppercase" }}>
-            Logged Sessions:
+            {t.landingPage.pomodoroLoggedSessions}
           </div>
           {pomoLogs.map((log) => (
             <div key={log.id} className="lp-pomo-log-item">
-              <span>{log.label}</span>
+              <span>{getLogLabel(log.label)}</span>
               <span style={{ color: "#71717a", fontFamily: "monospace" }}>{log.time}</span>
             </div>
           ))}

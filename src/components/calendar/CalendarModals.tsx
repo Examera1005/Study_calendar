@@ -3,14 +3,16 @@ import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Modal } from "../ui/Modal";
+import { useLanguage } from "../../hooks/useLanguage";
 
 function SubjectOptions({ subjects, name, defaultValue }: { subjects: Doc<"subjects">[] | undefined; name: string; defaultValue?: string }) {
+  const { t } = useLanguage();
   if (!subjects || subjects.length === 0) return null;
   return (
     <div className="form-group">
-      <label htmlFor={`${name}-subject`}>Subject (optional)</label>
+      <label htmlFor={`${name}-subject`}>{t.tasks.subjectLabelOptional}</label>
       <select id={`${name}-subject`} name="subjectId" defaultValue={defaultValue ?? ""}>
-        <option value="">None</option>
+        <option value="">{t.common.none}</option>
         {subjects.map((s) => (
           <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
         ))}
@@ -34,9 +36,10 @@ export function AddTaskModal({ date, subjects, onClose, onCreated }: {
   onClose: () => void;
   onCreated?: () => void;
 }) {
+  const { t } = useLanguage();
   const createTask = useMutation(api.tasks.create);
   return (
-    <Modal title="Add Task" onClose={onClose}>
+    <Modal title={t.tasks.addTask} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -55,25 +58,34 @@ export function AddTaskModal({ date, subjects, onClose, onCreated }: {
         }}
       >
         <div className="form-group">
-          <label htmlFor="cal-add-task-title">Title</label>
-          <input id="cal-add-task-title" name="title" required />
+          <label htmlFor="cal-add-task-title">{t.common.title}</label>
+          <input
+            id="cal-add-task-title"
+            name="title"
+            required
+            placeholder={t.tasks.taskTitlePlaceholder}
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="cal-add-task-desc">Description</label>
-          <textarea id="cal-add-task-desc" name="description" />
+          <label htmlFor="cal-add-task-desc">{t.tasks.descriptionLabel}</label>
+          <textarea
+            id="cal-add-task-desc"
+            name="description"
+            placeholder={t.tasks.taskNotesPlaceholder}
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="cal-add-task-priority">Priority</label>
+          <label htmlFor="cal-add-task-priority">{t.tasks.priorityLabel}</label>
           <select id="cal-add-task-priority" name="priority" defaultValue="medium">
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="low">{t.tasks.priorityLow}</option>
+            <option value="medium">{t.tasks.priorityMedium}</option>
+            <option value="high">{t.tasks.priorityHigh}</option>
           </select>
         </div>
         <SubjectOptions subjects={subjects} name="cal-add-task" />
         <div className="modal-actions">
-          <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button type="submit" className="btn btn-primary">Add Task</button>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>{t.common.cancel}</button>
+          <button type="submit" className="btn btn-primary">{t.tasks.addTask}</button>
         </div>
       </form>
     </Modal>
@@ -85,9 +97,10 @@ export function AddEventModal({ date, onClose, onCreated }: {
   onClose: () => void;
   onCreated?: () => void;
 }) {
+  const { t } = useLanguage();
   const createEvent = useMutation(api.events.create);
   return (
-    <Modal title="Add Event" onClose={onClose}>
+    <Modal title={t.calendar.addEvent} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -104,26 +117,35 @@ export function AddEventModal({ date, onClose, onCreated }: {
         }}
       >
         <div className="form-group">
-          <label htmlFor="cal-add-event-title">Title</label>
-          <input id="cal-add-event-title" name="title" required />
+          <label htmlFor="cal-add-event-title">{t.common.title}</label>
+          <input
+            id="cal-add-event-title"
+            name="title"
+            required
+            placeholder={t.calendar.eventTitle}
+          />
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <div className="form-group">
-            <label htmlFor="cal-add-event-start">Start Time</label>
+            <label htmlFor="cal-add-event-start">{t.calendar.startTimeLabel}</label>
             <input id="cal-add-event-start" name="startTime" type="time" />
           </div>
           <div className="form-group">
-            <label htmlFor="cal-add-event-end">End Time</label>
+            <label htmlFor="cal-add-event-end">{t.calendar.endTimeLabel}</label>
             <input id="cal-add-event-end" name="endTime" type="time" />
           </div>
         </div>
         <div className="form-group">
-          <label htmlFor="cal-add-event-desc">Description</label>
-          <textarea id="cal-add-event-desc" name="description" />
+          <label htmlFor="cal-add-event-desc">{t.tasks.descriptionLabel}</label>
+          <textarea
+            id="cal-add-event-desc"
+            name="description"
+            placeholder={t.tasks.taskNotesPlaceholder}
+          />
         </div>
         <div className="modal-actions">
-          <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button type="submit" className="btn btn-primary">Add Event</button>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>{t.common.cancel}</button>
+          <button type="submit" className="btn btn-primary">{t.calendar.addEvent}</button>
         </div>
       </form>
     </Modal>
@@ -136,9 +158,10 @@ export function AddLogModal({ date, subjects, onClose, onCreated }: {
   onClose: () => void;
   onCreated?: () => void;
 }) {
+  const { t } = useLanguage();
   const createLog = useMutation(api.dailyLogs.create);
   return (
-    <Modal title="Add Study Log" onClose={onClose}>
+    <Modal title={t.calendar.addLog} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -154,17 +177,22 @@ export function AddLogModal({ date, subjects, onClose, onCreated }: {
         }}
       >
         <div className="form-group">
-          <label htmlFor="cal-add-log-content">What did you study?</label>
-          <textarea id="cal-add-log-content" name="content" required />
+          <label htmlFor="cal-add-log-content">{t.dailyLog.whatDidYouStudy}</label>
+          <textarea
+            id="cal-add-log-content"
+            name="content"
+            required
+            placeholder={t.dailyLog.summaryPlaceholder}
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="cal-add-log-duration">Duration (minutes)</label>
+          <label htmlFor="cal-add-log-duration">{t.dailyLog.durationMinutes}</label>
           <input id="cal-add-log-duration" name="duration" type="number" min="1" />
         </div>
         <SubjectOptions subjects={subjects} name="cal-add-log" />
         <div className="modal-actions">
-          <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button type="submit" className="btn btn-primary">Add Entry</button>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>{t.common.cancel}</button>
+          <button type="submit" className="btn btn-primary">{t.common.add}</button>
         </div>
       </form>
     </Modal>
@@ -186,9 +214,10 @@ export function EditTaskModal({ task, subjects, onClose, onSaved }: {
   onClose: () => void;
   onSaved?: () => void;
 }) {
+  const { t } = useLanguage();
   const updateTask = useMutation(api.tasks.update);
   return (
-    <Modal title="Edit Task" onClose={onClose}>
+    <Modal title={t.tasks.editTask} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -207,29 +236,40 @@ export function EditTaskModal({ task, subjects, onClose, onSaved }: {
         }}
       >
         <div className="form-group">
-          <label htmlFor="cal-edit-task-title">Title</label>
-          <input id="cal-edit-task-title" name="title" defaultValue={task.title} required />
+          <label htmlFor="cal-edit-task-title">{t.common.title}</label>
+          <input
+            id="cal-edit-task-title"
+            name="title"
+            defaultValue={task.title}
+            required
+            placeholder={t.tasks.taskTitlePlaceholder}
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="cal-edit-task-desc">Description</label>
-          <textarea id="cal-edit-task-desc" name="description" defaultValue={task.description} />
+          <label htmlFor="cal-edit-task-desc">{t.tasks.descriptionLabel}</label>
+          <textarea
+            id="cal-edit-task-desc"
+            name="description"
+            defaultValue={task.description}
+            placeholder={t.tasks.taskNotesPlaceholder}
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="cal-edit-task-date">Date</label>
+          <label htmlFor="cal-edit-task-date">{t.common.date}</label>
           <input id="cal-edit-task-date" name="date" type="date" defaultValue={task.date} required />
         </div>
         <div className="form-group">
-          <label htmlFor="cal-edit-task-priority">Priority</label>
+          <label htmlFor="cal-edit-task-priority">{t.tasks.priorityLabel}</label>
           <select id="cal-edit-task-priority" name="priority" defaultValue={task.priority}>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="low">{t.tasks.priorityLow}</option>
+            <option value="medium">{t.tasks.priorityMedium}</option>
+            <option value="high">{t.tasks.priorityHigh}</option>
           </select>
         </div>
         <SubjectOptions subjects={subjects} name="cal-edit-task" defaultValue={task.subjectId || ""} />
         <div className="modal-actions">
-          <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button type="submit" className="btn btn-primary">Save Changes</button>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>{t.common.cancel}</button>
+          <button type="submit" className="btn btn-primary">{t.common.saveChanges}</button>
         </div>
       </form>
     </Modal>
@@ -242,9 +282,10 @@ export function EditLogModal({ log, subjects, onClose, onSaved }: {
   onClose: () => void;
   onSaved?: () => void;
 }) {
+  const { t } = useLanguage();
   const updateLog = useMutation(api.dailyLogs.update);
   return (
-    <Modal title="Edit Study Log" onClose={onClose}>
+    <Modal title={t.calendar.editLog} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -260,17 +301,23 @@ export function EditLogModal({ log, subjects, onClose, onSaved }: {
         }}
       >
         <div className="form-group">
-          <label htmlFor="cal-edit-log-content">What did you study?</label>
-          <textarea id="cal-edit-log-content" name="content" defaultValue={log.content} required />
+          <label htmlFor="cal-edit-log-content">{t.dailyLog.whatDidYouStudy}</label>
+          <textarea
+            id="cal-edit-log-content"
+            name="content"
+            defaultValue={log.content}
+            required
+            placeholder={t.dailyLog.summaryPlaceholder}
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="cal-edit-log-duration">Duration (minutes)</label>
+          <label htmlFor="cal-edit-log-duration">{t.dailyLog.durationMinutes}</label>
           <input id="cal-edit-log-duration" name="duration" type="number" min="1" defaultValue={log.duration} />
         </div>
         <SubjectOptions subjects={subjects} name="cal-edit-log" defaultValue={log.subjectId || ""} />
         <div className="modal-actions">
-          <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button type="submit" className="btn btn-primary">Save Changes</button>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>{t.common.cancel}</button>
+          <button type="submit" className="btn btn-primary">{t.common.saveChanges}</button>
         </div>
       </form>
     </Modal>

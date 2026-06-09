@@ -91,8 +91,8 @@ export function TiltCard({
     : (isHovered 
         ? "transform 0.15s cubic-bezier(0.25, 1, 0.5, 1)" 
         : "transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)");
-  const cardTransformStyle = disableTilt ? "flat" : "preserve-3d";
-  const cardBackface = disableTilt ? "visible" : "hidden";
+  const cardTransformStyle: React.CSSProperties["transformStyle"] = disableTilt ? "flat" : "preserve-3d";
+  const cardBackface: React.CSSProperties["backfaceVisibility"] = disableTilt ? "visible" : "hidden";
 
   return (
     <div
@@ -117,16 +117,16 @@ export function TiltCard({
         style={{
           transform: cardTransform,
           transition: cardTransition,
-          transformStyle: cardTransformStyle as any,
-          backfaceVisibility: cardBackface as any,
+          transformStyle: cardTransformStyle,
+          backfaceVisibility: cardBackface,
         }}
       >
         <div 
           className="tilt-card-inner"
           style={{ 
             transform: disableTilt ? "none" : "translateZ(20px)", 
-            transformStyle: cardTransformStyle as any, 
-            backfaceVisibility: cardBackface as any
+            transformStyle: cardTransformStyle,
+            backfaceVisibility: cardBackface
           }}
         >
           {children}

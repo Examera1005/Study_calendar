@@ -1,3 +1,5 @@
+import { useLanguage } from "../../hooks/useLanguage";
+
 type Tab = 7 | 30;
 
 type Props = {
@@ -6,6 +8,7 @@ type Props = {
 };
 
 export function TimeRangeToggle({ value, onChange }: Props) {
+  const { t } = useLanguage();
   return (
     <div style={{ display: "flex", gap: 8, background: "var(--bg-glass)", border: "1px solid var(--border-subtle)", borderRadius: "var(--radius-md)", padding: 4 }}>
       <button
@@ -14,7 +17,7 @@ export function TimeRangeToggle({ value, onChange }: Props) {
         onClick={() => onChange(7)}
         style={{ padding: "6px 12px" }}
       >
-        7 Jours
+        {t.analytics.timeRangeDays(7)}
       </button>
       <button
         type="button"
@@ -22,7 +25,7 @@ export function TimeRangeToggle({ value, onChange }: Props) {
         onClick={() => onChange(30)}
         style={{ padding: "6px 12px" }}
       >
-        30 Jours
+        {t.analytics.timeRangeDays(30)}
       </button>
     </div>
   );
@@ -36,6 +39,7 @@ type Stats = {
 };
 
 export function KpiCards({ stats }: { stats: Stats }) {
+  const { t } = useLanguage();
   const cards = [
     { 
       icon: (
@@ -45,7 +49,7 @@ export function KpiCards({ stats }: { stats: Stats }) {
         </svg>
       ), 
       value: `${stats.totalHours}h`, 
-      label: "Temps Total",
+      label: t.analytics.kpiHours,
       bg: "var(--accent-light)"
     },
     { 
@@ -54,8 +58,8 @@ export function KpiCards({ stats }: { stats: Stats }) {
           <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
         </svg>
       ), 
-      value: `${stats.streak} ${stats.streak > 1 ? "Jours" : "Jour"}`, 
-      label: "Série d'Études",
+      value: `${stats.streak} ${stats.streak > 1 ? t.dashboard.streakDayPlural : t.dashboard.streakDaySingular}`, 
+      label: t.analytics.kpiStreak,
       bg: "rgba(245, 158, 11, 0.08)"
     },
     { 
@@ -68,7 +72,7 @@ export function KpiCards({ stats }: { stats: Stats }) {
         </svg>
       ), 
       value: stats.totalSessions, 
-      label: "Sessions Loggées",
+      label: t.analytics.kpiSessions,
       bg: "rgba(16, 185, 129, 0.08)"
     },
     { 
@@ -79,7 +83,7 @@ export function KpiCards({ stats }: { stats: Stats }) {
         </svg>
       ), 
       value: stats.completedTasks, 
-      label: "Tâches Complétées",
+      label: t.analytics.kpiTasks,
       bg: "var(--accent-light)"
     },
   ];

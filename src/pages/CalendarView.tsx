@@ -22,6 +22,7 @@ import {
   EditTaskModal,
   EditLogModal,
 } from "../components/calendar/CalendarModals";
+import { useLanguage } from "../hooks/useLanguage";
 
 type Task = Doc<"tasks">;
 type Log = Doc<"dailyLogs">;
@@ -66,6 +67,7 @@ export function CalendarView({
   selectedDate: string;
   setSelectedDate: (d: string) => void;
 }) {
+  const { t, language, dateLocale } = useLanguage();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [dialog, dispatchDialog] = useReducer(dialogReducer, { type: "none" });
   const subjects = useQuery(api.subjects.list);
@@ -109,7 +111,7 @@ export function CalendarView({
     dayData[log.date].dots.push({ color, type: "log" });
     dayData[log.date].items.push({
       id: log._id,
-      title: `${subj ? `${subj.name}: ` : ""}${log.content} (${log.duration ? `${log.duration}m` : "no time"})`,
+      title: `${subj ? `${subj.name}: ` : ""}${log.content} (${log.duration ? `${log.duration}${t.common.minutesUnit}` : t.common.none})`,
       color,
       icon,
       type: "log",
@@ -129,16 +131,19 @@ export function CalendarView({
     setSelectedDate(formatLocalDate());
   };
 
+  const formattedMonth = format(currentMonth, "MMMM yyyy", { locale: dateLocale });
+  const capitalizedMonth = formattedMonth.charAt(0).toUpperCase() + formattedMonth.slice(1);
+
   return (
     <div>
       <div className="page-header">
-        <h1>Calendar</h1>
+        <h1>{t.calendar.title}</h1>
       </div>
 
       <div className="calendar-header">
-        <h2>{format(currentMonth, "MMMM yyyy")}</h2>
+        <h2>{capitalizedMonth}</h2>
         <div className="calendar-nav">
-          <button type="button" className="btn-icon" aria-label="Previous month" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+          <button type="button" className="btn-icon" aria-label={t.calendar.prevMonth} onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
             ◀
           </button>
           <button
@@ -146,9 +151,9 @@ export function CalendarView({
             className="btn btn-secondary btn-sm"
             onClick={handleGoToToday}
           >
-            Today
+            {t.common.today}
           </button>
-          <button type="button" className="btn-icon" aria-label="Next month" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+          <button type="button" className="btn-icon" aria-label={t.calendar.nextMonth} onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
             ▶
           </button>
         </div>

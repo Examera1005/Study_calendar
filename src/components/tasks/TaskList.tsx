@@ -2,6 +2,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { SubjectBadge } from "../ui/SubjectBadge";
+import { useLanguage } from "../../hooks/useLanguage";
 
 type Task = Doc<"tasks">;
 type Subject = Doc<"subjects">;
@@ -13,6 +14,7 @@ type Props = {
 };
 
 function TaskRow({ task, subjects, onEdit }: Props) {
+  const { t } = useLanguage();
   const toggleTask = useMutation(api.tasks.toggleComplete);
   const removeTask = useMutation(api.tasks.remove);
   const subj = task.subjectId ? subjects?.find((s) => s._id === task.subjectId) : null;
@@ -46,7 +48,7 @@ function TaskRow({ task, subjects, onEdit }: Props) {
           type="button"
           className="btn-icon"
           style={{ width: 28, height: 28 }}
-          aria-label={`Edit ${task.title}`}
+          aria-label={`${t.common.edit} ${task.title}`}
           onClick={() => onEdit(task)}
         >
           ✏️
@@ -55,7 +57,7 @@ function TaskRow({ task, subjects, onEdit }: Props) {
           type="button"
           className="btn-icon"
           style={{ width: 28, height: 28 }}
-          aria-label={`Delete ${task.title}`}
+          aria-label={`${t.common.delete} ${task.title}`}
           onClick={() => void removeTask({ id: task._id })}
         >
           🗑
@@ -84,12 +86,14 @@ export function TaskList({
   subjects,
   onEdit,
 }: ListProps) {
+  const { t } = useLanguage();
+
   if (activeTab === "done") {
     if (dailyCompleted.length === 0 && generalCompleted.length === 0) {
       return (
         <div className="empty-state">
           <div className="empty-icon">✓</div>
-          <p>No completed tasks yet</p>
+          <p>{t.tasks.noCompletedTasksYet}</p>
         </div>
       );
     }
@@ -97,7 +101,7 @@ export function TaskList({
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {dailyCompleted.length > 0 && (
           <div className="task-group">
-            <div className="task-group-title">📅 Daily Tasks Completed</div>
+            <div className="task-group-title">{t.tasks.dailyTasksCompletedGroup}</div>
             {dailyCompleted.map((task) => (
               <TaskRow key={task._id} task={task} subjects={subjects} onEdit={onEdit} />
             ))}
@@ -105,7 +109,7 @@ export function TaskList({
         )}
         {generalCompleted.length > 0 && (
           <div className="task-group">
-            <div className="task-group-title">📋 General Tasks Completed</div>
+            <div className="task-group-title">{t.tasks.generalTasksCompletedGroup}</div>
             {generalCompleted.map((task) => (
               <TaskRow key={task._id} task={task} subjects={subjects} onEdit={onEdit} />
             ))}
@@ -120,7 +124,7 @@ export function TaskList({
     return (
       <div className="empty-state">
         <div className="empty-icon">{activeTab === "daily" ? "✅" : "📋"}</div>
-        <p>{activeTab === "daily" ? "No tasks for this day" : "No general tasks yet"}</p>
+        <p>{activeTab === "daily" ? t.tasks.noTasksForDay : t.tasks.noGeneralTasksYet}</p>
       </div>
     );
   }

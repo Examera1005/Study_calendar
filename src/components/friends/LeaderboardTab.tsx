@@ -1,5 +1,6 @@
 import React from "react";
 import { formatDuration } from "../../utils/dateUtils";
+import { useLanguage } from "../../hooks/useLanguage";
 
 interface LeaderboardTabProps {
   leaderboard: any[] | undefined;
@@ -7,12 +8,14 @@ interface LeaderboardTabProps {
 }
 
 export function LeaderboardTab({ leaderboard, profile }: LeaderboardTabProps) {
+  const { t } = useLanguage();
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <div className="card">
-        <h3 style={{ marginBottom: 8 }}>Weekly Study Leaderboard</h3>
+        <h3 style={{ marginBottom: 8 }}>{t.friends.leaderboardTitle}</h3>
         <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 20 }}>
-          Ranking is based on total study hours logged in the past 7 days.
+          {t.friends.leaderboardDesc}
         </p>
 
         <div className="leaderboard-list">
@@ -29,7 +32,7 @@ export function LeaderboardTab({ leaderboard, profile }: LeaderboardTabProps) {
                   <div className="leaderboard-rank">{rankEmoji}</div>
                   <div className="leaderboard-user">
                     <div style={{ fontWeight: 600, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: 6 }}>
-                      {user.username} {isSelf && <span style={{ fontSize: "0.75rem", background: "var(--accent-light)", color: "var(--accent-primary)", padding: "2px 6px", borderRadius: 4 }}>You</span>}
+                      {user.username} {isSelf && <span style={{ fontSize: "0.75rem", background: "var(--accent-light)", color: "var(--accent-primary)", padding: "2px 6px", borderRadius: 4 }}>{t.friends.youLabel}</span>}
                     </div>
                     
                     {/* Subjects studied */}
@@ -47,20 +50,20 @@ export function LeaderboardTab({ leaderboard, profile }: LeaderboardTabProps) {
                               color: sub.color,
                             }}
                           >
-                            {sub.icon} {sub.name} ({Math.round(sub.duration)}m)
+                            {sub.icon} {sub.name} ({Math.round(sub.duration)}{t.common.minutesUnit})
                           </span>
                         ))}
                       </div>
                     ) : (
                       <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 6 }}>
-                        No subjects studied yet this week
+                        {t.friends.noSubjectsLeaderboard}
                       </div>
                     )}
 
                     {/* Upcoming exams */}
                     {user.upcomingExams.length > 0 && (
                       <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: 8, display: "flex", gap: 10 }}>
-                        <strong>Preparing for:</strong>
+                        <strong>{t.friends.preparingFor}</strong>
                         {user.upcomingExams.map((ex: any) => (
                           <span key={ex.title}>
                             {ex.title} ({ex.date})
@@ -77,7 +80,7 @@ export function LeaderboardTab({ leaderboard, profile }: LeaderboardTabProps) {
             })
           ) : (
             <div style={{ textAlign: "center", padding: 30, color: "var(--text-muted)" }}>
-              No guild members found. Add friends to start competing!
+              {t.friends.noGuildMembers}
             </div>
           )}
         </div>

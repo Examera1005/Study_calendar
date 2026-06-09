@@ -4,6 +4,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Modal } from "../ui/Modal";
 import { formatLocalDate } from "../../utils/dateUtils";
+import { useLanguage } from "../../hooks/useLanguage";
 
 type Props = {
   defaultMinutes: number;
@@ -15,9 +16,10 @@ type Props = {
 export function SaveTimerModal({ defaultMinutes, subjects, onClose, onSaved }: Props) {
   const [sessionMinutes, setSessionMinutes] = useState(defaultMinutes);
   const createLog = useMutation(api.dailyLogs.create);
+  const { t } = useLanguage();
 
   return (
-    <Modal title="Log Study Session" onClose={onClose}>
+    <Modal title={t.dailyLog.logStudySession} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -34,7 +36,7 @@ export function SaveTimerModal({ defaultMinutes, subjects, onClose, onSaved }: P
         }}
       >
         <div style={{ textAlign: "center", marginBottom: 20 }}>
-          <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 8 }}>Adjust Study Time (minutes)</div>
+          <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 8 }}>{t.dailyLog.adjustStudyTime}</div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
             <input
               type="number"
@@ -46,18 +48,18 @@ export function SaveTimerModal({ defaultMinutes, subjects, onClose, onSaved }: P
               className="session-duration-input"
               required
             />
-            <span style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--text-secondary)" }}>min</span>
+            <span style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--text-secondary)" }}>{t.common.minutesUnit}</span>
           </div>
         </div>
         <div className="form-group">
-          <label htmlFor="session-log-content">What did you study?</label>
-          <textarea id="session-log-content" name="content" required placeholder="Summarize your study session progress..." rows={3} />
+          <label htmlFor="session-log-content">{t.dailyLog.whatDidYouStudy}</label>
+          <textarea id="session-log-content" name="content" required placeholder={t.dailyLog.summaryPlaceholder} rows={3} />
         </div>
         {subjects && subjects.length > 0 && (
           <div className="form-group">
-            <label htmlFor="session-log-subject">Subject</label>
+            <label htmlFor="session-log-subject">{t.sidebar.subjects}</label>
             <select id="session-log-subject" name="subjectId" defaultValue="">
-              <option value="">None</option>
+              <option value="">{t.common.none}</option>
               {subjects.map((s) => (
                 <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
               ))}
@@ -65,8 +67,8 @@ export function SaveTimerModal({ defaultMinutes, subjects, onClose, onSaved }: P
           </div>
         )}
         <div className="modal-actions">
-          <button type="button" className="btn btn-secondary" onClick={onClose}>Discard</button>
-          <button type="submit" className="btn btn-primary">Save Log</button>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>{t.dailyLog.discard}</button>
+          <button type="submit" className="btn btn-primary">{t.dailyLog.saveLog}</button>
         </div>
       </form>
     </Modal>

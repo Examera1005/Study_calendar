@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { formatDuration } from "../../utils/dateUtils";
+import { useLanguage } from "../../hooks/useLanguage";
+import { format } from "date-fns";
 
 type Log = Doc<"dailyLogs">;
 
@@ -30,8 +32,6 @@ const PAD_RIGHT = 15;
 const PAD_TOP = 15;
 const PAD_BOTTOM = 25;
 
-const MONTH_LABELS = ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
-
 function formatLocalDate(d: Date): string {
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
@@ -39,12 +39,12 @@ function formatLocalDate(d: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function shortLabel(dateStr: string): string {
-  const parts = dateStr.split("-");
-  return `${parseInt(parts[2])} ${MONTH_LABELS[parseInt(parts[1]) - 1]}`;
+function shortLabel(dateStr: string, dateLocale: any, dateFormatShort: string): string {
+  const d = new Date(dateStr + "T00:00:00");
+  return format(d, dateFormatShort, { locale: dateLocale });
 }
 
-function buildChartData(allLogs: Log[], timeRange: number): { dateStr: string; label: string; minutes: number }[] {
+function buildChartData(allLogs: Log[], timeRange: number, dateLocale: any, dateFormatShort: string): { dateStr: string; label: string; minutes: number }[] {
   const days: string[] = [];
   for (let i = 0; i < timeRange; i++) {
     const d = new Date();
@@ -54,7 +54,7 @@ function buildChartData(allLogs: Log[], timeRange: number): { dateStr: string; l
   return days.map((dateStr) => {
     const dayLogs = allLogs.filter((l) => l.date === dateStr);
     const minutes = dayLogs.reduce((acc, l) => acc + (l.duration || 0), 0);
-    return { dateStr, label: shortLabel(dateStr), minutes };
+    return { dateStr, label: shortLabel(dateStr, dateLocale, dateFormatShort), minutes };
   });
 }
 
@@ -99,17 +99,20 @@ function buildChartElements(progressionData: { label: string; minutes: number }[
 
 export function ProgressionChart({ allLogs, timeRange, selectedSubjectId }: { allLogs: Log[]; timeRange: number; selectedSubjectId?: string | null }) {
   const [hoveredPoint, setHoveredPoint] = useState<Point | null>(null);
+  const { t, language, dateLocale } = useLanguage();
+
   const filteredLogs = useMemo(() => {
     if (!selectedSubjectId) return allLogs;
     return allLogs.filter((l) => l.subjectId === selectedSubjectId);
   }, [allLogs, selectedSubjectId]);
-  const progressionData = useMemo(() => buildChartData(filteredLogs, timeRange), [filteredLogs, timeRange]);
+  
+  const progressionData = useMemo(() => buildChartData(filteredLogs, timeRange, dateLocale, t.common.dateFormatShort), [filteredLogs, timeRange, dateLocale, t.common.dateFormatShort]);
   const elements = useMemo(() => buildChartElements(progressionData), [progressionData]);
 
   if (!elements || progressionData.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: "40px 0", color: "var(--text-muted)" }}>
-        Aucune donnée d'étude enregistrée.
+        {t.analytics.noStudyData}
       </div>
     );
   }
@@ -155,7 +158,7 @@ export function ProgressionChart({ allLogs, timeRange, selectedSubjectId }: { al
           x={WIDTH - PAD_RIGHT - 6} y={elements.averageY - 6}
           textAnchor="end" fontSize="0.65rem" fill="var(--warning)" fontWeight="600"
         >
-          Moyenne: {formatDuration(Math.round(elements.averageMinutes), { formatUnderHourAsMins: true })}
+          {t.analytics.averageLabel}: {formatDuration(Math.round(elements.averageMinutes), { formatUnderHourAsMins: true })}
         </text>
 
         {elements.medianMinutes > 0 && (
@@ -169,7 +172,7 @@ export function ProgressionChart({ allLogs, timeRange, selectedSubjectId }: { al
               x={PAD_LEFT + 6} y={elements.medianY - 6}
               textAnchor="start" fontSize="0.65rem" fill="var(--accent-primary)" fontWeight="600"
             >
-              Médiane (actifs): {formatDuration(Math.round(elements.medianMinutes), { formatUnderHourAsMins: true })}
+              {t.analytics.medianLabel}: {formatDuration(Math.round(elements.medianMinutes), { formatUnderHourAsMins: true })}
             </text>
           </g>
         )}

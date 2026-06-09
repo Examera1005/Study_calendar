@@ -64,11 +64,14 @@ export function calculateStreak(logs: { date: string; duration?: number }[]): nu
   return streak;
 }
 
+import type { TranslationSchema } from "../i18n/translations";
+
 // Calculate all achievements, progress, and unlock statuses
 export function getAchievements(
   logs: { date: string; duration?: number; subjectId?: string }[],
   completedTasksCount: number,
-  streak: number
+  streak: number,
+  t: TranslationSchema
 ): Badge[] {
   const studySessions = logs.filter((l) => l.duration && l.duration > 0);
   const totalMinutes = studySessions.reduce((acc, l) => acc + (l.duration || 0), 0);
@@ -82,8 +85,8 @@ export function getAchievements(
   return [
     {
       id: "first_session",
-      title: "Premier Pas",
-      description: "Loggez votre première session d'étude",
+      title: t.analytics.firstSessionTitle,
+      description: t.analytics.firstSessionDesc,
       icon: "🌱",
       current: studySessions.length,
       target: 1,
@@ -91,8 +94,8 @@ export function getAchievements(
     },
     {
       id: "study_hours",
-      title: "Érudit",
-      description: "Cumulez 10 heures d'étude (600 minutes)",
+      title: t.analytics.studyHoursTitle,
+      description: t.analytics.studyHoursDesc,
       icon: "📚",
       current: totalMinutes,
       target: 600,
@@ -100,8 +103,8 @@ export function getAchievements(
     },
     {
       id: "streak_5",
-      title: "Régularité",
-      description: "Atteignez une série d'étude de 5 jours consécutifs",
+      title: t.analytics.streak5Title,
+      description: t.analytics.streak5Desc,
       icon: "🔥",
       current: streak,
       target: 5,
@@ -109,8 +112,8 @@ export function getAchievements(
     },
     {
       id: "explorer",
-      title: "Explorateur",
-      description: "Étudiez 3 matières différentes",
+      title: t.analytics.explorerTitle,
+      description: t.analytics.explorerDesc,
       icon: "🧭",
       current: subjects.size,
       target: 3,
@@ -118,8 +121,8 @@ export function getAchievements(
     },
     {
       id: "tasks_10",
-      title: "Productif",
-      description: "Complétez 10 tâches d'apprentissage",
+      title: t.analytics.productiveTitle,
+      description: t.analytics.productiveDesc,
       icon: "⚡",
       current: completedTasksCount,
       target: 10,

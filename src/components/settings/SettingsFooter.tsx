@@ -1,8 +1,12 @@
+import { useLanguage } from "../../hooks/useLanguage";
+
 interface SettingsFooterProps {
   onShowLegal: (type: "privacy" | "terms") => void;
 }
 
 export function SettingsFooter({ onShowLegal }: SettingsFooterProps) {
+  const { t, language } = useLanguage();
+
   return (
     <div className="settings-legal-footer">
       <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
@@ -12,7 +16,7 @@ export function SettingsFooter({ onShowLegal }: SettingsFooterProps) {
           onClick={() => onShowLegal("privacy")}
           id="privacy-link"
         >
-          Privacy Policy
+          {t.settings.privacyBtn}
         </button>
         <button
           type="button"
@@ -20,11 +24,11 @@ export function SettingsFooter({ onShowLegal }: SettingsFooterProps) {
           onClick={() => onShowLegal("terms")}
           id="terms-link"
         >
-          Terms of Service
+          {t.settings.termsBtn}
         </button>
       </div>
       <span suppressHydrationWarning style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-        © {new Date().getFullYear()} Study Calendar. All rights reserved.
+        {t.settings.copyright(new Date().getFullYear())}
       </span>
     </div>
   );

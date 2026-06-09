@@ -1,100 +1,120 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import { playSynthSound } from "./sound";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 export function CryptoDemo() {
-  const [cryptoMessage, setCryptoMessage] = useState("Let's review the calculus answers together!");
-  const [cryptoStage, setCryptoStage] = useState<"plain" | "encrypting" | "cipher" | "transmitting" | "decrypting" | "done">("plain");
-  const [scrambledText, setScrambledText] = useState(cryptoMessage);
-  
-  const scrambleIntervalRef = useRef<any>(null);
-  const cryptoTimeoutsRef = useRef<any[]>([]);
+  const { t } = useLanguage();
 
-  const clearCryptoTimers = () => {
-    if (scrambleIntervalRef.current) {
-      clearInterval(scrambleIntervalRef.current);
+  const [demoState, setDemoState] = useState(() => {
+    const msg = t.landingPage.cryptoInitialMessage;
+    return {
+      message: msg,
+      stage: "plain" as "plain" | "encrypting" | "cipher" | "transmitting" | "decrypting" | "done",
+      scrambled: msg
+    };
+  });
+  
+  const scrambleIntervalRef = useRef<number | null>(null);
+  const cryptoTimeoutsRef = useRef<number[]>([]);
+
+  const clearCryptoTimers = useCallback(() => {
+    if (scrambleIntervalRef.current !== null) {
+      window.clearInterval(scrambleIntervalRef.current);
       scrambleIntervalRef.current = null;
     }
-    cryptoTimeoutsRef.current.forEach((id) => clearTimeout(id));
+    cryptoTimeoutsRef.current.forEach((id) => window.clearTimeout(id));
     cryptoTimeoutsRef.current = [];
-  };
+  }, []);
+
+  // Update default message when language changes
+  useEffect(() => {
+    const msg = t.landingPage.cryptoInitialMessage;
+    setDemoState({
+      message: msg,
+      scrambled: msg,
+      stage: "plain"
+    });
+    clearCryptoTimers();
+  }, [clearCryptoTimers, t.landingPage.cryptoInitialMessage]);
 
   const scheduleTimeout = (fn: () => void, delay: number) => {
-    const id = setTimeout(fn, delay);
+    const id = window.setTimeout(fn, delay);
     cryptoTimeoutsRef.current.push(id);
   };
 
   useEffect(() => {
-    // Unmount cleanup
     return () => {
       clearCryptoTimers();
     };
-  }, []);
+  }, [clearCryptoTimers]);
 
   const startCryptoProcess = () => {
-    if (cryptoStage !== "plain" && cryptoStage !== "done") return;
+    if (demoState.stage !== "plain" && demoState.stage !== "done") return;
     
     clearCryptoTimers();
     playSynthSound("click");
-    setCryptoStage("encrypting");
+    setDemoState(prev => ({ ...prev, stage: "encrypting" }));
     
-    // Scramble letters
     let tickCount = 0;
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;':\",./<>?";
     
-    scrambleIntervalRef.current = setInterval(() => {
-      setScrambledText((prev) => 
-        prev.split("").map((c, i) => {
+    scrambleIntervalRef.current = window.setInterval(() => {
+      setDemoState(prev => {
+        const nextScrambled = prev.scrambled.split("").map((c, i) => {
           if (c === " ") return " ";
-          // Gradually fix characters from left to right as time goes on
           if (i < tickCount * 4) {
             return "x";
           }
           return chars[Math.floor(Math.random() * chars.length)];
-        }).join("")
-      );
+        }).join("");
+        return { ...prev, scrambled: nextScrambled };
+      });
       playSynthSound("tick");
 
       tickCount++;
       if (tickCount > 10) {
-        if (scrambleIntervalRef.current) {
-          clearInterval(scrambleIntervalRef.current);
+        if (scrambleIntervalRef.current !== null) {
+          window.clearInterval(scrambleIntervalRef.current);
           scrambleIntervalRef.current = null;
         }
         
-        // Solidify to hex block
-        setScrambledText("0x3FA91B2E00C6758410EFDC7B9923AA991206C55B");
-        setCryptoStage("cipher");
+        setDemoState(prev => ({
+          ...prev,
+          scrambled: "0x3FA91B2E00C6758410EFDC7B9923AA991206C55B",
+          stage: "cipher"
+        }));
 
-        // Start Transmission
         scheduleTimeout(() => {
-          setCryptoStage("transmitting");
+          setDemoState(prev => ({ ...prev, stage: "transmitting" }));
           
-          // Travel across pipeline
           scheduleTimeout(() => {
-            setCryptoStage("decrypting");
+            setDemoState(prev => ({ ...prev, stage: "decrypting" }));
             
-            // Decrypt scramble back
             let decryptTick = 0;
-            const originalWords = cryptoMessage.split("");
             
-            scrambleIntervalRef.current = setInterval(() => {
-              setScrambledText(() => 
-                originalWords.map((char, index) => {
+            scrambleIntervalRef.current = window.setInterval(() => {
+              setDemoState(prev => {
+                const originalWords = prev.message.split("");
+                const nextScrambled = originalWords.map((char, index) => {
                   if (char === " ") return " ";
                   if (index < decryptTick * 4) return char;
                   return chars[Math.floor(Math.random() * chars.length)];
-                }).join("")
-              );
+                }).join("");
+                return { ...prev, scrambled: nextScrambled };
+              });
               playSynthSound("tick");
               
               decryptTick++;
               if (decryptTick > 10) {
-                if (scrambleIntervalRef.current) {
-                  clearInterval(scrambleIntervalRef.current);
+                if (scrambleIntervalRef.current !== null) {
+                  window.clearInterval(scrambleIntervalRef.current);
                   scrambleIntervalRef.current = null;
                 }
-                setScrambledText(cryptoMessage);
-                setCryptoStage("done");
+                setDemoState(prev => ({
+                  ...prev,
+                  scrambled: prev.message,
+                  stage: "done"
+                }));
                 playSynthSound("success");
               }
             }, 80);
@@ -108,16 +128,23 @@ export function CryptoDemo() {
   const handleResetCrypto = () => {
     playSynthSound("click");
     clearCryptoTimers();
-    setCryptoStage("plain");
-    setScrambledText(cryptoMessage);
+    setDemoState(prev => ({
+      ...prev,
+      stage: "plain",
+      scrambled: prev.message
+    }));
   };
 
   return (
     <>
-      <span className="lp-demo-tag lp-tag-crypto">Encryption Block</span>
-      <h3>E2E Message Encryptor</h3>
+      <span className="lp-demo-tag lp-tag-crypto">
+        {t.landingPage.cryptoTag}
+      </span>
+      <h3>
+        {t.landingPage.cryptoTitle}
+      </h3>
       <p className="lp-demo-desc">
-        We use local 2048-bit RSA keys. Test encryption on the browser; watch client text scramble and descramble at recipient side.
+        {t.landingPage.cryptoDesc}
       </p>
       
       <div className="lp-demo-interactive">
@@ -126,38 +153,44 @@ export function CryptoDemo() {
             {/* Sender Bubble */}
             <div className="lp-crypto-bubble" style={{ flex: 1 }}>
               <div className="lp-crypto-bubble-header">
-                <span>Alice (You)</span>
-                <span className="lp-crypto-key-badge">RSA Public</span>
+                <span>{t.landingPage.cryptoSender}</span>
+                <span className="lp-crypto-key-badge">{t.landingPage.cryptoSenderKey}</span>
               </div>
-              {cryptoStage === "plain" ? (
+              {demoState.stage === "plain" ? (
                 <input 
                   type="text" 
-                  aria-label="Secure message input"
-                  value={cryptoMessage} 
+                  aria-label={t.landingPage.cryptoSender}
+                  value={demoState.message} 
                   onChange={(e) => { 
-                    setCryptoMessage(e.target.value); 
-                    setScrambledText(e.target.value); 
+                    const val = e.target.value;
+                    setDemoState(prev => ({
+                      ...prev,
+                      message: val,
+                      scrambled: val
+                    }));
                   }}
                   style={{ background: "none", border: "none", padding: 0, fontSize: "0.85rem", color: "#ffffff", width: "100%" }}
                 />
               ) : (
-                <div className="lp-crypto-text">{cryptoMessage}</div>
+                <div className="lp-crypto-text">{demoState.message}</div>
               )}
             </div>
 
             {/* Recipient Bubble */}
             <div className="lp-crypto-bubble" style={{ flex: 1 }}>
               <div className="lp-crypto-bubble-header">
-                <span>Bob (Friend)</span>
-                <span className="lp-crypto-key-badge" style={{ background: "rgba(59, 130, 246, 0.1)", color: "#3b82f6" }}>Bob's Private</span>
+                <span>{t.landingPage.cryptoRecipient}</span>
+                <span className="lp-crypto-key-badge" style={{ background: "rgba(59, 130, 246, 0.1)", color: "#3b82f6" }}>
+                  {t.landingPage.cryptoRecipientKey}
+                </span>
               </div>
-              <div className="lp-crypto-text" style={{ color: cryptoStage === "done" ? "#ffffff" : "#71717a" }}>
-                {cryptoStage === "plain" && "Waiting for encryption..."}
-                {cryptoStage === "encrypting" && scrambledText}
-                {cryptoStage === "cipher" && scrambledText}
-                {cryptoStage === "transmitting" && scrambledText}
-                {cryptoStage === "decrypting" && scrambledText}
-                {cryptoStage === "done" && scrambledText}
+              <div className="lp-crypto-text" style={{ color: demoState.stage === "done" ? "#ffffff" : "#71717a" }}>
+                {demoState.stage === "plain" && t.landingPage.cryptoWaiting}
+                {demoState.stage === "encrypting" && demoState.scrambled}
+                {demoState.stage === "cipher" && demoState.scrambled}
+                {demoState.stage === "transmitting" && demoState.scrambled}
+                {demoState.stage === "decrypting" && demoState.scrambled}
+                {demoState.stage === "done" && demoState.scrambled}
               </div>
             </div>
           </div>
@@ -165,16 +198,16 @@ export function CryptoDemo() {
           {/* Dotted Sync Pipeline */}
           <div className="lp-crypto-pipeline">
             <div className="lp-crypto-pipeline-line" />
-            {cryptoStage !== "plain" && (
-              <div className={`lp-crypto-pipeline-dot ${cryptoStage === "transmitting" ? "animating" : ""}`} />
+            {demoState.stage !== "plain" && (
+              <div className={`lp-crypto-pipeline-dot ${demoState.stage === "transmitting" ? "animating" : ""}`} />
             )}
             <span className="lp-crypto-pipeline-label">
-              {cryptoStage === "plain" && "Pre-encryption"}
-              {cryptoStage === "encrypting" && "Encrypting RSA-2048 Client-Side..."}
-              {cryptoStage === "cipher" && "Payload Scrambled"}
-              {cryptoStage === "transmitting" && "Transmitting over Convex SSL..."}
-              {cryptoStage === "decrypting" && "Decrypting Private Key..."}
-              {cryptoStage === "done" && "Secure Match Achieved"}
+              {demoState.stage === "plain" && t.landingPage.cryptoStagePlain}
+              {demoState.stage === "encrypting" && t.landingPage.cryptoStageEncrypting}
+              {demoState.stage === "cipher" && t.landingPage.cryptoStageCipher}
+              {demoState.stage === "transmitting" && t.landingPage.cryptoStageTransmitting}
+              {demoState.stage === "decrypting" && t.landingPage.cryptoStageDecrypting}
+              {demoState.stage === "done" && t.landingPage.cryptoStageDone}
             </span>
           </div>
 
@@ -183,16 +216,16 @@ export function CryptoDemo() {
               type="button"
               className="btn btn-primary btn-sm" 
               onClick={startCryptoProcess}
-              disabled={cryptoStage !== "plain" && cryptoStage !== "done"}
+              disabled={demoState.stage !== "plain" && demoState.stage !== "done"}
             >
-              🔐 Encrypt & Send
+              🔐 {t.landingPage.cryptoSend}
             </button>
             <button 
               type="button"
               className="btn btn-secondary btn-sm" 
               onClick={handleResetCrypto}
             >
-              Clear Demo
+              {t.landingPage.cryptoClear}
             </button>
           </div>
         </div>

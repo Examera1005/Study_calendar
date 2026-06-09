@@ -2,7 +2,9 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import type { View } from "../../App";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { useLanguage } from "../../hooks/useLanguage";
 
+const CURRENT_YEAR = new Date().getFullYear();
 
 const DashboardIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "16px", height: "16px" }}>
@@ -120,6 +122,13 @@ export function Sidebar({
   const { signOut } = useAuthActions();
   const friendships = useQuery((api as any).friends.getFriendships);
   const unreadFriendsCount = friendships?.accepted?.filter((f: any) => f.unreadCount > 0).length || 0;
+  const { language, setLanguage, t } = useLanguage();
+
+  const getLabel = (id: View) => {
+    if (id === "analytics") return t.sidebar.stats;
+    if (id === "log") return t.sidebar.dailyLog;
+    return t.sidebar[id as keyof typeof t.sidebar] as string;
+  };
 
   return (
     <aside className={`sidebar ${sidebarOpen ? "open" : ""}`} id="sidebar">
@@ -128,15 +137,15 @@ export function Sidebar({
           <img src="/logo.png" alt="Logo" style={{ width: "28px", height: "28px", borderRadius: "6px" }} />
           <span className="brand-text">Study Calendar</span>
         </h2>
-        <span className="brand-subtitle">Stay organized, ace your exams</span>
+        <span className="brand-subtitle">{t.sidebar.subtitle}</span>
 
         {/* Collapse Button (Desktop Only) */}
         <button
           type="button"
           className="sidebar-collapse-toggle"
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={sidebarCollapsed ? t.sidebar.expand : t.sidebar.collapse}
+          title={sidebarCollapsed ? t.sidebar.expand : t.sidebar.collapse}
         >
           <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" style={{ transition: "transform var(--transition-normal)", transform: sidebarCollapsed ? "rotate(180deg)" : "none" }}>
             <polyline points="15 18 9 12 15 6"></polyline>
@@ -162,7 +171,7 @@ export function Sidebar({
               <span className="nav-icon" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
                 <Icon />
               </span>
-              <span className="nav-label">{item.label}</span>
+              <span className="nav-label">{getLabel(item.id)}</span>
               {item.id === "friends" && unreadFriendsCount > 0 && (
                 <span className="sidebar-unread-badge">{unreadFriendsCount}</span>
               )}
@@ -172,12 +181,45 @@ export function Sidebar({
       </nav>
 
       <div className="sidebar-footer">
+        {/* Language Switcher */}
+        {!sidebarCollapsed && (
+          <div className="toggle-row" style={{ marginBottom: "8px" }}>
+            <button
+              type="button"
+              onClick={() => setLanguage("en")}
+              className={`toggle-btn ${language === "en" ? "active" : ""}`}
+            >
+              🇬🇧 EN
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage("fr")}
+              className={`toggle-btn ${language === "fr" ? "active" : ""}`}
+            >
+              🇫🇷 FR
+            </button>
+          </div>
+        )}
+        
+        {sidebarCollapsed && (
+          <button
+            type="button"
+            className="theme-toggle-btn"
+            onClick={() => setLanguage(language === "en" ? "fr" : "en")}
+            style={{ marginBottom: "8px", width: "100%", padding: "8px 0" }}
+            title={language === "en" ? t.sidebar.switchToFrench : t.sidebar.switchToEnglish}
+          >
+            <span style={{ fontSize: "1rem" }}>{language === "en" ? "🇫🇷" : "🇬🇧"}</span>
+          </button>
+        )}
+
         <button
           type="button"
           className="theme-toggle-btn"
           onClick={toggleTheme}
           id="theme-toggle"
           title="Toggle color theme"
+          style={{ width: "100%" }}
         >
           {theme === "light" ? (
             <>
@@ -192,14 +234,14 @@ export function Sidebar({
                 <path d="m6.34 17.66-1.41 1.41"/>
                 <path d="m19.07 4.93-1.41 1.41"/>
               </svg>
-              <span className="footer-label">Light Mode</span>
+              {!sidebarCollapsed && <span className="footer-label">{t.sidebar.lightMode}</span>}
             </>
           ) : (
             <>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
               </svg>
-              <span className="footer-label">Dark Mode</span>
+              {!sidebarCollapsed && <span className="footer-label">{t.sidebar.darkMode}</span>}
             </>
           )}
         </button>
@@ -212,28 +254,30 @@ export function Sidebar({
             void signOut();
           }}
           id="sign-out-btn"
-          title="Sign Out"
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+          title={t.sidebar.signOut}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", marginTop: 8 }}
         >
           <span className="sign-out-icon" style={{ display: "inline-flex", alignItems: "center" }}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "16px", height: "16px" }}>
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
             </svg>
           </span>
-          <span className="footer-label">Sign Out</span>
+          {!sidebarCollapsed && <span className="footer-label">{t.sidebar.signOut}</span>}
         </button>
 
-        <div className="sidebar-footer-info" style={{
-          marginTop: 10,
-          fontSize: "0.75rem",
-          color: "var(--text-muted)",
-          textAlign: "center",
-          display: "flex",
-          justifyContent: "center",
-          gap: 6
-        }}>
-          <span suppressHydrationWarning>© {new Date().getFullYear()} Study Calendar</span>
-        </div>
+        {!sidebarCollapsed && (
+          <div className="sidebar-footer-info" style={{
+            marginTop: 10,
+            fontSize: "0.75rem",
+            color: "var(--text-muted)",
+            textAlign: "center",
+            display: "flex",
+            justifyContent: "center",
+            gap: 6
+          }}>
+            <span suppressHydrationWarning>© {CURRENT_YEAR} {t.sidebar.copyright}</span>
+          </div>
+        )}
       </div>
     </aside>
   );

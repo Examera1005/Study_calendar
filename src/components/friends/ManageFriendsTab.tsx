@@ -1,4 +1,5 @@
 import React from "react";
+import { useLanguage } from "../../hooks/useLanguage";
 
 interface ManageFriendsTabProps {
   searchQuery: string;
@@ -29,23 +30,25 @@ export function ManageFriendsTab({
   setActiveTab,
   handleBlockFriend,
 }: ManageFriendsTabProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="friends-manage-grid">
       {/* Column A: Search & Request */}
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
         <div className="card">
-          <h3>🔍 Search & Add Friends</h3>
+          <h3>{t.friends.searchFriendsHeader}</h3>
           <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: 16 }}>
-            Search for other users by typing their username handle.
+            {t.friends.searchFriendsDesc}
           </p>
 
           <form onSubmit={handleSendRequest} style={{ display: "flex", gap: 10, marginBottom: 16 }}>
             <input
               type="text"
-              placeholder="Search @username..."
+              placeholder={t.friends.searchFriendsPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              aria-label="Search friends by username"
+              aria-label={t.friends.searchFriendsPlaceholder}
               style={{
                 flex: 1,
                 padding: "8px 12px",
@@ -56,7 +59,7 @@ export function ManageFriendsTab({
               }}
               required
             />
-            <button type="submit" className="btn btn-primary">Send Invite</button>
+            <button type="submit" className="btn btn-primary">{t.friends.sendInviteBtn}</button>
           </form>
 
           {requestError && <div className="error-msg" style={{ fontSize: "0.8rem" }}>{requestError}</div>}
@@ -64,7 +67,7 @@ export function ManageFriendsTab({
 
           {searchResults && searchResults.length > 0 && (
             <div style={{ marginTop: 12 }}>
-              <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 8 }}>Matching handles:</div>
+              <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 8 }}>{t.friends.matchingHandles}</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {searchResults.map((user: any) => (
                   <div
@@ -87,7 +90,7 @@ export function ManageFriendsTab({
                         setSearchQuery(user.username);
                       }}
                     >
-                      Select
+                      {t.common.select}
                     </button>
                   </div>
                 ))}
@@ -98,10 +101,10 @@ export function ManageFriendsTab({
 
         {/* Pending Invites */}
         <div className="card">
-          <h3>✉️ Pending Invites</h3>
+          <h3>{t.friends.pendingInvitesHeader}</h3>
           
           <div style={{ marginTop: 12 }}>
-            <h4 style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: 8 }}>Received Requests</h4>
+            <h4 style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: 8 }}>{t.friends.pendingIncoming}</h4>
             {friendships?.pendingReceived && friendships.pendingReceived.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {friendships.pendingReceived.map((req: any) => (
@@ -124,14 +127,14 @@ export function ManageFriendsTab({
                         className="btn btn-primary btn-sm"
                         onClick={() => handleRespond(req.friendshipId, "accept")}
                       >
-                        Accept
+                        {t.friends.acceptBtn}
                       </button>
                       <button
                         type="button"
                         className="btn btn-secondary btn-sm"
                         onClick={() => handleRespond(req.friendshipId, "reject")}
                       >
-                        Deny
+                        {t.friends.declineBtn}
                       </button>
                     </div>
                   </div>
@@ -139,13 +142,13 @@ export function ManageFriendsTab({
               </div>
             ) : (
               <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", padding: 6 }}>
-                No incoming requests.
+                {t.friends.noIncomingRequests}
               </div>
             )}
           </div>
 
           <div style={{ marginTop: 20 }}>
-            <h4 style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: 8 }}>Sent Invites</h4>
+            <h4 style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: 8 }}>{t.friends.pendingOutgoing}</h4>
             {friendships?.pendingSent && friendships.pendingSent.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {friendships.pendingSent.map((req: any) => (
@@ -167,14 +170,14 @@ export function ManageFriendsTab({
                       className="btn btn-secondary btn-sm"
                       onClick={() => handleRespond(req.friendshipId, "reject")}
                     >
-                      Cancel
+                      {t.common.cancel}
                     </button>
                   </div>
                 ))}
               </div>
             ) : (
               <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", padding: 6 }}>
-                No sent invites pending.
+                {t.friends.noSentInvites}
               </div>
             )}
           </div>
@@ -183,9 +186,9 @@ export function ManageFriendsTab({
 
       {/* Column B: Friends List */}
       <div className="card">
-        <h3>👥 Accepted Friends</h3>
+        <h3>{t.friends.acceptedFriendsHeader}</h3>
         <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: 20 }}>
-          Your friends can compete with you on the leaderboard, send secure chats, and let you import their exam schedules.
+          {t.friends.acceptedFriendsDesc}
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -198,7 +201,7 @@ export function ManageFriendsTab({
                 <div style={{ minWidth: 150 }}>
                   <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{friend.username}</div>
                   <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 4 }}>
-                    🔒 End-to-End Cryptography Active
+                    {t.friends.e2eActive}
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -207,7 +210,7 @@ export function ManageFriendsTab({
                     className="btn btn-secondary btn-sm"
                     onClick={() => setViewExamsFriend(friend)}
                   >
-                    🎯 View Exams
+                    {t.friends.viewExamsBtn}
                   </button>
                   <button
                     type="button"
@@ -217,21 +220,21 @@ export function ManageFriendsTab({
                       setActiveTab("chat");
                     }}
                   >
-                    💬 Chat
+                    {t.friends.chatTab}
                   </button>
                   <button
                     type="button"
                     className="btn btn-danger btn-sm"
                     onClick={() => handleBlockFriend(friend.userId, friend.username)}
                   >
-                    🚫 Block
+                    🚫 {t.friends.blockUserBtn}
                   </button>
                 </div>
               </div>
             ))
           ) : (
             <div style={{ textAlign: "center", padding: 30, color: "var(--text-muted)", fontSize: "0.85rem" }}>
-              Your friends list is empty. Share your handle to get started!
+              {t.friends.noFriendsYet}
             </div>
           )}
         </div>

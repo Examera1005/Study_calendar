@@ -7,6 +7,7 @@ import { calculateStreak } from "../utils/statsUtils";
 import { formatLocalDate, formatDuration } from "../utils/dateUtils";
 import { WeeklyActivityChart, PercentageBadge } from "../components/dashboard/WeeklyActivityChart";
 import { DashboardCardGrid } from "../components/dashboard/DashboardCardGrid";
+import { useLanguage } from "../hooks/useLanguage";
 
 export function Dashboard({
   setView,
@@ -17,6 +18,9 @@ export function Dashboard({
   selectedDate: string;
   setSelectedDate: (d: string) => void;
 }) {
+  const { t, language, dateLocale } = useLanguage();
+  const dateFormat = t.common.dateFormatLong;
+  
   const today = formatLocalDate();
   const activeDate = selectedDate || today;
   const yesterday = (() => {
@@ -134,7 +138,7 @@ export function Dashboard({
     
     if (timeMap["uncategorized"]) {
       breakdown.push({
-        name: "Uncategorized",
+        name: t.common.uncategorized,
         icon: "📝",
         color: "var(--text-muted)",
         minutes: timeMap["uncategorized"],
@@ -145,7 +149,7 @@ export function Dashboard({
     return breakdown
       .filter((item) => item.minutes > 0)
       .sort((a, b) => b.minutes - a.minutes);
-  }, [allLogs, subjects]);
+  }, [allLogs, subjects, t]);
 
   const completedTasks = todayTasks?.filter((t) => t.completed).length ?? 0;
   const totalTasks = todayTasks?.length ?? 0;
@@ -165,10 +169,10 @@ export function Dashboard({
     <div>
       <div className="page-header">
         <div>
-          <h1>Dashboard</h1>
+          <h1>{t.dashboard.title}</h1>
           <div className="date-display" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", minHeight: "32px" }}>
             <span>
-              {format(new Date(activeDate + "T00:00:00"), "EEEE, MMMM d, yyyy")}
+              {format(new Date(activeDate + "T00:00:00"), dateFormat, { locale: dateLocale })}
             </span>
             {activeDate !== today && (
               <button
@@ -185,7 +189,7 @@ export function Dashboard({
                   cursor: "pointer"
                 }}
               >
-                Retour à Aujourd'hui
+                {t.dashboard.returnToday}
               </button>
             )}
           </div>
@@ -195,13 +199,13 @@ export function Dashboard({
       <div className="stats-row">
         <div className="stat-card">
           <div className="stat-value">{upcomingExams?.length ?? 0}</div>
-          <div className="stat-label">Upcoming Exams</div>
+          <div className="stat-label">{t.dashboard.upcomingExams}</div>
         </div>
         <div className="stat-card">
           <div className="stat-value">
             {completedTasks}/{totalTasks}
           </div>
-          <div className="stat-label">{activeDate === today ? "Today's Tasks" : "Tasks of the Day"}</div>
+          <div className="stat-label">{activeDate === today ? t.dashboard.todaysTasks : t.dashboard.tasksOfDay}</div>
         </div>
         <button
           type="button"
@@ -212,9 +216,9 @@ export function Dashboard({
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: "22px", height: "22px", color: "var(--warning)" }}>
               <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
             </svg>
-            <span>{streak} {streak > 1 ? "Jours" : "Jour"}</span>
+            <span>{streak} {streak > 1 ? t.dashboard.streakDayPlural : t.dashboard.streakDaySingular}</span>
           </div>
-          <div className="stat-label">Série d'Études</div>
+          <div className="stat-label">{t.dashboard.studyStreak}</div>
         </button>
         <div className="stat-card">
           <div className="stat-value" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -224,10 +228,10 @@ export function Dashboard({
             {yesterdayLogs !== undefined && <PercentageBadge pct={todayChangePct} />}
           </div>
           <div className="stat-label" style={{ display: "flex", justifyContent: "space-between" }}>
-            <span>{activeDate === today ? "Study Time Today" : "Study Time for Day"}</span>
+            <span>{activeDate === today ? t.dashboard.studyTimeToday : t.dashboard.studyTimeDay}</span>
             {yesterdayLogs !== undefined && (
               <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                {activeDate === today ? "VS  Yesterday" : "VS  Previous Day"}
+                {activeDate === today ? t.dashboard.vsYesterday : t.dashboard.vsPreviousDay}
               </span>
             )}
           </div>

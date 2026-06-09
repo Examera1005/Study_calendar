@@ -1285,8 +1285,9 @@ select option {
   color: var(--text-secondary);
   font-family: var(--font);
   font-size: 0.82rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
 }
 .toggle-btn.active {
   background: var(--accent-primary) !important;

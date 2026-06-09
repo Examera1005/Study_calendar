@@ -6,6 +6,7 @@ import { Modal } from "../components/ui/Modal";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import type { Id } from "../../convex/_generated/dataModel";
 import { formatLocalDate, formatDuration } from "../utils/dateUtils";
+import { useLanguage } from "../hooks/useLanguage";
 
 export function DailyLogView({
   selectedDate,
@@ -14,6 +15,7 @@ export function DailyLogView({
   selectedDate: string;
   setSelectedDate: (d: string) => void;
 }) {
+  const { t, language, dateLocale } = useLanguage();
   const logs = useQuery(api.dailyLogs.getByDate, { date: selectedDate });
   const subjects = useQuery(api.subjects.list);
   const createLog = useMutation(api.dailyLogs.create);
@@ -34,28 +36,32 @@ export function DailyLogView({
     <div>
       <div className="page-header">
         <div>
-          <h1>Daily Log</h1>
+          <h1>{t.dailyLog.title}</h1>
           <div className="date-display">
-            {logs?.length ?? 0} entries · {totalMinutes > 0 ? `${formatDuration(totalMinutes)} studied` : "No study time logged"}
+            {t.dailyLog.entriesCount(logs?.length ?? 0)} · {totalMinutes > 0 ? t.dailyLog.studiedTime(formatDuration(totalMinutes)) : t.dailyLog.noStudyTimeLogged}
           </div>
         </div>
         <button type="button" className="btn btn-primary" onClick={() => setShowAdd(true)} id="add-log-btn">
-          + Add Entry
+          {t.dailyLog.addEntryBtn}
         </button>
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-        <button type="button" className="btn-icon" aria-label="Previous day" onClick={() => navDate(-1)}>◀</button>
+        <button type="button" className="btn-icon" aria-label={t.tasks.prevDay} onClick={() => navDate(-1)}>◀</button>
         <h2 style={{ fontSize: "1.1rem" }}>
-          {format(new Date(selectedDate + "T00:00:00"), "EEEE, MMMM d, yyyy")}
+          {format(
+            new Date(selectedDate + "T00:00:00"),
+            t.common.dateFormatLong,
+            { locale: dateLocale }
+          )}
         </h2>
-        <button type="button" className="btn-icon" aria-label="Next day" onClick={() => navDate(1)}>▶</button>
+        <button type="button" className="btn-icon" aria-label={t.tasks.nextDay} onClick={() => navDate(1)}>▶</button>
         <button
           type="button"
           className="btn btn-secondary btn-sm"
           onClick={() => setSelectedDate(formatLocalDate())}
         >
-          Today
+          {t.common.today}
         </button>
       </div>
 
@@ -63,9 +69,9 @@ export function DailyLogView({
         {!logs || logs.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">✏️</div>
-            <p>No study entries for this day</p>
+            <p>{t.dailyLog.noStudyEntriesForDay}</p>
             <button type="button" className="btn btn-primary" style={{ marginTop: 12 }} onClick={() => setShowAdd(true)}>
-              Log your first session
+              {t.dailyLog.logFirstSession}
             </button>
           </div>
         ) : (
@@ -83,12 +89,12 @@ export function DailyLogView({
                         icon={subj.icon}
                       />
                     )}
-                    {log.duration && <span className="duration-badge">⏱ {log.duration}min</span>}
+                    {log.duration && <span className="duration-badge">⏱ {log.duration}{t.common.minutesUnit}</span>}
                   </div>
                 </div>
                 <div className="item-actions" style={{ display: "flex", gap: 4 }}>
-                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Edit log: ${log.content}`} onClick={() => setEditingLog(log)}>✏️</button>
-                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Delete log: ${log.content}`} onClick={() => void removeLog({ id: log._id })}>🗑</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`${t.common.edit}: ${log.content}`} onClick={() => setEditingLog(log)}>✏️</button>
+                  <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`${t.common.delete}: ${log.content}`} onClick={() => void removeLog({ id: log._id })}>🗑</button>
                 </div>
               </div>
             );
@@ -97,7 +103,7 @@ export function DailyLogView({
       </div>
 
       {showAdd && (
-        <Modal title="Add Study Log" onClose={() => setShowAdd(false)}>
+        <Modal title={t.calendar.addLog} onClose={() => setShowAdd(false)}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -112,18 +118,23 @@ export function DailyLogView({
             }}
           >
             <div className="form-group">
-              <label htmlFor="add-log-content">What did you study?</label>
-              <textarea id="add-log-content" name="content" required placeholder="Reviewed chapter 5 on thermodynamics..." />
+              <label htmlFor="add-log-content">{t.dailyLog.whatDidYouStudy}</label>
+              <textarea
+                id="add-log-content"
+                name="content"
+                required
+                placeholder={t.dailyLog.summaryPlaceholder}
+              />
             </div>
             <div className="form-group">
-              <label htmlFor="add-log-duration">Duration (minutes)</label>
+              <label htmlFor="add-log-duration">{t.dailyLog.durationMinutes}</label>
               <input id="add-log-duration" name="duration" type="number" min="1" placeholder="45" />
             </div>
             {subjects && subjects.length > 0 && (
               <div className="form-group">
-                <label htmlFor="add-log-subject">Subject (optional)</label>
+                <label htmlFor="add-log-subject">{t.tasks.subjectLabelOptional}</label>
                 <select id="add-log-subject" name="subjectId" defaultValue="">
-                  <option value="">None</option>
+                  <option value="">{t.common.none}</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
                   ))}
@@ -131,15 +142,15 @@ export function DailyLogView({
               </div>
             )}
             <div className="modal-actions">
-              <button type="button" className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>
-              <button type="submit" className="btn btn-primary">Add Entry</button>
+              <button type="button" className="btn btn-secondary" onClick={() => setShowAdd(false)}>{t.common.cancel}</button>
+              <button type="submit" className="btn btn-primary">{t.common.add}</button>
             </div>
           </form>
         </Modal>
       )}
 
       {editingLog && (
-        <Modal title="Edit Study Log" onClose={() => setEditingLog(null)}>
+        <Modal title={t.calendar.editLog} onClose={() => setEditingLog(null)}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -154,18 +165,18 @@ export function DailyLogView({
             }}
           >
             <div className="form-group">
-              <label htmlFor="edit-log-content">What did you study?</label>
+              <label htmlFor="edit-log-content">{t.dailyLog.whatDidYouStudy}</label>
               <textarea id="edit-log-content" name="content" defaultValue={editingLog.content} required />
             </div>
             <div className="form-group">
-              <label htmlFor="edit-log-duration">Duration (minutes)</label>
+              <label htmlFor="edit-log-duration">{t.dailyLog.durationMinutes}</label>
               <input id="edit-log-duration" name="duration" type="number" min="1" defaultValue={editingLog.duration} />
             </div>
             {subjects && subjects.length > 0 && (
               <div className="form-group">
-                <label htmlFor="edit-log-subject">Subject</label>
+                <label htmlFor="edit-log-subject">{t.tasks.subjectLabel}</label>
                 <select id="edit-log-subject" name="subjectId" defaultValue={editingLog.subjectId || ""}>
-                  <option value="">None</option>
+                  <option value="">{t.common.none}</option>
                   {subjects.map((s) => (
                     <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
                   ))}
@@ -173,8 +184,8 @@ export function DailyLogView({
               </div>
             )}
             <div className="modal-actions">
-              <button type="button" className="btn btn-secondary" onClick={() => setEditingLog(null)}>Cancel</button>
-              <button type="submit" className="btn btn-primary">Save Changes</button>
+              <button type="button" className="btn btn-secondary" onClick={() => setEditingLog(null)}>{t.common.cancel}</button>
+              <button type="submit" className="btn btn-primary">{t.common.saveChanges}</button>
             </div>
           </form>
         </Modal>

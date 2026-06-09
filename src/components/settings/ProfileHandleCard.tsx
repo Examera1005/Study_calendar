@@ -1,80 +1,120 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useState, useEffect, useRef, useReducer } from "react";
+import { useQuery, useMutation, useConvex } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { useLanguage } from "../../hooks/useLanguage";
+
+interface CheckState {
+  isChecking: boolean;
+  isAvailable: boolean | null;
+  error: string;
+}
+
+type CheckAction =
+  | { type: "SAME_USERNAME" }
+  | { type: "TOO_SHORT"; error: string }
+  | { type: "INVALID_CHARS"; error: string }
+  | { type: "START_CHECKING" }
+  | { type: "RESULT"; available: boolean; takenError: string }
+  | { type: "RESULT_ERROR" }
+  | { type: "FIELD_ERROR"; error: string };
+
+function checkReducer(_state: CheckState, action: CheckAction): CheckState {
+  switch (action.type) {
+    case "SAME_USERNAME":
+      return { isChecking: false, isAvailable: true, error: "" };
+    case "TOO_SHORT":
+      return { isChecking: false, isAvailable: false, error: action.error };
+    case "INVALID_CHARS":
+      return { isChecking: false, isAvailable: false, error: action.error };
+    case "START_CHECKING":
+      return { isChecking: true, isAvailable: null, error: "" };
+    case "RESULT":
+      return {
+        isChecking: false,
+        isAvailable: action.available,
+        error: action.available ? "" : action.takenError,
+      };
+    case "RESULT_ERROR":
+      return { isChecking: false, isAvailable: null, error: "" };
+    case "FIELD_ERROR":
+      return { isChecking: false, isAvailable: null, error: action.error };
+  }
+}
+
+const INITIAL_CHECK: CheckState = {
+  isChecking: false,
+  isAvailable: null,
+  error: "",
+};
 
 export function ProfileHandleCard() {
-  const friendsApi = (api as any).friends;
-  const profile = useQuery(friendsApi.getProfile);
-  const updateProfile = useMutation(friendsApi.createOrUpdateProfile);
+  const convex = useConvex();
+  const profile = useQuery(api.friends.getProfile);
+  const updateProfile = useMutation(api.friends.createOrUpdateProfile);
+  const { t } = useLanguage();
 
   const [usernameInput, setUsernameInput] = useState("");
-  const [{ isChecking, isAvailable, error: usernameError }, setCheckState] = useState({
-    isChecking: false,
-    isAvailable: null as boolean | null,
-    error: "",
-  });
+  const [check, dispatch] = useReducer(checkReducer, INITIAL_CHECK);
   const [saveSuccess, setSaveSuccess] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const updateUsernameCheckState = (next: Partial<{ isChecking: boolean; isAvailable: boolean | null; error: string }>) => {
-    setCheckState(prev => ({ ...prev, ...next }));
-  };
+  // Ref to read latest input inside async callback without closure staleness
+  const latestInputRef = useRef(usernameInput);
+  useEffect(() => {
+    latestInputRef.current = usernameInput;
+  });
 
-  // Initialize username input when profile loads
+  // Initialize input when profile loads
   useEffect(() => {
     if (profile) {
-      // Remove @ prefix for display in the input box
       setUsernameInput(profile.username.replace("@", ""));
     }
   }, [profile]);
 
-  // Debounced username checking
+  // Single effect: validate, debounce, query (no cascade)
   useEffect(() => {
     if (!profile) return;
+
     const cleanInput = usernameInput.trim().toLowerCase();
     const currentClean = profile.username.replace("@", "");
 
     if (cleanInput === currentClean) {
-      updateUsernameCheckState({ isAvailable: true, error: "", isChecking: false });
+      dispatch({ type: "SAME_USERNAME" });
       return;
     }
 
     if (cleanInput.length < 3) {
-      updateUsernameCheckState({ isAvailable: false, error: "Username must be at least 3 characters.", isChecking: false });
+      dispatch({ type: "TOO_SHORT", error: t.settings.profileHandleMinChars });
       return;
     }
 
-    const hasInvalid = /[^a-z0-9_]/.test(cleanInput);
-    if (hasInvalid) {
-      updateUsernameCheckState({ isAvailable: false, error: "Only letters, numbers, and underscores allowed.", isChecking: false });
+    if (/[^a-z0-9_]/.test(cleanInput)) {
+      dispatch({ type: "INVALID_CHARS", error: t.settings.profileHandleInvalidChars });
       return;
     }
 
-    updateUsernameCheckState({ isChecking: true, isAvailable: null, error: "" });
+    dispatch({ type: "START_CHECKING" });
 
-    const delay = window.setTimeout(async () => {
+    const timer = window.setTimeout(async () => {
+      if (latestInputRef.current.trim().toLowerCase() !== cleanInput) return;
+
       try {
-        const formatted = "@" + cleanInput;
-        const available = await (api as any).friends.checkUsernameAvailable({
-          username: formatted,
+        const available = await convex.query(api.friends.checkUsernameAvailable, {
+          username: "@" + cleanInput,
         });
-        updateUsernameCheckState({
-          isAvailable: available,
-          error: available ? "" : "Handle is already taken.",
-          isChecking: false
-        });
-      } catch (err) {
-        console.error(err);
-        updateUsernameCheckState({ isChecking: false });
+
+        dispatch({ type: "RESULT", available, takenError: t.settings.profileHandleTaken });
+      } catch {
+        dispatch({ type: "RESULT_ERROR" });
       }
     }, 400);
 
-    return () => clearTimeout(delay);
-  }, [usernameInput, profile]);
+    return () => clearTimeout(timer);
+  }, [usernameInput, profile, t, convex]);
 
   const handleSaveUsername = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!profile || !isAvailable || isChecking) return;
+    if (!profile || !check.isAvailable || check.isChecking) return;
 
     setIsSaving(true);
     setSaveSuccess("");
@@ -83,10 +123,11 @@ export function ProfileHandleCard() {
         username: usernameInput,
         publicKey: profile.publicKey,
       });
-      setSaveSuccess("Profile handle updated successfully!");
+      setSaveSuccess(t.settings.profileHandleUpdateSuccess);
       setTimeout(() => setSaveSuccess(""), 3000);
-    } catch (err: any) {
-      setCheckState(prev => ({ ...prev, error: err.message || "Failed to update profile." }));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t.settings.profileHandleUpdateFailed;
+      dispatch({ type: "FIELD_ERROR", error: message });
     } finally {
       setIsSaving(false);
     }
@@ -94,19 +135,19 @@ export function ProfileHandleCard() {
 
   return (
     <div className="card">
-      <h3 style={{ marginBottom: 12 }}>👥 Study Guild Handle</h3>
+      <h3 style={{ marginBottom: 12 }}>{t.settings.profileHandleTitle}</h3>
       <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 20 }}>
-        Change your unique handle. Other users can find and add you using this.
+        {t.settings.profileHandleDesc}
       </p>
 
       {!profile ? (
         <div style={{ padding: 12, background: "var(--accent-light)", borderRadius: "var(--radius-md)", color: "var(--accent-primary)", fontSize: "0.85rem" }}>
-          Please set up your profile in the Friends tab to configure your handle.
+          {t.settings.profileHandleSetupRequired}
         </div>
       ) : (
         <form onSubmit={handleSaveUsername}>
           <div className="form-group" style={{ marginBottom: 16 }}>
-            <label htmlFor="settings-username">Change @username</label>
+            <label htmlFor="settings-username">{t.settings.profileHandleChangeLabel}</label>
             <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
               <span style={{ position: "absolute", left: 12, color: "var(--text-muted)", fontWeight: 600 }}>@</span>
               <input
@@ -121,12 +162,12 @@ export function ProfileHandleCard() {
             </div>
 
             <div style={{ marginTop: 8, fontSize: "0.8rem" }}>
-              {isChecking && <span style={{ color: "var(--text-muted)" }}>Checking availability…</span>}
-              {!isChecking && isAvailable === true && usernameInput.trim().toLowerCase() !== profile.username.replace("@", "") && (
-                <span style={{ color: "var(--success)" }}>✅ Handle is available</span>
+              {check.isChecking && <span style={{ color: "var(--text-muted)" }}>{t.settings.profileHandleChecking}</span>}
+              {!check.isChecking && check.isAvailable === true && usernameInput.trim().toLowerCase() !== profile.username.replace("@", "") && (
+                <span style={{ color: "var(--success)" }}>✅ {t.settings.profileHandleAvailable}</span>
               )}
-              {!isChecking && usernameError && (
-                <span style={{ color: "var(--danger)" }}>❌ {usernameError}</span>
+              {!check.isChecking && check.error && (
+                <span style={{ color: "var(--danger)" }}>❌ {check.error}</span>
               )}
             </div>
           </div>
@@ -140,9 +181,9 @@ export function ProfileHandleCard() {
           <button
             type="submit"
             className="btn btn-primary"
-            disabled={!isAvailable || isChecking || isSaving || usernameInput.trim().toLowerCase() === profile.username.replace("@", "")}
+            disabled={!check.isAvailable || check.isChecking || isSaving || usernameInput.trim().toLowerCase() === profile.username.replace("@", "")}
           >
-            {isSaving ? "Saving..." : "Update Handle"}
+            {isSaving ? t.settings.profileHandleSaving : t.settings.profileHandleUpdateBtn}
           </button>
         </form>
       )}

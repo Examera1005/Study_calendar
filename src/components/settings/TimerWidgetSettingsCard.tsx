@@ -1,11 +1,6 @@
-export type TimerCorner = "bottom-right" | "bottom-left" | "top-right" | "top-left";
+import { useLanguage } from "../../hooks/useLanguage";
 
-const CORNER_LABELS: Record<TimerCorner, string> = {
-  "bottom-right": "↘ Bas-Droite",
-  "bottom-left": "↙ Bas-Gauche",
-  "top-right": "↗ Haut-Droite",
-  "top-left": "↖ Haut-Gauche",
-};
+export type TimerCorner = "bottom-right" | "bottom-left" | "top-right" | "top-left";
 
 const CORNERS: TimerCorner[] = ["bottom-right", "bottom-left", "top-right", "top-left"];
 
@@ -17,20 +12,31 @@ type Props = {
 };
 
 export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScaleChange }: Props) {
+  const { t } = useLanguage();
   const scaleId = "timer-widget-scale";
+
+  const getCornerLabel = (c: TimerCorner) => {
+    switch (c) {
+      case "bottom-right": return `↘ ${t.settings.cornerBottomRight}`;
+      case "bottom-left": return `↙ ${t.settings.cornerBottomLeft}`;
+      case "top-right": return `↗ ${t.settings.cornerTopRight}`;
+      case "top-left": return `↖ ${t.settings.cornerTopLeft}`;
+      default: return "";
+    }
+  };
 
   return (
     <div className="card">
-      <h3 style={{ marginBottom: 12 }}>⏱️ Study Session Widget</h3>
+      <h3 style={{ marginBottom: 12 }}>{t.settings.widgetTitle}</h3>
       <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 20 }}>
-        Personnalise la position et la taille du bouton "Study Session" flottant.
+        {t.settings.widgetDesc}
       </p>
 
       {/* Corner selector — uses a fieldset/legend instead of a floating <label> so each
           button inside the group is properly associated with its own text content. */}
       <fieldset style={{ border: "none", padding: 0, margin: "0 0 20px", minInlineSize: 0 }}>
         <legend style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 8, display: "block" }}>
-          Position à l'écran
+          {t.settings.widgetPosition}
         </legend>
         <div className="timer-corner-grid">
           {CORNERS.map((c) => (
@@ -40,7 +46,7 @@ export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScale
               className={`timer-corner-btn ${corner === c ? "active" : ""}`}
               onClick={() => onCornerChange(c)}
             >
-              {CORNER_LABELS[c]}
+              {getCornerLabel(c)}
             </button>
           ))}
         </div>
@@ -49,7 +55,7 @@ export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScale
       {/* Visual mini-preview */}
       <div style={{ marginBottom: 20 }}>
         <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: 8, display: "block" }}>
-          Aperçu
+          {t.settings.widgetPreview}
         </span>
         <div className="timer-preview-box">
           <div
@@ -67,7 +73,7 @@ export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScale
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
           <label htmlFor={scaleId} style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
-            Taille du widget
+            {t.settings.widgetScale}
           </label>
           <span style={{
             fontSize: "0.8rem",
@@ -88,7 +94,7 @@ export function TimerWidgetSettingsCard({ corner, scale, onCornerChange, onScale
           step="0.05"
           value={scale}
           onChange={(e) => onScaleChange(parseFloat(e.target.value))}
-          aria-label="Taille du widget"
+          aria-label={t.settings.widgetScale}
           className="color-picker-slider"
           style={{
             width: "100%",

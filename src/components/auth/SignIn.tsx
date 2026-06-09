@@ -1,9 +1,11 @@
 import { useAuthActions } from "@convex-dev/auth/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Modal } from "../ui/Modal";
+import { useLanguage } from "../../hooks/useLanguage";
 
 export function SignIn() {
   const { signIn } = useAuthActions();
+  const { t } = useLanguage();
   const [step, setStep] = useState<"signIn" | "signUp">("signIn");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,8 +21,8 @@ export function SignIn() {
     } catch (err: unknown) {
       setError(
         step === "signIn"
-          ? "Invalid email or password."
-          : "Could not create account. Try a different email.",
+          ? t.auth.invalidCredentialsError
+          : t.auth.signUpError
       );
       console.error(err);
     } finally {
@@ -31,18 +33,18 @@ export function SignIn() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>📚 Study Calendar</h1>
+        <h1>📚 {t.auth.copyright}</h1>
         <p className="subtitle">
           {step === "signIn"
-            ? "Welcome back — sign in to continue"
-            : "Create your account to get started"}
+            ? t.auth.welcomeBackSubtitle
+            : t.auth.createAccountSubtitle}
         </p>
 
         {error && <div className="error-msg">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="auth-email">Email</label>
+            <label htmlFor="auth-email">{t.auth.emailLabel}</label>
             <input
               id="auth-email"
               name="email"
@@ -54,12 +56,12 @@ export function SignIn() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="auth-password">Password</label>
+            <label htmlFor="auth-password">{t.auth.passwordLabel}</label>
             <input
               id="auth-password"
               name="password"
               type="password"
-              placeholder="Min. 8 characters"
+              placeholder={t.auth.passwordPlaceholder}
               autoComplete={step === "signUp" ? "new-password" : "current-password"}
               required
               minLength={8}
@@ -74,7 +76,7 @@ export function SignIn() {
             disabled={loading}
             id="auth-submit"
           >
-            {loading ? "Please wait…" : step === "signIn" ? "Sign In" : "Create Account"}
+            {loading ? t.auth.pleaseWait : step === "signIn" ? t.auth.signInBtn : t.auth.signUpBtn}
           </button>
         </form>
 
@@ -89,20 +91,20 @@ export function SignIn() {
             id="auth-toggle"
           >
             {step === "signIn"
-              ? "Don't have an account? Sign up"
-              : "Already have an account? Sign in"}
+              ? t.auth.toggleSignUpPrompt
+              : t.auth.toggleSignInPrompt}
           </button>
         </div>
 
         <div className="auth-footer">
-          <span suppressHydrationWarning>© {new Date().getFullYear()} Study Calendar</span>
+          <span suppressHydrationWarning>© {new Date().getFullYear()} {t.auth.copyright}</span>
           <span>•</span>
           <button 
             type="button"
             className="auth-footer-btn"
             onClick={() => setShowLegal("privacy")}
           >
-            Privacy Policy
+            {t.settings.privacyBtn}
           </button>
           <span>•</span>
           <button 
@@ -110,49 +112,48 @@ export function SignIn() {
             className="auth-footer-btn"
             onClick={() => setShowLegal("terms")}
           >
-            Terms of Service
+            {t.settings.termsBtn}
           </button>
         </div>
       </div>
 
       {showLegal === "privacy" && (
-        <Modal title="Privacy Policy" onClose={() => setShowLegal(null)}>
+        <Modal title={t.settings.privacyPolicyTitle} onClose={() => setShowLegal(null)}>
           <div style={{ fontSize: "0.85rem", lineHeight: "1.5", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: 12 }}>
-            <p><strong>Effective Date: May 30, 2026</strong></p>
-            <p>Your privacy is important to us. This Privacy Policy details how we handle information in the Study Calendar application.</p>
-            
-            <h4 style={{ color: "var(--text-primary)" }}>1. Data We Collect</h4>
-            <p>We collect and store your email address (for authentication purposes), and study logs, task lists, calendar events, and academic exams you record.</p>
-
-            <h4 style={{ color: "var(--text-primary)" }}>2. How We Use Data</h4>
-            <p>Your data is processed strictly to display dashboards, track deadlines, aggregate study statistics, and provide core planning utilities.</p>
-
-            <h4 style={{ color: "var(--text-primary)" }}>3. Security & Database</h4>
-            <p>All data is hosted securely within Convex databases. We use secure modern cryptographical methods to ensure user account and token integrity.</p>
-
-            <h4 style={{ color: "var(--text-primary)" }}>4. Deletion Rights</h4>
-            <p>You can request to purge all associated entries, logs, and account records by contacting our support team or deleting them inside settings.</p>
+            <LegalText paragraphs={t.settings.privacyPolicyText} />
           </div>
         </Modal>
       )}
 
       {showLegal === "terms" && (
-        <Modal title="Terms of Service" onClose={() => setShowLegal(null)}>
+        <Modal title={t.settings.termsOfServiceTitle} onClose={() => setShowLegal(null)}>
           <div style={{ fontSize: "0.85rem", lineHeight: "1.5", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: 12 }}>
-            <p><strong>Effective Date: May 30, 2026</strong></p>
-            <p>Welcome to Study Calendar. By signing up, you agree to these Terms of Service.</p>
-
-            <h4 style={{ color: "var(--text-primary)" }}>1. User License</h4>
-            <p>We grant you a non-commercial, personal, revocable license to plan academic schedules and record study activity.</p>
-
-            <h4 style={{ color: "var(--text-primary)" }}>2. Disclaimer of Warranties</h4>
-            <p>Study Calendar is provided "as is" and "as available". We do not guarantee that the tool will prevent exam failures or maintain 100% database uptime.</p>
-
-            <h4 style={{ color: "var(--text-primary)" }}>3. Account Termination</h4>
-            <p>We reserve the right to suspend or block access to accounts that violate normal usage patterns or threaten application database stability.</p>
+            <LegalText paragraphs={t.settings.termsOfServiceText} />
           </div>
         </Modal>
       )}
     </div>
+  );
+}
+
+function LegalText({ paragraphs }: { paragraphs: string[] }) {
+  return (
+    <>
+      {paragraphs.map((paragraph, index) => {
+        if (index === 0) {
+          return <p key={paragraph}><strong>{paragraph}</strong></p>;
+        }
+        const match = paragraph.match(/^(\d+\.\s*[^:]+)(?::)?(.*)$/);
+        if (match) {
+          return (
+            <React.Fragment key={paragraph}>
+              <h4 style={{ color: "var(--text-primary)", marginTop: 10 }}>{match[1]}</h4>
+              {match[2] && <p>{match[2].trim()}</p>}
+            </React.Fragment>
+          );
+        }
+        return <p key={paragraph}>{paragraph}</p>;
+      })}
+    </>
   );
 }

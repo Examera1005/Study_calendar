@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { decryptMessage } from "../../utils/crypto";
+import { useLanguage } from "../../hooks/useLanguage";
 
 // Sub-component for decrypting message rows asynchronously
 function ChatMessageRow({
@@ -14,22 +15,30 @@ function ChatMessageRow({
   isMe: boolean;
   timestamp: number;
 }) {
-  const [body, setBody] = useState<string>("🔒 Decrypting...");
+  const { t } = useLanguage();
+  const [body, setBody] = useState<string>(t.friends.decrypting);
 
   useEffect(() => {
     let active = true;
     async function decrypt() {
-      const ciphertext = isMe ? senderEncryptedBody : encryptedBody;
-      const decrypted = await decryptMessage(ciphertext);
-      if (active) {
-        setBody(decrypted);
+      try {
+        const ciphertext = isMe ? senderEncryptedBody : encryptedBody;
+        const decrypted = await decryptMessage(ciphertext);
+        if (active) {
+          setBody(decrypted);
+        }
+      } catch (error) {
+        console.error(error);
+        if (active) {
+          setBody(t.friends.decryptError);
+        }
       }
     }
     void decrypt();
     return () => {
       active = false;
     };
-  }, [encryptedBody, senderEncryptedBody, isMe]);
+  }, [encryptedBody, senderEncryptedBody, isMe, t.friends.decryptError, t.friends.decrypting]);
 
   return (
     <div className={`chat-message-row ${isMe ? "me" : "them"}`}>
@@ -66,12 +75,14 @@ export function ChatTab({
   profile,
   chatBottomRef,
 }: ChatTabProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="friends-layout">
       {/* Active conversations / Friends list */}
       <div className={`card conversations-list-card ${activeChatFriend ? "has-active-chat" : ""}`} style={{ padding: 12 }}>
         <h3 style={{ padding: "8px 12px", borderBottom: "1px solid var(--border-subtle)", paddingBottom: 12, marginBottom: 8 }}>
-          Conversations
+          {t.friends.conversationsHeader}
         </h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
           {friendships?.accepted && friendships.accepted.length > 0 ? (
@@ -91,7 +102,7 @@ export function ChatTab({
             ))
           ) : (
             <div style={{ textAlign: "center", padding: 16, fontSize: "0.8rem", color: "var(--text-muted)" }}>
-              No accepted friends to message.
+              {t.friends.noConversations}
             </div>
           )}
         </div>
@@ -107,18 +118,18 @@ export function ChatTab({
                   type="button"
                   className="mobile-back-btn"
                   onClick={() => setActiveChatFriend(null)}
-                  aria-label="Back to conversations list"
+                  aria-label={t.friends.backToConversations}
                 >
                   ⬅️
                 </button>
                 <div>
                   <h3 style={{ fontSize: "1.05rem", color: "var(--text-primary)", margin: 0 }}>{activeChatFriend.username}</h3>
-                  <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Active Conversation</span>
+                  <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{t.friends.activeConversation}</span>
                 </div>
               </div>
               <div style={{ fontSize: "0.75rem", color: "var(--success)", display: "flex", alignItems: "center", gap: 6 }}>
                 <span className="pulse-dot" style={{ width: 6, height: 6, background: "var(--success)", borderRadius: "50%" }} />
-                E2EE Locked
+                {t.friends.e2eLocked}
               </div>
             </div>
 
@@ -135,8 +146,8 @@ export function ChatTab({
                 ))
               ) : (
                 <div className="chat-empty">
-                  <span>🔒 Messages are encrypted end-to-end.</span>
-                  <span style={{ fontSize: "0.8rem" }}>Say hello to start the secure conversation!</span>
+                  <span>{t.friends.e2eNotice}</span>
+                  <span style={{ fontSize: "0.8rem" }}>{t.friends.sayHello}</span>
                 </div>
               )}
               <div ref={chatBottomRef} />
@@ -145,19 +156,19 @@ export function ChatTab({
             <form onSubmit={handleSendMessage} className="chat-input-area">
               <input
                 type="text"
-                placeholder="Type an encrypted message..."
+                placeholder={t.friends.typingPlaceholder}
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                aria-label="Type an encrypted message"
+                aria-label={t.friends.typingPlaceholder}
                 required
               />
-              <button type="submit" className="btn btn-primary">Send</button>
+              <button type="submit" className="btn btn-primary">{t.common.send}</button>
             </form>
           </>
         ) : (
           <div className="chat-empty">
-            <h3>💬 Secure Chat</h3>
-            <p style={{ fontSize: "0.82rem" }}>Select a friend from the left sidebar to start messaging.</p>
+            <h3>{t.friends.chatTab}</h3>
+            <p style={{ fontSize: "0.82rem" }}>{t.friends.emptyChatState}</p>
           </div>
         )}
       </div>

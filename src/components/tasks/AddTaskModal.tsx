@@ -3,6 +3,7 @@ import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc, Id } from "../../../convex/_generated/dataModel";
 import { Modal } from "../ui/Modal";
+import { useLanguage } from "../../hooks/useLanguage";
 
 type TaskType = "daily" | "general";
 
@@ -15,11 +16,12 @@ type Props = {
 };
 
 export function AddTaskModal({ selectedDate, defaultType, subjects, onClose, onCreated }: Props) {
+  const { t } = useLanguage();
   const [taskType, setTaskType] = useState<TaskType>(defaultType);
   const createTask = useMutation(api.tasks.create);
 
   return (
-    <Modal title="Add Task" onClose={onClose}>
+    <Modal title={t.tasks.addTask} onClose={onClose}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -38,46 +40,55 @@ export function AddTaskModal({ selectedDate, defaultType, subjects, onClose, onC
         }}
       >
         <div className="form-group">
-          <span className="form-label">Type</span>
+          <span className="form-label">{t.tasks.typeLabel}</span>
           <div className="task-tabs" style={{ marginBottom: 0 }}>
             <button
               type="button"
               className={`task-tab ${taskType === "daily" ? "active" : ""}`}
               onClick={() => setTaskType("daily")}
             >
-              📅 Daily
+              📅 {t.tasks.dailyTab}
             </button>
             <button
               type="button"
               className={`task-tab ${taskType === "general" ? "active" : ""}`}
               onClick={() => setTaskType("general")}
             >
-              📋 General
+              📋 {t.tasks.generalTab}
             </button>
           </div>
           <input type="hidden" name="taskType" value={taskType} />
         </div>
         <div className="form-group">
-          <label htmlFor="add-task-title">Title</label>
-          <input id="add-task-title" name="title" required />
+          <label htmlFor="add-task-title">{t.common.title}</label>
+          <input
+            id="add-task-title"
+            name="title"
+            required
+            placeholder={t.tasks.taskTitlePlaceholder}
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="add-task-description">Description</label>
-          <textarea id="add-task-description" name="description" />
+          <label htmlFor="add-task-description">{t.tasks.descriptionLabel}</label>
+          <textarea
+            id="add-task-description"
+            name="description"
+            placeholder={t.tasks.taskNotesPlaceholder}
+          />
         </div>
         <div className="form-group">
-          <label htmlFor="add-task-priority">Priority</label>
+          <label htmlFor="add-task-priority">{t.tasks.priorityLabel}</label>
           <select id="add-task-priority" name="priority" defaultValue="medium">
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="low">{t.tasks.priorityLow}</option>
+            <option value="medium">{t.tasks.priorityMedium}</option>
+            <option value="high">{t.tasks.priorityHigh}</option>
           </select>
         </div>
         {subjects && subjects.length > 0 && (
           <div className="form-group">
-            <label htmlFor="add-task-subject">Subject (optional)</label>
+            <label htmlFor="add-task-subject">{t.tasks.subjectLabelOptional}</label>
             <select id="add-task-subject" name="subjectId" defaultValue="">
-              <option value="">None</option>
+              <option value="">{t.common.none}</option>
               {subjects.map((s) => (
                 <option key={s._id} value={s._id}>
                   {s.icon ? `${s.icon} ` : ""}{s.name}
@@ -88,10 +99,10 @@ export function AddTaskModal({ selectedDate, defaultType, subjects, onClose, onC
         )}
         <div className="modal-actions">
           <button type="button" className="btn btn-secondary" onClick={onClose}>
-            Cancel
+            {t.common.cancel}
           </button>
           <button type="submit" className="btn btn-primary">
-            Add Task
+            {t.tasks.addTask}
           </button>
         </div>
       </form>

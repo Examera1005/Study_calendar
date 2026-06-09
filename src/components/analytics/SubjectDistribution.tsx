@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Doc } from "../../../convex/_generated/dataModel";
+import { useLanguage } from "../../hooks/useLanguage";
 
 type Log = Doc<"dailyLogs">;
 type Subject = Doc<"subjects">;
@@ -13,7 +14,7 @@ type DistributionItem = {
   percentage: number;
 };
 
-function buildDistribution(allLogs: Log[] | undefined, subjects: Subject[] | undefined): DistributionItem[] {
+function buildDistribution(allLogs: Log[] | undefined, subjects: Subject[] | undefined, uncategorizedLabel: string): DistributionItem[] {
   if (!allLogs || !subjects) return [];
   const durationMap: Record<string, number> = {};
   let totalMinutes = 0;
@@ -39,7 +40,7 @@ function buildDistribution(allLogs: Log[] | undefined, subjects: Subject[] | und
   if (durationMap["uncategorized"]) {
     data.push({
       id: "uncategorized",
-      name: "Sans Matière",
+      name: uncategorizedLabel,
       color: "var(--text-muted)",
       icon: "📝",
       minutes: durationMap["uncategorized"],
@@ -61,7 +62,8 @@ export function SubjectDistribution({
   onSelectSubject: (subjectId: string | null) => void;
 }) {
   const [hoveredSlice, setHoveredSlice] = useState<number | null>(null);
-  const distribution = useMemo(() => buildDistribution(allLogs, subjects), [allLogs, subjects]);
+  const { t } = useLanguage();
+  const distribution = useMemo(() => buildDistribution(allLogs, subjects, t.common.uncategorized), [allLogs, subjects, t]);
 
   const paths = useMemo(() => {
     let accumulatedPercent = 0;
@@ -89,7 +91,7 @@ export function SubjectDistribution({
   if (distribution.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: "40px 0", color: "var(--text-muted)" }}>
-        Veuillez lier des matières à vos sessions d'études.
+        {t.analytics.linkSubjectsPrompt}
       </div>
     );
   }
@@ -122,7 +124,7 @@ export function SubjectDistribution({
             {hoveredSlice !== null ? `${distribution[hoveredSlice].percentage}%` : selectedSubjectId ? `${distribution.find(d => d.id === selectedSubjectId)?.percentage ?? 0}%` : "Total"}
           </text>
           <text x="80" y="96" textAnchor="middle" fill="var(--text-muted)" fontSize="0.55rem" fontWeight="600">
-            {hoveredSlice !== null ? distribution[hoveredSlice].name : selectedSubjectId ? distribution.find(d => d.id === selectedSubjectId)?.name ?? "" : "Matières"}
+            {hoveredSlice !== null ? distribution[hoveredSlice].name : selectedSubjectId ? distribution.find(d => d.id === selectedSubjectId)?.name ?? "" : t.sidebar.subjects}
           </text>
         </svg>
       </div>

@@ -1,9 +1,13 @@
 // Native Sound Engine using Web Audio API: lazy-loaded shared context for optimal browser performance
 let sharedAudioCtx: AudioContext | null = null;
 
+interface WindowWithWebkitAudioContext extends Window {
+  webkitAudioContext?: typeof AudioContext;
+}
+
 export function playSynthSound(type: "success" | "tick" | "click" | "pop") {
   try {
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const AudioContextClass = window.AudioContext || (window as WindowWithWebkitAudioContext).webkitAudioContext;
     if (!AudioContextClass) return;
     if (!sharedAudioCtx) {
       sharedAudioCtx = new AudioContextClass();
@@ -53,7 +57,7 @@ export function playSynthSound(type: "success" | "tick" | "click" | "pop") {
       osc.start();
       osc.stop(ctx.currentTime + 0.14);
     }
-  } catch (e) {
-    // Fail silently if audio output is blocked
+  } catch (error) {
+    console.debug("Audio playback skipped", error);
   }
 }

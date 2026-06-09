@@ -5,13 +5,14 @@ import { useState } from "react";
 import { Modal } from "../components/ui/Modal";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import type { Id } from "../../convex/_generated/dataModel";
+import { useLanguage } from "../hooks/useLanguage";
 
-const daysUntil = (dateStr: string) => {
+const daysUntil = (dateStr: string, t: any) => {
   const d = Math.ceil((new Date(dateStr).getTime() - Date.now()) / 86400000);
-  if (d < 0) return "Passed";
-  if (d === 0) return "Today";
-  if (d === 1) return "Tomorrow";
-  return `${d} days`;
+  if (d < 0) return t.exams.passed;
+  if (d === 0) return t.exams.today;
+  if (d === 1) return t.exams.tomorrow;
+  return t.exams.daysCount(d);
 };
 
 const countdownClass = (dateStr: string) => {
@@ -30,10 +31,9 @@ export function ExamsView() {
   const removeExam = useMutation(api.exams.remove);
   const [showAdd, setShowAdd] = useState(false);
   const [editingExam, setEditingExam] = useState<any>(null);
+  const { t, language, dateLocale } = useLanguage();
 
   const getSubject = (id: string) => subjects?.find((s) => s._id === id);
-
-
 
   const sorted = (exams ?? []).toSorted(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
@@ -42,16 +42,16 @@ export function ExamsView() {
   return (
     <div>
       <div className="page-header">
-        <h1>Exams</h1>
+        <h1>{t.exams.title}</h1>
         <button type="button" className="btn btn-primary" onClick={() => setShowAdd(true)} id="add-exam-btn">
-          + Add Exam
+          + {t.exams.addExam}
         </button>
       </div>
 
       {(!subjects || subjects.length === 0) && (
         <div className="card" style={{ marginBottom: 16, border: "1px solid var(--warning)", background: "var(--accent-light)", color: "var(--warning)" }}>
           <p style={{ fontSize: "0.88rem", fontWeight: 500 }}>
-            ⚠️ Create a subject first in Settings before adding exams.
+            {t.exams.createSubjectWarning}
           </p>
         </div>
       )}
@@ -60,7 +60,7 @@ export function ExamsView() {
         <div className="card">
           <div className="empty-state">
             <div className="empty-icon">🎯</div>
-            <p>No exams yet. Add your first exam above!</p>
+            <p>{t.exams.noExamsYet}</p>
           </div>
         </div>
       ) : (
@@ -84,19 +84,19 @@ export function ExamsView() {
                           icon={subj.icon}
                         />
                       )}
-                      <span>{format(new Date(exam.date), "MMM d, yyyy")}</span>
+                      <span>{format(new Date(exam.date), "MMM d, yyyy", { locale: dateLocale })}</span>
                       <span className="coeff-badge">×{exam.coefficient}</span>
                     </div>
                     {exam.notes && <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", marginTop: 4 }}>{exam.notes}</p>}
                     {exam.grade !== undefined && (
                       <div style={{ marginTop: 6 }}>
-                        <span className="duration-badge">Grade: {exam.grade}</span>
+                        <span className="duration-badge">{t.common.grade}: {exam.grade}</span>
                       </div>
                     )}
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
                     <span className={`countdown ${countdownClass(exam.date)}`}>
-                      {daysUntil(exam.date)}
+                      {daysUntil(exam.date, t)}
                     </span>
                     <div style={{ display: "flex", gap: 4 }}>
                       {!exam.completed && (
@@ -104,17 +104,21 @@ export function ExamsView() {
                           type="button"
                           className="btn btn-sm btn-secondary"
                           onClick={() => {
-                            const grade = prompt("Enter your grade:");
+                            const grade = prompt(t.exams.enterGradePrompt);
                             if (grade !== null) {
                               void updateExam({ id: exam._id, completed: true, grade: Number(grade) || undefined });
                             }
                           }}
                         >
-                          ✓ Done
+                          ✓ {t.common.done}
                         </button>
                       )}
                       <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Edit ${exam.title}`} onClick={() => setEditingExam(exam)}>✏️</button>
-                      <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Delete ${exam.title}`} onClick={() => void removeExam({ id: exam._id })}>🗑</button>
+                      <button type="button" className="btn-icon" style={{ width: 28, height: 28 }} aria-label={`Delete ${exam.title}`} onClick={() => {
+                        if (confirm(t.exams.confirmDeleteExam)) {
+                          void removeExam({ id: exam._id });
+                        }
+                      }}>🗑</button>
                     </div>
                   </div>
                 </div>
@@ -125,7 +129,7 @@ export function ExamsView() {
       )}
 
       {showAdd && subjects && subjects.length > 0 && (
-        <Modal title="Add Exam" onClose={() => setShowAdd(false)}>
+        <Modal title={t.exams.addExam} onClose={() => setShowAdd(false)}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -141,13 +145,13 @@ export function ExamsView() {
             }}
           >
             <div className="form-group">
-              <label htmlFor="add-exam-title">Title</label>
-              <input id="add-exam-title" name="title" required placeholder="Final Exam" />
+              <label htmlFor="add-exam-title">{t.common.title}</label>
+              <input id="add-exam-title" name="title" required placeholder={t.exams.finalExamPlaceholder} />
             </div>
             <div className="form-group">
-              <label htmlFor="add-exam-subject">Subject</label>
+              <label htmlFor="add-exam-subject">{t.common.subject}</label>
               <select id="add-exam-subject" name="subjectId" required>
-                <option value="">Select a subject</option>
+                <option value="">{t.exams.selectSubjectPlaceholder}</option>
                 {subjects.map((s) => (
                   <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
                 ))}
@@ -155,27 +159,27 @@ export function ExamsView() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <div className="form-group">
-                <label htmlFor="add-exam-date">Date</label>
+                <label htmlFor="add-exam-date">{t.common.date}</label>
                 <input id="add-exam-date" name="date" type="date" required />
               </div>
               <div className="form-group">
-                <label htmlFor="add-exam-coeff">Coefficient</label>
+                <label htmlFor="add-exam-coeff">{t.common.coefficient}</label>
                 <input id="add-exam-coeff" name="coefficient" type="number" step="0.5" min="0.5" defaultValue="1" required />
               </div>
             </div>
             <div className="form-group">
-              <label htmlFor="add-exam-notes">Notes (optional)</label>
-              <textarea id="add-exam-notes" name="notes" placeholder="Chapters to review..." />
+              <label htmlFor="add-exam-notes">{t.common.notes} ({t.common.optional})</label>
+              <textarea id="add-exam-notes" name="notes" placeholder={t.exams.notesPlaceholder} />
             </div>
             <div className="modal-actions">
-              <button type="button" className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button>
-              <button type="submit" className="btn btn-primary">Add Exam</button>
+              <button type="button" className="btn btn-secondary" onClick={() => setShowAdd(false)}>{t.common.cancel}</button>
+              <button type="submit" className="btn btn-primary">{t.exams.addExam}</button>
             </div>
           </form>
         </Modal>
       )}
       {editingExam && subjects && subjects.length > 0 && (
-        <Modal title="Edit Exam" onClose={() => setEditingExam(null)}>
+        <Modal title={t.exams.editExam} onClose={() => setEditingExam(null)}>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -194,13 +198,13 @@ export function ExamsView() {
             }}
           >
             <div className="form-group">
-              <label htmlFor="edit-exam-title">Title</label>
-              <input id="edit-exam-title" name="title" defaultValue={editingExam.title} required placeholder="Final Exam" />
+              <label htmlFor="edit-exam-title">{t.common.title}</label>
+              <input id="edit-exam-title" name="title" defaultValue={editingExam.title} required placeholder={t.exams.finalExamPlaceholder} />
             </div>
             <div className="form-group">
-              <label htmlFor="edit-exam-subject">Subject</label>
+              <label htmlFor="edit-exam-subject">{t.common.subject}</label>
               <select id="edit-exam-subject" name="subjectId" defaultValue={editingExam.subjectId} required>
-                <option value="">Select a subject</option>
+                <option value="">{t.exams.selectSubjectPlaceholder}</option>
                 {subjects.map((s) => (
                   <option key={s._id} value={s._id}>{s.icon ? `${s.icon} ` : ""}{s.name}</option>
                 ))}
@@ -208,34 +212,34 @@ export function ExamsView() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <div className="form-group">
-                <label htmlFor="edit-exam-date">Date</label>
+                <label htmlFor="edit-exam-date">{t.common.date}</label>
                 <input id="edit-exam-date" name="date" type="date" defaultValue={editingExam.date} required />
               </div>
               <div className="form-group">
-                <label htmlFor="edit-exam-coeff">Coefficient</label>
+                <label htmlFor="edit-exam-coeff">{t.common.coefficient}</label>
                 <input id="edit-exam-coeff" name="coefficient" type="number" step="0.5" min="0.5" defaultValue={editingExam.coefficient} required />
               </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               <div className="form-group">
-                <label htmlFor="edit-exam-status">Status</label>
+                <label htmlFor="edit-exam-status">{t.common.status}</label>
                 <select id="edit-exam-status" name="completed" defaultValue={editingExam.completed ? "true" : "false"}>
-                  <option value="false">Upcoming</option>
-                  <option value="true">Completed</option>
+                  <option value="false">{t.common.upcoming}</option>
+                  <option value="true">{t.common.completed}</option>
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="edit-exam-grade">Grade (optional)</label>
+                <label htmlFor="edit-exam-grade">{t.common.grade} ({t.common.optional})</label>
                 <input id="edit-exam-grade" name="grade" type="number" step="0.1" defaultValue={editingExam.grade} placeholder="e.g. 16" />
               </div>
             </div>
             <div className="form-group">
-              <label htmlFor="edit-exam-notes">Notes (optional)</label>
-              <textarea id="edit-exam-notes" name="notes" defaultValue={editingExam.notes || ""} placeholder="Chapters to review..." />
+              <label htmlFor="edit-exam-notes">{t.common.notes} ({t.common.optional})</label>
+              <textarea id="edit-exam-notes" name="notes" defaultValue={editingExam.notes || ""} placeholder={t.exams.notesPlaceholder} />
             </div>
             <div className="modal-actions">
-              <button type="button" className="btn btn-secondary" onClick={() => setEditingExam(null)}>Cancel</button>
-              <button type="submit" className="btn btn-primary">Save Changes</button>
+              <button type="button" className="btn btn-secondary" onClick={() => setEditingExam(null)}>{t.common.cancel}</button>
+              <button type="submit" className="btn btn-primary">{t.common.saveChanges}</button>
             </div>
           </form>
         </Modal>

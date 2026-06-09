@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal } from "../ui/Modal";
+import { useLanguage } from "../../hooks/useLanguage";
 
 interface ViewExamsModalProps {
   viewExamsFriend: any;
@@ -16,14 +17,16 @@ export function ViewExamsModal({
   importSuccessId,
   handleImportExam,
 }: ViewExamsModalProps) {
+  const { t } = useLanguage();
+
   return (
     <Modal
-      title={`🎯 ${viewExamsFriend.username}'s Exams`}
+      title={`🎯 ${t.friends.friendsExamsTitle(viewExamsFriend.username)}`}
       onClose={() => setViewExamsFriend(null)}
     >
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         <p style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
-          If you share these exams or want to remember when they happen, click "Add to My Calendar" to copy them directly into your exam list.
+          {t.friends.importExamsDesc}
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 350, overflowY: "auto" }}>
@@ -46,7 +49,7 @@ export function ViewExamsModal({
                   <div>
                     <div style={{ fontWeight: 600, color: "var(--text-primary)" }}>{exam.title}</div>
                     <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 4 }}>
-                      Date: <strong>{exam.date}</strong> · Coeff: {exam.coefficient}
+                      {t.common.date}: <strong>{exam.date}</strong> · {t.common.coefficient}: {exam.coefficient}
                     </div>
                     <div
                       className="friend-exam-subject-badge"
@@ -65,14 +68,14 @@ export function ViewExamsModal({
                     onClick={() => handleImportExam(exam._id)}
                     disabled={isImported}
                   >
-                    {isImported ? "✓ Added!" : "+ Add to My Calendar"}
+                    {isImported ? t.friends.addedToast : t.friends.addToCalendarBtn}
                   </button>
                 </div>
               );
             })
           ) : (
             <div style={{ textAlign: "center", padding: 20, color: "var(--text-muted)" }}>
-              No exams registered for this user yet.
+              {t.friends.noUpcomingExams}
             </div>
           )}
         </div>
@@ -83,7 +86,7 @@ export function ViewExamsModal({
             className="btn btn-secondary"
             onClick={() => setViewExamsFriend(null)}
           >
-            Close
+            {t.common.close}
           </button>
         </div>
       </div>

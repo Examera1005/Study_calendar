@@ -1,7 +1,6 @@
 import { format, addDays, isSameMonth, isToday } from "date-fns";
 import { formatDuration } from "../../utils/dateUtils";
-
-const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+import { useLanguage } from "../../hooks/useLanguage";
 
 type DayData = {
   dots: { color: string; type: "exam" | "event" | "log" }[];
@@ -18,9 +17,20 @@ type Props = {
 };
 
 export function CalendarGrid({ days, currentMonth, selectedDate, dayData, onSelectDate }: Props) {
+  const { dateLocale } = useLanguage();
+
+  // Generate weekday headers starting from Monday dynamically according to the active locale
+  const baseDate = new Date(2026, 5, 1); // June 1st, 2026 (Monday)
+  const dayNames = Array.from({ length: 7 }, (_, i) => {
+    const d = addDays(baseDate, i);
+    const formatted = format(d, "ccc", { locale: dateLocale }); // Short day representation
+    const clean = formatted.replace(/\.$/, ""); // Strip trailing dots (often present in French: "lun.")
+    return clean.charAt(0).toUpperCase() + clean.slice(1);
+  });
+
   return (
     <div className="calendar-grid">
-      {DAY_NAMES.map((dn) => (
+      {dayNames.map((dn) => (
         <div key={dn} className="calendar-day-header">{dn}</div>
       ))}
       {days.map((day) => (
@@ -44,6 +54,7 @@ function CalendarDay({ day, currentMonth, isSelected, data, onSelect }: {
   data?: DayData;
   onSelect: (dateStr: string) => void;
 }) {
+  const { t } = useLanguage();
   const dateStr = format(day, "yyyy-MM-dd");
   const className = `calendar-day${!isSameMonth(day, currentMonth) ? " other-month" : ""}${isToday(day) ? " today" : ""}${isSelected ? " selected" : ""}`;
 
@@ -54,7 +65,7 @@ function CalendarDay({ day, currentMonth, isSelected, data, onSelect }: {
           {isToday(day) ? <span>{format(day, "d")}</span> : format(day, "d")}
         </div>
         {data?.totalStudyMinutes && data.totalStudyMinutes > 0 && (
-          <div className="day-study-badge" title="Total study duration today">
+          <div className="day-study-badge" title={t.dailyLog.studyTimeLabel}>
             ⏱️ {formatDuration(data.totalStudyMinutes, { formatUnderHourAsMins: true })}
           </div>
         )}
@@ -82,7 +93,9 @@ function CalendarDay({ day, currentMonth, isSelected, data, onSelect }: {
               </div>
             ))}
             {data.items.length > 2 && (
-              <div className="calendar-day-item-more">+{data.items.length - 2} more</div>
+              <div className="calendar-day-item-more">
+                {t.calendar.moreItems(data.items.length - 2)}
+              </div>
             )}
           </div>
         </>

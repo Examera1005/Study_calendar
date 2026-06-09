@@ -8,6 +8,7 @@ import { TaskList } from "../components/tasks/TaskList";
 import { TaskTabs } from "../components/tasks/TaskTabs";
 import { AddTaskModal } from "../components/tasks/AddTaskModal";
 import { EditTaskModal } from "../components/tasks/EditTaskModal";
+import { useLanguage } from "../hooks/useLanguage";
 
 type TaskTab = "daily" | "general" | "done";
 
@@ -18,6 +19,7 @@ export function TasksView({
   selectedDate: string;
   setSelectedDate: (d: string) => void;
 }) {
+  const { t, language, dateLocale } = useLanguage();
   const dailyTasks = useQuery(api.tasks.getByDate, { date: selectedDate });
   const generalTasks = useQuery(api.tasks.listGeneral);
   const subjects = useQuery(api.subjects.list);
@@ -55,9 +57,9 @@ export function TasksView({
     <div>
       <div className="page-header">
         <div>
-          <h1>Tasks</h1>
+          <h1>{t.tasks.title}</h1>
           <div className="date-display">
-            {completed}/{total} completed
+            {t.tasks.completedCount(completed, total)}
           </div>
         </div>
         <button
@@ -66,7 +68,7 @@ export function TasksView({
           onClick={() => setShowAdd(true)}
           id="add-task-btn"
         >
-          + Add Task
+          + {t.tasks.addTask}
         </button>
       </div>
 
@@ -79,17 +81,21 @@ export function TasksView({
 
       {(activeTab === "daily" || activeTab === "done") && (
         <div className="tasks-date-nav">
-          <button type="button" className="btn-icon" aria-label="Previous day" onClick={() => navDate(-1)}>
+          <button type="button" className="btn-icon" aria-label={t.tasks.prevDay} onClick={() => navDate(-1)}>
             ◀
           </button>
           <h2 style={{ fontSize: "1.1rem" }}>
-            {format(new Date(selectedDate + "T00:00:00"), "EEEE, MMMM d, yyyy")}
+            {format(
+              new Date(selectedDate + "T00:00:00"),
+              t.common.dateFormatLong,
+              { locale: dateLocale }
+            )}
           </h2>
-          <button type="button" className="btn-icon" aria-label="Next day" onClick={() => navDate(1)}>
+          <button type="button" className="btn-icon" aria-label={t.tasks.nextDay} onClick={() => navDate(1)}>
             ▶
           </button>
           <button type="button" className="btn btn-secondary btn-sm" onClick={() => setSelectedDate(formatLocalDate())}>
-            Today
+            {t.common.today}
           </button>
         </div>
       )}
@@ -97,7 +103,7 @@ export function TasksView({
       {activeTab === "general" && (
         <div style={{ marginBottom: 20 }}>
           <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-            These tasks aren't tied to any specific day: your ongoing to-do list.
+            {t.tasks.generalTasksDesc}
           </p>
         </div>
       )}
@@ -105,7 +111,7 @@ export function TasksView({
       {activeTab === "done" && (
         <div style={{ marginBottom: 20 }}>
           <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-            Your completed tasks for the selected day and ongoing general backlog.
+            {t.tasks.completedTasksDesc}
           </p>
         </div>
       )}

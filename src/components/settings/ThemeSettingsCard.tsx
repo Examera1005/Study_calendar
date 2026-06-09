@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { ColorPicker } from "../ui/ColorPicker";
+import { useLanguage } from "../../hooks/useLanguage";
 import {
   loadCustomizations,
   saveCustomizations,
@@ -28,12 +29,12 @@ const getPresetsForVariable = (variable: string, themeMode: "light" | "dark") =>
 };
 
 const COLOR_VARIABLES = [
-  { key: "--accent-primary", label: "Primary Accent", defaultDark: "#3b82f6", defaultLight: "#2563eb" },
-  { key: "--accent-glow", label: "Button Glow Shadow", defaultDark: "#3b82f6", defaultLight: "#2563eb" },
-  { key: "--bg-primary", label: "App Background", defaultDark: "#1b1c1d", defaultLight: "#f8fafc" },
-  { key: "--bg-secondary", label: "Sidebar & Card Background", defaultDark: "#141b2b", defaultLight: "#ffffff" },
-  { key: "--text-primary", label: "Primary Text", defaultDark: "#ffffff", defaultLight: "#0f172a" },
-  { key: "--text-secondary", label: "Secondary Text", defaultDark: "#90a9cb", defaultLight: "#475569" },
+  { key: "--accent-primary", defaultDark: "#3b82f6", defaultLight: "#2563eb" },
+  { key: "--accent-glow", defaultDark: "#3b82f6", defaultLight: "#2563eb" },
+  { key: "--bg-primary", defaultDark: "#1b1c1d", defaultLight: "#f8fafc" },
+  { key: "--bg-secondary", defaultDark: "#141b2b", defaultLight: "#ffffff" },
+  { key: "--text-primary", defaultDark: "#ffffff", defaultLight: "#0f172a" },
+  { key: "--text-secondary", defaultDark: "#90a9cb", defaultLight: "#475569" },
 ];
 
 interface ThemeSettingsCardProps {
@@ -43,8 +44,9 @@ interface ThemeSettingsCardProps {
 
 export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
   // Theme customizations from Convex
-  const userSettings = useQuery((api as any).userSettings?.get);
-  const updateSettings = useMutation((api as any).userSettings?.update);
+  const userSettings = useQuery(api.userSettings.get);
+  const updateSettings = useMutation(api.userSettings.update);
+  const { t } = useLanguage();
 
   // Theme customizations state
   const [customizations, setCustomizations] = useState<Record<string, string>>(() => loadCustomizations(theme));
@@ -68,6 +70,18 @@ export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
       console.error("Failed to parse user settings customizations:", e);
     }
   }
+
+  const getVarLabel = (key: string) => {
+    switch (key) {
+      case "--accent-primary": return t.settings.themeAccentPrimary;
+      case "--accent-glow": return t.settings.themeAccentGlow;
+      case "--bg-primary": return t.settings.themeBgPrimary;
+      case "--bg-secondary": return t.settings.themeBgSecondary;
+      case "--text-primary": return t.settings.themeTextPrimary;
+      case "--text-secondary": return t.settings.themeTextSecondary;
+      default: return key;
+    }
+  };
 
   const handleColorChange = (newColor: string) => {
     if (!activeVariable) return;
@@ -101,9 +115,9 @@ export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
 
   return (
     <div className="card">
-      <h3 style={{ marginBottom: 12 }}>🎨 Theme & Appearance</h3>
+      <h3 style={{ marginBottom: 12 }}>{t.settings.themeTitle}</h3>
       <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 16 }}>
-        Customize your app theme. Preferred theme will be saved automatically.
+        {t.settings.themeDesc}
       </p>
 
       <div style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
@@ -114,7 +128,7 @@ export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
           style={{ flex: "1 1 140px", padding: "16px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}
         >
           <span style={{ fontSize: "1.5rem" }}>🌙</span>
-          <strong>Dark Mode</strong>
+          <strong>{t.settings.themeDark}</strong>
         </button>
         <button
           type="button"
@@ -123,17 +137,17 @@ export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
           style={{ flex: "1 1 140px", padding: "16px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}
         >
           <span style={{ fontSize: "1.5rem" }}>☀️</span>
-          <strong>Light Mode</strong>
+          <strong>{t.settings.themeLight}</strong>
         </button>
       </div>
 
       {/* Theme Color Customization sub-section */}
       <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: 20 }}>
         <h4 style={{ fontSize: "0.95rem", fontWeight: 600, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
-          ✨ Custom Theme Colors
+          {t.settings.themeCustomTitle}
         </h4>
         <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", marginBottom: 16 }}>
-          Fine-tune colors for {theme === "dark" ? "Dark" : "Light"} Mode. Changes apply instantly.
+          {t.settings.themeCustomDesc(theme)}
         </p>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
@@ -153,7 +167,7 @@ export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
                   }}
                 >
                   <span style={{ fontSize: "0.88rem", fontWeight: 500, color: isEditing ? "var(--accent-primary)" : "var(--text-primary)" }}>
-                    {v.label}
+                    {getVarLabel(v.key)}
                   </span>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontFamily: "monospace", fontSize: "0.8rem", color: "var(--text-muted)" }}>
@@ -179,7 +193,7 @@ export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
               onClick={handleResetTheme}
               style={{ marginTop: 8, alignSelf: "flex-start", fontSize: "0.82rem", padding: "6px 12px" }}
             >
-              Reset Theme Overrides
+              {t.settings.themeResetBtn}
             </button>
           </div>
 
@@ -187,14 +201,14 @@ export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
             <div style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
               <div style={{ display: "flex", justifyContent: "space-between", width: "100%", maxWidth: 280, padding: "0 4px" }}>
                 <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text-secondary)" }}>
-                  EDITING: {COLOR_VARIABLES.find(x => x.key === activeVariable)?.label}
+                  {t.settings.themeEditingLabel(getVarLabel(activeVariable))}
                 </span>
                 <button
                   type="button"
                   onClick={() => setActiveVariable(null)}
                   style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", fontSize: "0.78rem", fontWeight: 500 }}
                 >
-                  Close
+                  {t.common.close}
                 </button>
               </div>
               <ColorPicker

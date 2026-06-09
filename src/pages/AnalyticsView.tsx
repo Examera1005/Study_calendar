@@ -7,6 +7,7 @@ import { KpiCards, TimeRangeToggle } from "../components/analytics/KpiCards";
 import { ProgressionChart } from "../components/analytics/ProgressionChart";
 import { SubjectDistribution } from "../components/analytics/SubjectDistribution";
 import { BadgeCard } from "../components/analytics/BadgeCard";
+import { useLanguage } from "../hooks/useLanguage";
 
 type Log = Doc<"dailyLogs">;
 type Task = Doc<"tasks">;
@@ -16,6 +17,7 @@ export function AnalyticsView() {
   const allLogs = useQuery(api.dailyLogs.list) as Log[] | undefined;
   const subjects = useQuery(api.subjects.list) as Subject[] | undefined;
   const allTasks = useQuery(api.tasks.listAll) as Task[] | undefined;
+  const { t, language } = useLanguage();
 
   const [timeRange, setTimeRange] = useState<7 | 30>(7);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
@@ -27,7 +29,7 @@ export function AnalyticsView() {
 
   const chartTitleText = selectedSubject
     ? `Progression — ${selectedSubject.icon || "📚"} ${selectedSubject.name}`
-    : "Progression du Temps d'Étude";
+    : t.analytics.progressionTitle;
 
   const stats = useMemo(() => {
     if (!allLogs || !allTasks) return { totalHours: 0, totalSessions: 0, completedTasks: 0, streak: 0 };
@@ -42,15 +44,15 @@ export function AnalyticsView() {
   }, [allLogs, allTasks]);
 
   const achievementsList = useMemo(
-    () => getAchievements(allLogs || [], stats.completedTasks, stats.streak),
-    [allLogs, stats.completedTasks, stats.streak],
+    () => getAchievements(allLogs || [], stats.completedTasks, stats.streak, t),
+    [allLogs, stats.completedTasks, stats.streak, t],
   );
 
   return (
     <div>
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <h1>Statistiques & Badges</h1>
+          <h1>{t.analytics.title}</h1>
         </div>
         <TimeRangeToggle value={timeRange} onChange={setTimeRange} />
       </div>
@@ -72,7 +74,7 @@ export function AnalyticsView() {
                 onClick={() => setSelectedSubjectId(null)}
                 className="analytics-reset-btn"
               >
-                ✕ Voir tout
+                {t.analytics.viewAllBtn}
               </button>
             )}
           </div>
@@ -84,7 +86,7 @@ export function AnalyticsView() {
               <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
               <path d="M22 12A10 10 0 0 0 12 2v10z" />
             </svg>
-            Répartition par Matière
+            {t.analytics.subjectDistributionTitle}
           </h3>
           <SubjectDistribution
             allLogs={allLogs}
@@ -104,10 +106,10 @@ export function AnalyticsView() {
             <path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34" />
             <path d="M12 2a6 6 0 0 0-6 6v3.34c0 .87.35 1.7 1 2.34l3 3h4l3-3c.65-.64 1-1.47 1-2.34V8a6 6 0 0 0-6-6z" />
           </svg>
-          Badges & Trophées
+          {t.analytics.badgesTitle}
         </h3>
         <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: 20 }}>
-          Gagnez des badges en complétant vos tâches et en restant régulier dans vos études.
+          {t.analytics.badgesDesc}
         </p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
           {achievementsList.map((badge) => (

@@ -26,6 +26,7 @@ import { MobileHeader } from "./components/layout/MobileHeader";
 import { FloatingTimerWidget } from "./components/layout/FloatingTimerWidget";
 import { SaveTimerModal } from "./components/study/SaveTimerModal";
 import type { TimerCorner } from "./components/settings/TimerWidgetSettingsCard";
+import { useLanguage } from "./hooks/useLanguage";
 
 export type View = "dashboard" | "calendar" | "exams" | "tasks" | "log" | "subjects" | "settings" | "friends" | "analytics" | "pomodoro";
 
@@ -90,6 +91,7 @@ function timerPrefsReducer(state: TimerPrefsState, action: TimerPrefsAction): Ti
 }
 
 export default function App() {
+  const { t } = useLanguage();
   const [ui, dispatchUi] = useReducer(uiReducer, undefined, () => ({
     view: (localStorage.getItem("currentView") as View) || "dashboard",
     sidebarOpen: false,
@@ -189,7 +191,7 @@ export default function App() {
             type="button"
             className="sidebar-overlay"
             onClick={() => setSidebarOpen(false)}
-            aria-label="Close sidebar"
+            aria-label={t.sidebar.collapse}
             style={{ border: "none", padding: 0 }}
           />
         )}

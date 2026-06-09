@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useLanguage } from "../hooks/useLanguage";
 
 interface PomodoroViewProps {
   pomodoroStatus: "idle" | "running" | "paused";
@@ -22,11 +23,19 @@ const formatSeconds = (totalSecs: number) => {
 };
 
 const PRESETS = [
-  { label: "Classique (25m / 5m)", work: 25, break: 5 },
-  { label: "Productif (50m / 10m)", work: 50, break: 10 },
-  { label: "Sprint (15m / 3m)", work: 15, break: 3 },
-  { label: "Continu (30m / 0m)", work: 30, break: 0 },
+  { key: "classic", work: 25, break: 5 },
+  { key: "productive", work: 50, break: 10 },
+  { key: "sprint", work: 15, break: 3 },
+  { key: "continuous", work: 30, break: 0 },
 ];
+
+function getPresetLabel(key: string, t: any): string {
+  if (key === "classic") return t.pomodoro.presetClassic;
+  if (key === "productive") return t.pomodoro.presetProductive;
+  if (key === "sprint") return t.pomodoro.presetSprint;
+  if (key === "continuous") return t.pomodoro.presetContinuous;
+  return key;
+}
 
 export function PomodoroView({
   pomodoroStatus,
@@ -41,7 +50,7 @@ export function PomodoroView({
   resetPomodoro,
   stopAndLogWork,
 }: PomodoroViewProps) {
-
+  const { t, language } = useLanguage();
 
   // Calculate circular progress percentage
   const progressPercent = useMemo(() => {
@@ -56,11 +65,9 @@ export function PomodoroView({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - progressPercent * circumference;
 
-
-
   const handlePresetSelect = (w: number, b: number) => {
     if (pomodoroStatus !== "idle") {
-      if (!confirm("Voulez-vous réinitialiser le minuteur actuel pour appliquer ce raccourci ?")) {
+      if (!confirm(t.pomodoro.resetMinuterPrompt)) {
         return;
       }
     }
@@ -82,9 +89,11 @@ export function PomodoroView({
       padding: "20px 0"
     }}>
       <div style={{ textAlign: "center" }}>
-        <h1>Minuteur Pomodoro</h1>
+        <h1>
+          {t.pomodoro.timerTitle}
+        </h1>
         <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginTop: 4 }}>
-          Restez concentré et gérez vos temps d'étude et de pause de manière optimale.
+          {t.pomodoro.subtitle}
         </p>
       </div>
 
@@ -136,7 +145,7 @@ export function PomodoroView({
                 background: pomodoroStatus !== "idle" ? "var(--bg-primary)" : "transparent",
               }}
             >
-              {pomodoroStatus === "idle" ? "Prêt" : (pomodoroMode === "work" ? "💻 Étude" : "☕ Pause")}
+              {pomodoroStatus === "idle" ? t.pomodoro.readyStatus : (pomodoroMode === "work" ? t.pomodoro.studyState : t.pomodoro.breakState)}
             </span>
             <span style={{
               fontSize: "2.8rem",
@@ -153,7 +162,7 @@ export function PomodoroView({
               color: "var(--text-muted)",
               fontWeight: 500
             }}>
-              Objectif: {pomodoroMode === "work" ? workDuration : breakDuration} min
+              {t.pomodoro.goalLabel}: {pomodoroMode === "work" ? workDuration : breakDuration} {t.common.minutesUnit}
             </span>
           </div>
         </div>
@@ -167,7 +176,7 @@ export function PomodoroView({
               onClick={pausePomodoro}
               style={{ flex: 1, padding: "12px", fontSize: "0.95rem" }}
             >
-              ⏸️ Pause
+              {t.pomodoro.pauseBtn}
             </button>
           ) : (
             <button
@@ -182,7 +191,7 @@ export function PomodoroView({
                 borderColor: currentThemeColor
               }}
             >
-              ▶️ Commencer
+              {t.pomodoro.startBtn}
             </button>
           )}
 
@@ -193,7 +202,7 @@ export function PomodoroView({
               onClick={stopAndLogWork}
               style={{ flex: 1, padding: "12px", fontSize: "0.95rem" }}
             >
-              ⏹️ Arrêter
+              {t.pomodoro.stopBtn}
             </button>
           )}
         </div>
@@ -201,14 +210,14 @@ export function PomodoroView({
 
       {/* Interval Setup Config */}
       <div className="card" style={{ width: "100%" }}>
-        <h3 style={{ marginBottom: 16 }}>⚙️ Réglages des Durées</h3>
+        <h3 style={{ marginBottom: 16 }}>{t.pomodoro.durationSettings}</h3>
         
         <div style={{ display: "flex", flexWrap: "wrap", gap: 20, marginBottom: 24 }}>
           {/* Work duration range */}
           <div style={{ flex: 1, minWidth: 200, display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", fontWeight: 600 }}>
-              <span style={{ color: "var(--text-secondary)" }}>💻 Temps d'Étude (Travail)</span>
-              <span style={{ color: "var(--accent-primary)" }}>{workDuration} minutes</span>
+              <span style={{ color: "var(--text-secondary)" }}>{t.pomodoro.studyDurationLabel}</span>
+              <span style={{ color: "var(--accent-primary)" }}>{workDuration} {t.common.minutesUnit}</span>
             </div>
             <input
               type="range"
@@ -234,9 +243,9 @@ export function PomodoroView({
           {/* Break duration range */}
           <div style={{ flex: 1, minWidth: 200, display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", fontWeight: 600 }}>
-              <span style={{ color: "var(--text-secondary)" }}>☕ Temps de Pause</span>
+              <span style={{ color: "var(--text-secondary)" }}>{t.pomodoro.breakDurationLabel}</span>
               <span style={{ color: "var(--success)" }}>
-                {breakDuration === 0 ? "Aucune (Continu)" : `${breakDuration} minutes`}
+                {breakDuration === 0 ? t.pomodoro.continuousLabel : `${breakDuration} ${t.common.minutesUnit}`}
               </span>
             </div>
             <input
@@ -264,7 +273,7 @@ export function PomodoroView({
         {/* Quick presets grid */}
         <div>
           <h4 style={{ fontSize: "0.8rem", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 600, marginBottom: 12 }}>
-            Raccourcis de Configuration
+            {t.pomodoro.durationSettingsShortcuts}
           </h4>
           <div style={{
             display: "grid",
@@ -273,7 +282,7 @@ export function PomodoroView({
           }}>
             {PRESETS.map((preset) => (
               <button
-                key={preset.label}
+                key={preset.key}
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => handlePresetSelect(preset.work, preset.break)}
@@ -286,9 +295,9 @@ export function PomodoroView({
                   fontWeight: 500
                 }}
               >
-                <span>{preset.label.split(" (")[0]}</span>
+                <span>{getPresetLabel(preset.key, t)}</span>
                 <span style={{ color: "var(--text-muted)", fontFamily: "monospace" }}>
-                  {preset.work}m / {preset.break === 0 ? "None" : `${preset.break}m`}
+                  {preset.work}{t.common.minutesUnit} / {preset.break === 0 ? t.common.none : `${preset.break}${t.common.minutesUnit}`}
                 </span>
               </button>
             ))}

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { playSynthSound } from "./sound";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 export function StreakDemo() {
+  const { t } = useLanguage();
   const [streakCount, setStreakCount] = useState(4);
   const [showBadge, setShowBadge] = useState(false);
 
@@ -20,10 +22,14 @@ export function StreakDemo() {
 
   return (
     <>
-      <span className="lp-demo-tag lp-tag-streaks">Achievements</span>
-      <h3>Streak & Badge Tracker</h3>
+      <span className="lp-demo-tag lp-tag-streaks">
+        {t.landingPage.streakTag}
+      </span>
+      <h3>
+        {t.landingPage.streakTitle}
+      </h3>
       <p className="lp-demo-desc">
-        Streaks build academic discipline. Test log session to increment your calendar streak and unlock badges.
+        {t.landingPage.streakDesc}
       </p>
       
       <div className="lp-demo-interactive">
@@ -35,19 +41,19 @@ export function StreakDemo() {
 
           <div className="lp-streak-details">
             <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#71717a", textTransform: "uppercase" }}>
-              Streaks status
+              {t.landingPage.streakStatus}
             </span>
             <div className="lp-streak-count">
-              Streak: <span>{streakCount} Days</span>
+              {t.landingPage.streakLabel} <span>{streakCount} {t.landingPage.daysUnit}</span>
             </div>
             
             {showBadge ? (
               <div className="lp-badge-unlocked" style={{ animation: "lpScaleIn 300ms cubic-bezier(0.16, 1, 0.3, 1)" }}>
-                🏆 Unlocked: Academic Champion (5d)
+                {t.landingPage.streakBadgeUnlocked}
               </div>
             ) : (
               <span style={{ fontSize: "0.8rem", color: "#71717a" }}>
-                Log 1 more session to unlock next badge
+                {t.landingPage.streakNextBadge}
               </span>
             )}
           </div>
@@ -60,10 +66,10 @@ export function StreakDemo() {
             onClick={handleLogStudySession}
             disabled={streakCount === 5}
           >
-            📝 Log Mock Session
+            {t.landingPage.streakLogSession}
           </button>
           <button type="button" className="btn btn-secondary btn-sm" onClick={handleResetStreak}>
-            Reset
+            {t.landingPage.streakReset}
           </button>
         </div>
       </div>

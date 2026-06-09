@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { format } from "date-fns";
 import { formatDuration } from "../../utils/dateUtils";
+import { useLanguage } from "../../hooks/useLanguage";
 
 export const PercentageBadge = ({ pct }: { pct: number }) => {
   if (pct > 0) {
@@ -47,6 +48,7 @@ export function WeeklyActivityChart({
   comparisonData,
 }: WeeklyActivityChartProps) {
   const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
+  const { t, language, dateLocale } = useLanguage();
 
   const clickedDayIndex = useMemo(() => {
     if (selectedDate === today) {
@@ -84,12 +86,12 @@ export function WeeklyActivityChart({
       
       return {
         date: dateStr,
-        label: format(new Date(dateStr + "T00:00:00"), "EEE"),
+        label: format(new Date(dateStr + "T00:00:00"), "EEE", { locale: dateLocale }),
         subjects: subjectMap,
         total,
       };
     });
-  }, [allLogs]);
+  }, [allLogs, dateLocale]);
 
   const maxTime = useMemo(() => {
     return Math.max(...chartData.map((d) => d.total), 60);
@@ -110,14 +112,14 @@ export function WeeklyActivityChart({
   return (
     <div className="card" style={{ marginBottom: 20 }}>
       <div className="card-header">
-        <h3>📈 Weekly Study Activity</h3>
-        <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Last 7 Days</span>
+        <h3>📈 {t.dashboard.weeklyActivity}</h3>
+        <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{t.analytics.timeRangeDays(7)}</span>
       </div>
       
       {chartData.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">📈</div>
-          <p>No study logs recorded for the past week</p>
+          <p>{t.dashboard.noActivityThisWeek}</p>
         </div>
       ) : (
         <div className="chart-container-layout" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 24, alignItems: "center" }}>
@@ -230,10 +232,10 @@ export function WeeklyActivityChart({
             {displayDayIndex !== null ? (
               <div>
                 <h4 style={{ fontSize: "0.85rem", fontWeight: 700, marginBottom: 8, color: "var(--text-primary)" }}>
-                  {format(new Date(chartData[displayDayIndex].date + "T00:00:00"), "EEEE, MMM d")}
+                  {format(new Date(chartData[displayDayIndex].date + "T00:00:00"), t.common.dateFormatMedium, { locale: dateLocale })}
                 </h4>
                 {chartData[displayDayIndex].total === 0 ? (
-                  <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>No study time logged on this day.</p>
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{t.calendar.noLogsForDay}</p>
                 ) : (
                   <div>
                     <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 12 }}>
@@ -247,7 +249,7 @@ export function WeeklyActivityChart({
                           <div key={subId} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.78rem" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                               <span style={{ width: 8, height: 8, borderRadius: "50%", background: subj?.color ?? "var(--text-muted)" }} />
-                              <span style={{ color: "var(--text-secondary)" }}>{subj?.name ?? "Uncategorized"}</span>
+                              <span style={{ color: "var(--text-secondary)" }}>{subj?.name ?? t.common.uncategorized}</span>
                             </div>
                             <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{mins}m</span>
                           </div>
@@ -261,21 +263,21 @@ export function WeeklyActivityChart({
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                   <h4 style={{ fontSize: "0.85rem", fontWeight: 700, margin: 0, color: "var(--text-primary)" }}>
-                    Weekly Study Summary
+                    {t.dashboard.weeklyStudySummary}
                   </h4>
                   {allLogs !== undefined && (
                     <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                       <PercentageBadge pct={comparisonData.totalChangePct} />
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>vs last week</span>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{t.dashboard.vsLastWeek}</span>
                     </div>
                   )}
                 </div>
                 {Object.keys(weeklyTotals).length === 0 ? (
-                  <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>Hover over a bar to inspect daily study details.</p>
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{t.dashboard.hoverBarDesc}</p>
                 ) : (
                   <div>
                     <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginBottom: 10 }}>
-                      Hover over columns to view specific days.
+                      {t.dashboard.hoverColumnsDesc}
                     </p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                       {Object.entries(weeklyTotals)
@@ -288,7 +290,7 @@ export function WeeklyActivityChart({
                             <div key={subId} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.78rem" }}>
                               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                                 <span style={{ width: 8, height: 8, borderRadius: "50%", background: subj?.color ?? "var(--text-muted)" }} />
-                                <span style={{ color: "var(--text-secondary)" }}>{subj?.name ?? "Uncategorized"}</span>
+                                <span style={{ color: "var(--text-secondary)" }}>{subj?.name ?? t.common.uncategorized}</span>
                               </div>
                               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                 {allLogs !== undefined && <PercentageBadge pct={pctChange} />}
