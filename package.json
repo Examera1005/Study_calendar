@@ -5,7 +5,8 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "npx convex deploy && tsc -b && vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"knip": "knip"
 	},
 	"dependencies": {
 		"@auth/core": "0.37.0",

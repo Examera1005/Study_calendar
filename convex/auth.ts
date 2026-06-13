@@ -1,5 +1,6 @@
 import { Password } from "@convex-dev/auth/providers/Password";
 import { convexAuth } from "@convex-dev/auth/server";
+import { ConvexError } from "convex/values";
 import { Resend } from "resend";
 import { internal } from "./_generated/api";
 
@@ -36,7 +37,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
 					);
 
 					if (!rateLimitResult.ok) {
-						throw new Error(
+						throw new ConvexError(
 							`Too many password reset requests. Please try again in ${rateLimitResult.retryAfterSec} seconds.`,
 						);
 					}
@@ -54,7 +55,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
 						});
 						if (error) {
 							console.error("Resend API Error details:", error);
-							throw new Error(
+							throw new ConvexError(
 								"Failed to send password reset email via Resend.",
 							);
 						}

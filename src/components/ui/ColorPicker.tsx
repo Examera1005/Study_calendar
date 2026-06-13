@@ -24,6 +24,254 @@ const DEFAULT_PRESETS = [
 	"#f8fafc", // Soft White
 ];
 
+interface SaturationValuePickerProps {
+	hsv: { h: number; s: number; v: number };
+	normalizedColor: string;
+	isDragging: React.MutableRefObject<boolean>;
+	svContainerRef: React.RefObject<HTMLButtonElement | null>;
+	handleMouseDown: (e: React.MouseEvent) => void;
+	handleTouchStart: (e: React.TouchEvent) => void;
+	updateColor: (newHsv: { h: number; s: number; v: number }) => void;
+}
+
+function SaturationValuePicker({
+	hsv,
+	normalizedColor,
+	isDragging,
+	svContainerRef,
+	handleMouseDown,
+	handleTouchStart,
+	updateColor,
+}: SaturationValuePickerProps) {
+	const svBackground = `hsl(${hsv.h}, 100%, 50%)`;
+
+	return (
+		<button
+			ref={svContainerRef}
+			type="button"
+			onMouseDown={handleMouseDown}
+			onTouchStart={handleTouchStart}
+			onKeyDown={(e) => {
+				let nextS = hsv.s;
+				let nextV = hsv.v;
+				let changed = false;
+				if (e.key === "ArrowLeft") {
+					nextS = Math.max(0, hsv.s - 5);
+					changed = true;
+				} else if (e.key === "ArrowRight") {
+					nextS = Math.min(100, hsv.s + 5);
+					changed = true;
+				} else if (e.key === "ArrowDown") {
+					nextV = Math.max(0, hsv.v - 5);
+					changed = true;
+				} else if (e.key === "ArrowUp") {
+					nextV = Math.min(100, hsv.v + 5);
+					changed = true;
+				}
+				if (changed) {
+					e.preventDefault();
+					updateColor({ ...hsv, s: nextS, v: nextV });
+				}
+			}}
+			aria-label="Color saturation and brightness picker"
+			className="color-picker-rect"
+			style={{
+				backgroundColor: svBackground,
+			}}
+		>
+			{/* White overlay gradient (Saturation) */}
+			<div
+				style={{
+					position: "absolute",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					background: "linear-gradient(to right, #ffffff, transparent)",
+				}}
+			/>
+			{/* Black overlay gradient (Value) */}
+			<div
+				style={{
+					position: "absolute",
+					top: 0,
+					left: 0,
+					right: 0,
+					bottom: 0,
+					background: "linear-gradient(to top, #000000, transparent)",
+				}}
+			/>
+
+			{/* Selector handle */}
+			<div
+				className="color-picker-handle"
+				style={{
+					left: `${hsv.s}%`,
+					top: `${100 - hsv.v}%`,
+					backgroundColor: normalizedColor,
+					transition: isDragging.current
+						? "none"
+						: "left 100ms ease, top 100ms ease",
+				}}
+			/>
+		</button>
+	);
+}
+
+interface HueSliderProps {
+	hsv: { h: number; s: number; v: number };
+	handleHueChange: (hue: number) => void;
+}
+
+function HueSlider({ hsv, handleHueChange }: HueSliderProps) {
+	return (
+		<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "space-between",
+					fontSize: "0.75rem",
+					color: "var(--text-secondary)",
+					fontWeight: 500,
+				}}
+			>
+				<span>Hue</span>
+				<span>{hsv.h}°</span>
+			</div>
+			<div
+				style={{
+					position: "relative",
+					display: "flex",
+					alignItems: "center",
+				}}
+			>
+				<input
+					type="range"
+					min={0}
+					max={360}
+					value={hsv.h}
+					onChange={(e) => handleHueChange(Number(e.target.value))}
+					aria-label="Color hue"
+					style={{
+						width: "100%",
+						height: 10,
+						borderRadius: 5,
+						background:
+							"linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)",
+						appearance: "none",
+						cursor: "pointer",
+					}}
+					className="color-picker-slider"
+				/>
+			</div>
+		</div>
+	);
+}
+
+interface ColorHexInputProps {
+	normalizedColor: string;
+	hexInput: string;
+	handleHexInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+function ColorHexInput({
+	normalizedColor,
+	hexInput,
+	handleHexInputChange,
+}: ColorHexInputProps) {
+	return (
+		<div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+			<div
+				style={{
+					width: 32,
+					height: 32,
+					borderRadius: "var(--radius-sm)",
+					backgroundColor: normalizedColor,
+					border: "1px solid var(--border-medium)",
+					boxShadow: "var(--shadow-sm)",
+				}}
+			/>
+			<div style={{ position: "relative", flex: 1 }}>
+				<input
+					type="text"
+					value={hexInput}
+					onChange={handleHexInputChange}
+					placeholder="#3B82F6"
+					aria-label="Hex color code"
+					style={{
+						padding: "6px 8px",
+						fontSize: "0.85rem",
+						textTransform: "uppercase",
+						fontFamily: "monospace",
+						height: 32,
+					}}
+				/>
+			</div>
+		</div>
+	);
+}
+
+interface ColorPresetsGridProps {
+	presets: string[];
+	normalizedColor: string;
+	handlePresetSelect: (preset: string) => void;
+}
+
+function ColorPresetsGrid({
+	presets,
+	normalizedColor,
+	handlePresetSelect,
+}: ColorPresetsGridProps) {
+	return (
+		<div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+			<div
+				style={{
+					fontSize: "0.75rem",
+					color: "var(--text-secondary)",
+					fontWeight: 600,
+				}}
+			>
+				PRESETS
+			</div>
+			<div
+				style={{
+					display: "grid",
+					gridTemplateColumns: "repeat(6, 1fr)",
+					gap: 8,
+				}}
+			>
+				{presets.map((preset) => {
+					const isSelected =
+						normalizedColor.toLowerCase() === preset.toLowerCase();
+					return (
+						<button
+							key={preset}
+							type="button"
+							onClick={() => handlePresetSelect(preset)}
+							aria-label={`Select color ${preset}`}
+							style={{
+								backgroundColor: preset,
+								border: isSelected
+									? "2px solid var(--text-primary)"
+									: "1px solid var(--border-subtle)",
+								boxShadow: isSelected ? "0 0 0 1px var(--bg-primary)" : "none",
+							}}
+							title={preset}
+							className="color-preset-btn"
+							onMouseEnter={(e) => {
+								e.currentTarget.style.transform = "scale(1.15)";
+							}}
+							onMouseLeave={(e) => {
+								e.currentTarget.style.transform = "scale(1)";
+							}}
+						/>
+					);
+				})}
+			</div>
+		</div>
+	);
+}
+
 export function ColorPicker({
 	color,
 	value,
@@ -142,203 +390,31 @@ export function ColorPicker({
 		onChange(preset);
 	};
 
-	// Base background for SV container represents Hue at 100% Saturation and 100% Value
-	const svBackground = `hsl(${hsv.h}, 100%, 50%)`;
-
 	return (
 		<div className="color-picker-container">
-			{/* Saturation-Value Picker Rectangle */}
-			<button
-				ref={svContainerRef}
-				type="button"
-				onMouseDown={handleMouseDown}
-				onTouchStart={handleTouchStart}
-				onKeyDown={(e) => {
-					let nextS = hsv.s;
-					let nextV = hsv.v;
-					let changed = false;
-					if (e.key === "ArrowLeft") {
-						nextS = Math.max(0, hsv.s - 5);
-						changed = true;
-					} else if (e.key === "ArrowRight") {
-						nextS = Math.min(100, hsv.s + 5);
-						changed = true;
-					} else if (e.key === "ArrowDown") {
-						nextV = Math.max(0, hsv.v - 5);
-						changed = true;
-					} else if (e.key === "ArrowUp") {
-						nextV = Math.min(100, hsv.v + 5);
-						changed = true;
-					}
-					if (changed) {
-						e.preventDefault();
-						updateColor({ ...hsv, s: nextS, v: nextV });
-					}
-				}}
-				aria-label="Color saturation and brightness picker"
-				className="color-picker-rect"
-				style={{
-					backgroundColor: svBackground,
-				}}
-			>
-				{/* White overlay gradient (Saturation) */}
-				<div
-					style={{
-						position: "absolute",
-						top: 0,
-						left: 0,
-						right: 0,
-						bottom: 0,
-						background: "linear-gradient(to right, #ffffff, transparent)",
-					}}
-				/>
-				{/* Black overlay gradient (Value) */}
-				<div
-					style={{
-						position: "absolute",
-						top: 0,
-						left: 0,
-						right: 0,
-						bottom: 0,
-						background: "linear-gradient(to top, #000000, transparent)",
-					}}
-				/>
+			<SaturationValuePicker
+				hsv={hsv}
+				normalizedColor={normalizedColor}
+				isDragging={isDragging}
+				svContainerRef={svContainerRef}
+				handleMouseDown={handleMouseDown}
+				handleTouchStart={handleTouchStart}
+				updateColor={updateColor}
+			/>
 
-				{/* Selector handle */}
-				<div
-					className="color-picker-handle"
-					style={{
-						left: `${hsv.s}%`,
-						top: `${100 - hsv.v}%`,
-						backgroundColor: normalizedColor,
-						transition: isDragging.current
-							? "none"
-							: "left 100ms ease, top 100ms ease",
-					}}
-				/>
-			</button>
+			<HueSlider hsv={hsv} handleHueChange={handleHueChange} />
 
-			{/* Hue Slider */}
-			<div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "space-between",
-						fontSize: "0.75rem",
-						color: "var(--text-secondary)",
-						fontWeight: 500,
-					}}
-				>
-					<span>Hue</span>
-					<span>{hsv.h}°</span>
-				</div>
-				<div
-					style={{
-						position: "relative",
-						display: "flex",
-						alignItems: "center",
-					}}
-				>
-					<input
-						type="range"
-						min={0}
-						max={360}
-						value={hsv.h}
-						onChange={(e) => handleHueChange(Number(e.target.value))}
-						aria-label="Color hue"
-						style={{
-							width: "100%",
-							height: 10,
-							borderRadius: 5,
-							background:
-								"linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)",
-							appearance: "none",
-							cursor: "pointer",
-						}}
-						className="color-picker-slider"
-					/>
-				</div>
-			</div>
+			<ColorHexInput
+				normalizedColor={normalizedColor}
+				hexInput={hexInput}
+				handleHexInputChange={handleHexInputChange}
+			/>
 
-			{/* Hexadecimal Input and Color Indicator */}
-			<div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-				<div
-					style={{
-						width: 32,
-						height: 32,
-						borderRadius: "var(--radius-sm)",
-						backgroundColor: normalizedColor,
-						border: "1px solid var(--border-medium)",
-						boxShadow: "var(--shadow-sm)",
-					}}
-				/>
-				<div style={{ position: "relative", flex: 1 }}>
-					<input
-						type="text"
-						value={hexInput}
-						onChange={handleHexInputChange}
-						placeholder="#3B82F6"
-						aria-label="Hex color code"
-						style={{
-							padding: "6px 8px",
-							fontSize: "0.85rem",
-							textTransform: "uppercase",
-							fontFamily: "monospace",
-							height: 32,
-						}}
-					/>
-				</div>
-			</div>
-
-			{/* Presets Grid */}
-			<div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-				<div
-					style={{
-						fontSize: "0.75rem",
-						color: "var(--text-secondary)",
-						fontWeight: 600,
-					}}
-				>
-					PRESETS
-				</div>
-				<div
-					style={{
-						display: "grid",
-						gridTemplateColumns: "repeat(6, 1fr)",
-						gap: 8,
-					}}
-				>
-					{presets.map((preset) => {
-						const isSelected =
-							normalizedColor.toLowerCase() === preset.toLowerCase();
-						return (
-							<button
-								key={preset}
-								type="button"
-								onClick={() => handlePresetSelect(preset)}
-								aria-label={`Select color ${preset}`}
-								style={{
-									backgroundColor: preset,
-									border: isSelected
-										? "2px solid var(--text-primary)"
-										: "1px solid var(--border-subtle)",
-									boxShadow: isSelected
-										? "0 0 0 1px var(--bg-primary)"
-										: "none",
-								}}
-								title={preset}
-								className="color-preset-btn"
-								onMouseEnter={(e) => {
-									e.currentTarget.style.transform = "scale(1.15)";
-								}}
-								onMouseLeave={(e) => {
-									e.currentTarget.style.transform = "scale(1)";
-								}}
-							/>
-						);
-					})}
-				</div>
-			</div>
+			<ColorPresetsGrid
+				presets={presets}
+				normalizedColor={normalizedColor}
+				handlePresetSelect={handlePresetSelect}
+			/>
 		</div>
 	);
 }

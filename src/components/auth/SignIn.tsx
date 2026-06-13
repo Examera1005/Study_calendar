@@ -119,6 +119,12 @@ export function SignIn() {
 					msg.includes("could not create account")
 				) {
 					userFriendlyError = t.auth.signUpError;
+				} else if (step === "forgotPassword") {
+					if (msg.includes("Too many") || msg.includes("try again")) {
+						userFriendlyError = msg;
+					} else {
+						userFriendlyError = t.auth.resetPasswordError;
+					}
 				} else {
 					userFriendlyError = msg;
 				}
@@ -126,7 +132,9 @@ export function SignIn() {
 				userFriendlyError =
 					step === "signIn"
 						? t.auth.invalidCredentialsError
-						: t.auth.signUpError;
+						: step === "forgotPassword"
+							? t.auth.resetPasswordError
+							: t.auth.signUpError;
 			}
 			dispatch({ type: "REQUEST_FAILURE", error: userFriendlyError });
 			console.error(err);

@@ -12,6 +12,181 @@ import { useLanguage } from "../hooks/useLanguage";
 import { formatDuration, formatLocalDate } from "../utils/dateUtils";
 import { calculateStreak } from "../utils/statsUtils";
 
+interface DashboardHeaderProps {
+	// biome-ignore lint/suspicious/noExplicitAny: translations object
+	t: any;
+	activeDate: string;
+	today: string;
+	dateFormat: string;
+	// biome-ignore lint/suspicious/noExplicitAny: dateLocale is standard date-fns locale
+	dateLocale: any;
+	setSelectedDate: (d: string) => void;
+}
+
+function DashboardHeader({
+	t,
+	activeDate,
+	today,
+	dateFormat,
+	dateLocale,
+	setSelectedDate,
+}: DashboardHeaderProps) {
+	return (
+		<div className="page-header">
+			<div>
+				<h1>{t.dashboard.title}</h1>
+				<div
+					className="date-display"
+					style={{
+						display: "flex",
+						alignItems: "center",
+						gap: 12,
+						flexWrap: "wrap",
+						minHeight: "32px",
+					}}
+				>
+					<span>
+						{format(new Date(`${activeDate}T00:00:00`), dateFormat, {
+							locale: dateLocale,
+						})}
+					</span>
+					{activeDate !== today && (
+						<button
+							type="button"
+							className="btn btn-ghost btn-sm"
+							onClick={() => setSelectedDate(today)}
+							style={{
+								padding: "4px 8px",
+								fontSize: "0.75rem",
+								border: "1px solid var(--border-medium)",
+								borderRadius: "var(--radius-sm)",
+								background: "var(--bg-glass)",
+								color: "var(--text-primary)",
+								cursor: "pointer",
+							}}
+						>
+							{t.dashboard.returnToday}
+						</button>
+					)}
+				</div>
+			</div>
+		</div>
+	);
+}
+
+interface DashboardStatsRowProps {
+	// biome-ignore lint/suspicious/noExplicitAny: translations object
+	t: any;
+	activeDate: string;
+	today: string;
+	// biome-ignore lint/suspicious/noExplicitAny: Convex query result
+	upcomingExams: any;
+	completedTasks: number;
+	totalTasks: number;
+	setView: (v: View) => void;
+	streak: number;
+	totalMinutes: number;
+	// biome-ignore lint/suspicious/noExplicitAny: Convex query result
+	yesterdayLogs: any;
+	todayChangePct: number;
+}
+
+function DashboardStatsRow({
+	t,
+	activeDate,
+	today,
+	upcomingExams,
+	completedTasks,
+	totalTasks,
+	setView,
+	streak,
+	totalMinutes,
+	yesterdayLogs,
+	todayChangePct,
+}: DashboardStatsRowProps) {
+	return (
+		<div className="stats-row">
+			<div className="stat-card">
+				<div className="stat-value">{upcomingExams?.length ?? 0}</div>
+				<div className="stat-label">{t.dashboard.upcomingExams}</div>
+			</div>
+			<div className="stat-card">
+				<div className="stat-value">
+					{completedTasks}/{totalTasks}
+				</div>
+				<div className="stat-label">
+					{activeDate === today
+						? t.dashboard.todaysTasks
+						: t.dashboard.tasksOfDay}
+				</div>
+			</div>
+			<button
+				type="button"
+				className="stat-card stat-card-button"
+				onClick={() => setView("analytics")}
+			>
+				<div
+					className="stat-value"
+					style={{ display: "flex", alignItems: "center", gap: 8 }}
+				>
+					{/** biome-ignore lint/a11y/noSvgWithoutTitle: Dynamic Convex API / third-party type */}
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						style={{ width: "22px", height: "22px", color: "var(--warning)" }}
+					>
+						<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+					</svg>
+					<span>
+						{streak}{" "}
+						{streak > 1
+							? t.dashboard.streakDayPlural
+							: t.dashboard.streakDaySingular}
+					</span>
+				</div>
+				<div className="stat-label">{t.dashboard.studyStreak}</div>
+			</button>
+			<div className="stat-card">
+				<div
+					className="stat-value"
+					style={{
+						display: "flex",
+						justifyContent: "space-between",
+						alignItems: "center",
+					}}
+				>
+					<span>{formatDuration(totalMinutes, { showZero: "0h" })}</span>
+					{yesterdayLogs !== undefined && (
+						<PercentageBadge pct={todayChangePct} />
+					)}
+				</div>
+				<div
+					className="stat-label"
+					style={{ display: "flex", justifyContent: "space-between" }}
+				>
+					<span>
+						{activeDate === today
+							? t.dashboard.studyTimeToday
+							: t.dashboard.studyTimeDay}
+					</span>
+					{yesterdayLogs !== undefined && (
+						<span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+							{activeDate === today
+								? t.dashboard.vsYesterday
+								: t.dashboard.vsPreviousDay}
+						</span>
+					)}
+				</div>
+			</div>
+		</div>
+	);
+}
+
 export function Dashboard({
 	setView,
 	selectedDate,
@@ -192,125 +367,28 @@ export function Dashboard({
 
 	return (
 		<div>
-			<div className="page-header">
-				<div>
-					<h1>{t.dashboard.title}</h1>
-					<div
-						className="date-display"
-						style={{
-							display: "flex",
-							alignItems: "center",
-							gap: 12,
-							flexWrap: "wrap",
-							minHeight: "32px",
-						}}
-					>
-						<span>
-							{format(new Date(`${activeDate}T00:00:00`), dateFormat, {
-								locale: dateLocale,
-							})}
-						</span>
-						{activeDate !== today && (
-							<button
-								type="button"
-								className="btn btn-ghost btn-sm"
-								onClick={() => setSelectedDate(today)}
-								style={{
-									padding: "4px 8px",
-									fontSize: "0.75rem",
-									border: "1px solid var(--border-medium)",
-									borderRadius: "var(--radius-sm)",
-									background: "var(--bg-glass)",
-									color: "var(--text-primary)",
-									cursor: "pointer",
-								}}
-							>
-								{t.dashboard.returnToday}
-							</button>
-						)}
-					</div>
-				</div>
-			</div>
+			<DashboardHeader
+				t={t}
+				activeDate={activeDate}
+				today={today}
+				dateFormat={dateFormat}
+				dateLocale={dateLocale}
+				setSelectedDate={setSelectedDate}
+			/>
 
-			<div className="stats-row">
-				<div className="stat-card">
-					<div className="stat-value">{upcomingExams?.length ?? 0}</div>
-					<div className="stat-label">{t.dashboard.upcomingExams}</div>
-				</div>
-				<div className="stat-card">
-					<div className="stat-value">
-						{completedTasks}/{totalTasks}
-					</div>
-					<div className="stat-label">
-						{activeDate === today
-							? t.dashboard.todaysTasks
-							: t.dashboard.tasksOfDay}
-					</div>
-				</div>
-				<button
-					type="button"
-					className="stat-card stat-card-button"
-					onClick={() => setView("analytics")}
-				>
-					<div
-						className="stat-value"
-						style={{ display: "flex", alignItems: "center", gap: 8 }}
-					>
-						{/** biome-ignore lint/a11y/noSvgWithoutTitle: Dynamic Convex API / third-party type */}
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2.5"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							style={{ width: "22px", height: "22px", color: "var(--warning)" }}
-						>
-							<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-						</svg>
-						<span>
-							{streak}{" "}
-							{streak > 1
-								? t.dashboard.streakDayPlural
-								: t.dashboard.streakDaySingular}
-						</span>
-					</div>
-					<div className="stat-label">{t.dashboard.studyStreak}</div>
-				</button>
-				<div className="stat-card">
-					<div
-						className="stat-value"
-						style={{
-							display: "flex",
-							justifyContent: "space-between",
-							alignItems: "center",
-						}}
-					>
-						<span>{formatDuration(totalMinutes, { showZero: "0h" })}</span>
-						{yesterdayLogs !== undefined && (
-							<PercentageBadge pct={todayChangePct} />
-						)}
-					</div>
-					<div
-						className="stat-label"
-						style={{ display: "flex", justifyContent: "space-between" }}
-					>
-						<span>
-							{activeDate === today
-								? t.dashboard.studyTimeToday
-								: t.dashboard.studyTimeDay}
-						</span>
-						{yesterdayLogs !== undefined && (
-							<span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-								{activeDate === today
-									? t.dashboard.vsYesterday
-									: t.dashboard.vsPreviousDay}
-							</span>
-						)}
-					</div>
-				</div>
-			</div>
+			<DashboardStatsRow
+				t={t}
+				activeDate={activeDate}
+				today={today}
+				upcomingExams={upcomingExams}
+				completedTasks={completedTasks}
+				totalTasks={totalTasks}
+				setView={setView}
+				streak={streak}
+				totalMinutes={totalMinutes}
+				yesterdayLogs={yesterdayLogs}
+				todayChangePct={todayChangePct}
+			/>
 
 			{/* Weekly Study Activity Chart */}
 			<WeeklyActivityChart

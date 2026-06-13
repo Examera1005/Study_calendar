@@ -51,7 +51,6 @@ declare const fullApi: ApiFromModules<{
  */
 export declare const api: FilterApi<
 	typeof fullApi,
-	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
 	FunctionReference<any, "public">
 >;
 
@@ -65,9 +64,7 @@ export declare const api: FilterApi<
  */
 export declare const internal: FilterApi<
 	typeof fullApi,
-	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
 	FunctionReference<any, "internal">
 >;
 
-// biome-ignore lint/complexity/noBannedTypes: Dynamic Convex API / third-party type
 export declare const components: {};

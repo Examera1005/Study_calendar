@@ -82,8 +82,9 @@ export const remove = mutation({
 		// 2. Unset subjectId for tasks
 		const tasksToUpdate = await ctx.db
 			.query("tasks")
-			.withIndex("by_userId", (q) => q.eq("userId", userId))
-			.filter((q) => q.eq(q.field("subjectId"), args.id))
+			.withIndex("by_userId_and_subjectId", (q) =>
+				q.eq("userId", userId).eq("subjectId", args.id),
+			)
 			.collect();
 		await Promise.all(
 			tasksToUpdate.map((task) =>
@@ -94,8 +95,9 @@ export const remove = mutation({
 		// 3. Unset subjectId for events
 		const eventsToUpdate = await ctx.db
 			.query("events")
-			.withIndex("by_userId_and_date", (q) => q.eq("userId", userId))
-			.filter((q) => q.eq(q.field("subjectId"), args.id))
+			.withIndex("by_userId_and_subjectId", (q) =>
+				q.eq("userId", userId).eq("subjectId", args.id),
+			)
 			.collect();
 		await Promise.all(
 			eventsToUpdate.map((ev) =>
@@ -106,8 +108,9 @@ export const remove = mutation({
 		// 4. Unset subjectId for dailyLogs
 		const logsToUpdate = await ctx.db
 			.query("dailyLogs")
-			.withIndex("by_userId_and_date", (q) => q.eq("userId", userId))
-			.filter((q) => q.eq(q.field("subjectId"), args.id))
+			.withIndex("by_userId_and_subjectId", (q) =>
+				q.eq("userId", userId).eq("subjectId", args.id),
+			)
 			.collect();
 		await Promise.all(
 			logsToUpdate.map((log) =>

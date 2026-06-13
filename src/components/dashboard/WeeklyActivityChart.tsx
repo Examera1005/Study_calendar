@@ -68,10 +68,255 @@ interface WeeklyActivityChartProps {
 	};
 }
 
+interface WeeklyActivityLegendProps {
+	displayDayIndex: number | null;
+	// biome-ignore lint/suspicious/noExplicitAny: chartData list
+	chartData: any[];
+	// biome-ignore lint/suspicious/noExplicitAny: dateLocale
+	dateLocale: any;
+	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
+	getSubject: (id: string) => any;
+	weeklyTotals: Record<string, number>;
+	comparisonData: {
+		totalChangePct: number;
+		subjectChanges: Record<string, number>;
+	};
+	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
+	allLogs: any[] | undefined;
+	// biome-ignore lint/suspicious/noExplicitAny: translations object
+	t: any;
+}
+
+function WeeklyActivityLegend({
+	displayDayIndex,
+	chartData,
+	dateLocale,
+	getSubject,
+	weeklyTotals,
+	comparisonData,
+	allLogs,
+	t,
+}: WeeklyActivityLegendProps) {
+	return (
+		<div className="dashboard-legend-card">
+			{displayDayIndex !== null ? (
+				<div>
+					<h4
+						style={{
+							fontSize: "0.85rem",
+							fontWeight: 700,
+							marginBottom: 8,
+							color: "var(--text-primary)",
+						}}
+					>
+						{format(
+							new Date(`${chartData[displayDayIndex].date}T00:00:00`),
+							t.common.dateFormatMedium,
+							{ locale: dateLocale },
+						)}
+					</h4>
+					{chartData[displayDayIndex].total === 0 ? (
+						<p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+							{t.calendar.noLogsForDay}
+						</p>
+					) : (
+						<div>
+							<div
+								style={{
+									fontSize: "1.1rem",
+									fontWeight: 700,
+									color: "var(--text-primary)",
+									marginBottom: 12,
+								}}
+							>
+								Total:{" "}
+								{formatDuration(chartData[displayDayIndex].total, {
+									formatUnderHourAsMins: true,
+								})}
+							</div>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: 6,
+								}}
+							>
+								{Object.entries(
+									chartData[displayDayIndex].subjects as Record<string, number>,
+								).map(([subId, mins]) => {
+									if (mins <= 0) return null;
+									const subj =
+										subId !== "uncategorized" ? getSubject(subId) : null;
+									return (
+										<div
+											key={subId}
+											style={{
+												display: "flex",
+												justifyContent: "space-between",
+												fontSize: "0.78rem",
+											}}
+										>
+											<div
+												style={{
+													display: "flex",
+													alignItems: "center",
+													gap: 6,
+												}}
+											>
+												<span
+													style={{
+														width: 8,
+														height: 8,
+														borderRadius: "50%",
+														background: subj?.color ?? "var(--text-muted)",
+													}}
+												/>
+												<span style={{ color: "var(--text-secondary)" }}>
+													{subj?.name ?? t.common.uncategorized}
+												</span>
+											</div>
+											<span
+												style={{
+													fontWeight: 600,
+													color: "var(--text-primary)",
+												}}
+											>
+												{mins}m
+											</span>
+										</div>
+									);
+								})}
+							</div>
+						</div>
+					)}
+				</div>
+			) : (
+				<div>
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							marginBottom: 8,
+						}}
+					>
+						<h4
+							style={{
+								fontSize: "0.85rem",
+								fontWeight: 700,
+								margin: 0,
+								color: "var(--text-primary)",
+							}}
+						>
+							{t.dashboard.weeklyStudySummary}
+						</h4>
+						{allLogs !== undefined && (
+							<div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+								<PercentageBadge pct={comparisonData.totalChangePct} />
+								<span
+									style={{
+										fontSize: "0.75rem",
+										color: "var(--text-muted)",
+									}}
+								>
+									{t.dashboard.vsLastWeek}
+								</span>
+							</div>
+						)}
+					</div>
+					{Object.keys(weeklyTotals).length === 0 ? (
+						<p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+							{t.dashboard.hoverBarDesc}
+						</p>
+					) : (
+						<div>
+							<p
+								style={{
+									fontSize: "0.75rem",
+									color: "var(--text-muted)",
+									marginBottom: 10,
+								}}
+							>
+								{t.dashboard.hoverColumnsDesc}
+							</p>
+							<div
+								style={{
+									display: "flex",
+									flexDirection: "column",
+									gap: 6,
+								}}
+							>
+								{Object.entries(weeklyTotals)
+									.sort((a, b) => b[1] - a[1])
+									.map(([subId, mins]) => {
+										if (mins <= 0) return null;
+										const subj =
+											subId !== "uncategorized" ? getSubject(subId) : null;
+										const pctChange = comparisonData.subjectChanges[subId] ?? 0;
+										return (
+											<div
+												key={subId}
+												style={{
+													display: "flex",
+													justifyContent: "space-between",
+													alignItems: "center",
+													fontSize: "0.78rem",
+												}}
+											>
+												<div
+													style={{
+														display: "flex",
+														alignItems: "center",
+														gap: 6,
+													}}
+												>
+													<span
+														style={{
+															width: 8,
+															height: 8,
+															borderRadius: "50%",
+															background: subj?.color ?? "var(--text-muted)",
+														}}
+													/>
+													<span style={{ color: "var(--text-secondary)" }}>
+														{subj?.name ?? t.common.uncategorized}
+													</span>
+												</div>
+												<div
+													style={{
+														display: "flex",
+														alignItems: "center",
+														gap: 8,
+													}}
+												>
+													{allLogs !== undefined && (
+														<PercentageBadge pct={pctChange} />
+													)}
+													<span
+														style={{
+															fontWeight: 600,
+															color: "var(--text-primary)",
+														}}
+													>
+														{formatDuration(mins, {
+															formatUnderHourAsMins: true,
+														})}
+													</span>
+												</div>
+											</div>
+										);
+									})}
+							</div>
+						</div>
+					)}
+				</div>
+			)}
+		</div>
+	);
+}
+
 export function WeeklyActivityChart({
 	allLogs,
-	// biome-ignore lint/correctness/noUnusedFunctionParameters: Dynamic Convex API / third-party type
-	subjects,
 	selectedDate,
 	setSelectedDate,
 	today,
@@ -79,8 +324,7 @@ export function WeeklyActivityChart({
 	comparisonData,
 }: WeeklyActivityChartProps) {
 	const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
-	// biome-ignore lint/correctness/noUnusedVariables: Dynamic Convex API / third-party type
-	const { t, language, dateLocale } = useLanguage();
+	const { t, dateLocale } = useLanguage();
 
 	const clickedDayIndex = useMemo(() => {
 		if (selectedDate === today) {
@@ -301,233 +545,16 @@ export function WeeklyActivityChart({
 					</div>
 
 					{/* Right: Dynamic Tooltip / Legend */}
-					<div className="dashboard-legend-card">
-						{displayDayIndex !== null ? (
-							<div>
-								<h4
-									style={{
-										fontSize: "0.85rem",
-										fontWeight: 700,
-										marginBottom: 8,
-										color: "var(--text-primary)",
-									}}
-								>
-									{format(
-										new Date(`${chartData[displayDayIndex].date}T00:00:00`),
-										t.common.dateFormatMedium,
-										{ locale: dateLocale },
-									)}
-								</h4>
-								{chartData[displayDayIndex].total === 0 ? (
-									<p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-										{t.calendar.noLogsForDay}
-									</p>
-								) : (
-									<div>
-										<div
-											style={{
-												fontSize: "1.1rem",
-												fontWeight: 700,
-												color: "var(--text-primary)",
-												marginBottom: 12,
-											}}
-										>
-											Total:{" "}
-											{formatDuration(chartData[displayDayIndex].total, {
-												formatUnderHourAsMins: true,
-											})}
-										</div>
-										<div
-											style={{
-												display: "flex",
-												flexDirection: "column",
-												gap: 6,
-											}}
-										>
-											{Object.entries(chartData[displayDayIndex].subjects).map(
-												([subId, mins]) => {
-													if (mins <= 0) return null;
-													const subj =
-														subId !== "uncategorized"
-															? getSubject(subId)
-															: null;
-													return (
-														<div
-															key={subId}
-															style={{
-																display: "flex",
-																justifyContent: "space-between",
-																fontSize: "0.78rem",
-															}}
-														>
-															<div
-																style={{
-																	display: "flex",
-																	alignItems: "center",
-																	gap: 6,
-																}}
-															>
-																<span
-																	style={{
-																		width: 8,
-																		height: 8,
-																		borderRadius: "50%",
-																		background:
-																			subj?.color ?? "var(--text-muted)",
-																	}}
-																/>
-																<span
-																	style={{ color: "var(--text-secondary)" }}
-																>
-																	{subj?.name ?? t.common.uncategorized}
-																</span>
-															</div>
-															<span
-																style={{
-																	fontWeight: 600,
-																	color: "var(--text-primary)",
-																}}
-															>
-																{mins}m
-															</span>
-														</div>
-													);
-												},
-											)}
-										</div>
-									</div>
-								)}
-							</div>
-						) : (
-							<div>
-								<div
-									style={{
-										display: "flex",
-										justifyContent: "space-between",
-										alignItems: "center",
-										marginBottom: 8,
-									}}
-								>
-									<h4
-										style={{
-											fontSize: "0.85rem",
-											fontWeight: 700,
-											margin: 0,
-											color: "var(--text-primary)",
-										}}
-									>
-										{t.dashboard.weeklyStudySummary}
-									</h4>
-									{allLogs !== undefined && (
-										<div
-											style={{ display: "flex", alignItems: "center", gap: 4 }}
-										>
-											<PercentageBadge pct={comparisonData.totalChangePct} />
-											<span
-												style={{
-													fontSize: "0.75rem",
-													color: "var(--text-muted)",
-												}}
-											>
-												{t.dashboard.vsLastWeek}
-											</span>
-										</div>
-									)}
-								</div>
-								{Object.keys(weeklyTotals).length === 0 ? (
-									<p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-										{t.dashboard.hoverBarDesc}
-									</p>
-								) : (
-									<div>
-										<p
-											style={{
-												fontSize: "0.75rem",
-												color: "var(--text-muted)",
-												marginBottom: 10,
-											}}
-										>
-											{t.dashboard.hoverColumnsDesc}
-										</p>
-										<div
-											style={{
-												display: "flex",
-												flexDirection: "column",
-												gap: 6,
-											}}
-										>
-											{Object.entries(weeklyTotals)
-												.sort((a, b) => b[1] - a[1])
-												.map(([subId, mins]) => {
-													if (mins <= 0) return null;
-													const subj =
-														subId !== "uncategorized"
-															? getSubject(subId)
-															: null;
-													const pctChange =
-														comparisonData.subjectChanges[subId] ?? 0;
-													return (
-														<div
-															key={subId}
-															style={{
-																display: "flex",
-																justifyContent: "space-between",
-																alignItems: "center",
-																fontSize: "0.78rem",
-															}}
-														>
-															<div
-																style={{
-																	display: "flex",
-																	alignItems: "center",
-																	gap: 6,
-																}}
-															>
-																<span
-																	style={{
-																		width: 8,
-																		height: 8,
-																		borderRadius: "50%",
-																		background:
-																			subj?.color ?? "var(--text-muted)",
-																	}}
-																/>
-																<span
-																	style={{ color: "var(--text-secondary)" }}
-																>
-																	{subj?.name ?? t.common.uncategorized}
-																</span>
-															</div>
-															<div
-																style={{
-																	display: "flex",
-																	alignItems: "center",
-																	gap: 8,
-																}}
-															>
-																{allLogs !== undefined && (
-																	<PercentageBadge pct={pctChange} />
-																)}
-																<span
-																	style={{
-																		fontWeight: 600,
-																		color: "var(--text-primary)",
-																	}}
-																>
-																	{formatDuration(mins, {
-																		formatUnderHourAsMins: true,
-																	})}
-																</span>
-															</div>
-														</div>
-													);
-												})}
-										</div>
-									</div>
-								)}
-							</div>
-						)}
-					</div>
+					<WeeklyActivityLegend
+						displayDayIndex={displayDayIndex}
+						chartData={chartData}
+						dateLocale={dateLocale}
+						getSubject={getSubject}
+						weeklyTotals={weeklyTotals}
+						comparisonData={comparisonData}
+						allLogs={allLogs}
+						t={t}
+					/>
 				</div>
 			)}
 		</div>

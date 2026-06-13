@@ -512,6 +512,7 @@ export interface TranslationSchema {
 		checkEmailMsg: string;
 		passwordResetSuccess: string;
 		backToSignIn: string;
+		resetPasswordError: string;
 	};
 }
 
@@ -1091,6 +1092,8 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			checkEmailMsg: "A verification code has been sent to your email.",
 			passwordResetSuccess: "Password reset successfully! You can now sign in.",
 			backToSignIn: "Back to Sign In",
+			resetPasswordError:
+				"Could not send reset code. Please verify the email is registered and try again.",
 		},
 	},
 	fr: {
@@ -1681,6 +1684,8 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			passwordResetSuccess:
 				"Mot de passe réinitialisé ! Vous pouvez maintenant vous connecter.",
 			backToSignIn: "Retour à la connexion",
+			resetPasswordError:
+				"Impossible d'envoyer le code de réinitialisation. Veuillez vérifier que l'adresse e-mail est correcte et réessayer.",
 		},
 	},
 };

@@ -55,6 +55,233 @@ interface ThemeSettingsCardProps {
 	setTheme: (t: "light" | "dark") => void;
 }
 
+interface ThemeModeSelectorProps {
+	theme: "light" | "dark";
+	setTheme: (t: "light" | "dark") => void;
+	// biome-ignore lint/suspicious/noExplicitAny: translations object
+	t: any;
+}
+
+function ThemeModeSelector({ theme, setTheme, t }: ThemeModeSelectorProps) {
+	return (
+		<div
+			style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}
+		>
+			<button
+				type="button"
+				className={`btn ${theme === "dark" ? "btn-primary" : "btn-secondary"}`}
+				onClick={() => setTheme("dark")}
+				style={{
+					flex: "1 1 140px",
+					padding: "16px 20px",
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					gap: 8,
+				}}
+			>
+				<span style={{ fontSize: "1.5rem" }}>🌙</span>
+				<strong>{t.settings.themeDark}</strong>
+			</button>
+			<button
+				type="button"
+				className={`btn ${theme === "light" ? "btn-primary" : "btn-secondary"}`}
+				onClick={() => setTheme("light")}
+				style={{
+					flex: "1 1 140px",
+					padding: "16px 20px",
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					gap: 8,
+				}}
+			>
+				<span style={{ fontSize: "1.5rem" }}>☀️</span>
+				<strong>{t.settings.themeLight}</strong>
+			</button>
+		</div>
+	);
+}
+
+interface ThemeCustomizationListProps {
+	theme: "light" | "dark";
+	customizations: Record<string, string>;
+	activeVariable: string | null;
+	setActiveVariable: (v: string | null) => void;
+	getVarLabel: (key: string) => string;
+	handleResetTheme: () => void;
+	// biome-ignore lint/suspicious/noExplicitAny: translations object
+	t: any;
+}
+
+function ThemeCustomizationList({
+	theme,
+	customizations,
+	activeVariable,
+	setActiveVariable,
+	getVarLabel,
+	handleResetTheme,
+	t,
+}: ThemeCustomizationListProps) {
+	return (
+		<div
+			style={{
+				flex: "1 1 280px",
+				display: "flex",
+				flexDirection: "column",
+				gap: 10,
+			}}
+		>
+			{COLOR_VARIABLES.map((v) => {
+				const val =
+					customizations[v.key] ||
+					(theme === "dark" ? v.defaultDark : v.defaultLight);
+				const isEditing = activeVariable === v.key;
+				return (
+					<button
+						key={v.key}
+						type="button"
+						onClick={() => setActiveVariable(v.key)}
+						className="theme-customization-btn"
+						style={{
+							background: isEditing
+								? "var(--accent-light)"
+								: "var(--bg-primary)",
+							border: isEditing
+								? "1px solid var(--accent-primary)"
+								: "1px solid var(--border-subtle)",
+						}}
+					>
+						<span
+							style={{
+								fontSize: "0.88rem",
+								fontWeight: 500,
+								color: isEditing
+									? "var(--accent-primary)"
+									: "var(--text-primary)",
+							}}
+						>
+							{getVarLabel(v.key)}
+						</span>
+						<div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+							<span
+								style={{
+									fontFamily: "monospace",
+									fontSize: "0.8rem",
+									color: "var(--text-muted)",
+								}}
+							>
+								{val.toUpperCase()}
+							</span>
+							<div
+								style={{
+									width: 20,
+									height: 20,
+									borderRadius: "50%",
+									backgroundColor: val,
+									border: "1px solid var(--border-medium)",
+								}}
+							/>
+						</div>
+					</button>
+				);
+			})}
+
+			<button
+				type="button"
+				className="btn btn-secondary"
+				onClick={handleResetTheme}
+				style={{
+					marginTop: 8,
+					alignSelf: "flex-start",
+					fontSize: "0.82rem",
+					padding: "6px 12px",
+				}}
+			>
+				{t.settings.themeResetBtn}
+			</button>
+		</div>
+	);
+}
+
+interface ThemeColorPickerPanelProps {
+	activeVariable: string;
+	setActiveVariable: (v: string | null) => void;
+	getVarLabel: (key: string) => string;
+	theme: "light" | "dark";
+	customizations: Record<string, string>;
+	handleColorChange: (hex: string) => void;
+	// biome-ignore lint/suspicious/noExplicitAny: translations object
+	t: any;
+}
+
+function ThemeColorPickerPanel({
+	activeVariable,
+	setActiveVariable,
+	getVarLabel,
+	theme,
+	customizations,
+	handleColorChange,
+	t,
+}: ThemeColorPickerPanelProps) {
+	return (
+		<div
+			style={{
+				flex: "0 0 auto",
+				display: "flex",
+				flexDirection: "column",
+				alignItems: "center",
+				gap: 8,
+			}}
+		>
+			<div
+				style={{
+					display: "flex",
+					justifyContent: "space-between",
+					width: "100%",
+					maxWidth: 280,
+					padding: "0 4px",
+				}}
+			>
+				<span
+					style={{
+						fontSize: "0.78rem",
+						fontWeight: 600,
+						color: "var(--text-secondary)",
+					}}
+				>
+					{t.settings.themeEditingLabel(getVarLabel(activeVariable))}
+				</span>
+				<button
+					type="button"
+					onClick={() => setActiveVariable(null)}
+					style={{
+						background: "none",
+						border: "none",
+						color: "var(--text-muted)",
+						cursor: "pointer",
+						fontSize: "0.78rem",
+						fontWeight: 500,
+					}}
+				>
+					{t.common.close}
+				</button>
+			</div>
+			<ColorPicker
+				color={
+					customizations[activeVariable] ||
+					(theme === "dark"
+						? COLOR_VARIABLES.find((x) => x.key === activeVariable)?.defaultDark
+						: COLOR_VARIABLES.find((x) => x.key === activeVariable)
+								?.defaultLight)
+				}
+				onChange={handleColorChange}
+				presets={getPresetsForVariable(activeVariable, theme)}
+			/>
+		</div>
+	);
+}
+
 export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
 	// Theme customizations from Convex
 	const userSettings = useQuery(api.userSettings.get);
@@ -151,42 +378,7 @@ export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
 				{t.settings.themeDesc}
 			</p>
 
-			<div
-				style={{ display: "flex", gap: 16, marginBottom: 20, flexWrap: "wrap" }}
-			>
-				<button
-					type="button"
-					className={`btn ${theme === "dark" ? "btn-primary" : "btn-secondary"}`}
-					onClick={() => setTheme("dark")}
-					style={{
-						flex: "1 1 140px",
-						padding: "16px 20px",
-						display: "flex",
-						flexDirection: "column",
-						alignItems: "center",
-						gap: 8,
-					}}
-				>
-					<span style={{ fontSize: "1.5rem" }}>🌙</span>
-					<strong>{t.settings.themeDark}</strong>
-				</button>
-				<button
-					type="button"
-					className={`btn ${theme === "light" ? "btn-primary" : "btn-secondary"}`}
-					onClick={() => setTheme("light")}
-					style={{
-						flex: "1 1 140px",
-						padding: "16px 20px",
-						display: "flex",
-						flexDirection: "column",
-						alignItems: "center",
-						gap: 8,
-					}}
-				>
-					<span style={{ fontSize: "1.5rem" }}>☀️</span>
-					<strong>{t.settings.themeLight}</strong>
-				</button>
-			</div>
+			<ThemeModeSelector theme={theme} setTheme={setTheme} t={t} />
 
 			{/* Theme Color Customization sub-section */}
 			<div
@@ -215,142 +407,26 @@ export function ThemeSettingsCard({ theme, setTheme }: ThemeSettingsCardProps) {
 				</p>
 
 				<div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
-					<div
-						style={{
-							flex: "1 1 280px",
-							display: "flex",
-							flexDirection: "column",
-							gap: 10,
-						}}
-					>
-						{COLOR_VARIABLES.map((v) => {
-							const val =
-								customizations[v.key] ||
-								(theme === "dark" ? v.defaultDark : v.defaultLight);
-							const isEditing = activeVariable === v.key;
-							return (
-								<button
-									key={v.key}
-									type="button"
-									onClick={() => setActiveVariable(v.key)}
-									className="theme-customization-btn"
-									style={{
-										background: isEditing
-											? "var(--accent-light)"
-											: "var(--bg-primary)",
-										border: isEditing
-											? "1px solid var(--accent-primary)"
-											: "1px solid var(--border-subtle)",
-									}}
-								>
-									<span
-										style={{
-											fontSize: "0.88rem",
-											fontWeight: 500,
-											color: isEditing
-												? "var(--accent-primary)"
-												: "var(--text-primary)",
-										}}
-									>
-										{getVarLabel(v.key)}
-									</span>
-									<div
-										style={{ display: "flex", alignItems: "center", gap: 10 }}
-									>
-										<span
-											style={{
-												fontFamily: "monospace",
-												fontSize: "0.8rem",
-												color: "var(--text-muted)",
-											}}
-										>
-											{val.toUpperCase()}
-										</span>
-										<div
-											style={{
-												width: 20,
-												height: 20,
-												borderRadius: "50%",
-												backgroundColor: val,
-												border: "1px solid var(--border-medium)",
-											}}
-										/>
-									</div>
-								</button>
-							);
-						})}
-
-						<button
-							type="button"
-							className="btn btn-secondary"
-							onClick={handleResetTheme}
-							style={{
-								marginTop: 8,
-								alignSelf: "flex-start",
-								fontSize: "0.82rem",
-								padding: "6px 12px",
-							}}
-						>
-							{t.settings.themeResetBtn}
-						</button>
-					</div>
+					<ThemeCustomizationList
+						theme={theme}
+						customizations={customizations}
+						activeVariable={activeVariable}
+						setActiveVariable={setActiveVariable}
+						getVarLabel={getVarLabel}
+						handleResetTheme={handleResetTheme}
+						t={t}
+					/>
 
 					{activeVariable && (
-						<div
-							style={{
-								flex: "0 0 auto",
-								display: "flex",
-								flexDirection: "column",
-								alignItems: "center",
-								gap: 8,
-							}}
-						>
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "space-between",
-									width: "100%",
-									maxWidth: 280,
-									padding: "0 4px",
-								}}
-							>
-								<span
-									style={{
-										fontSize: "0.78rem",
-										fontWeight: 600,
-										color: "var(--text-secondary)",
-									}}
-								>
-									{t.settings.themeEditingLabel(getVarLabel(activeVariable))}
-								</span>
-								<button
-									type="button"
-									onClick={() => setActiveVariable(null)}
-									style={{
-										background: "none",
-										border: "none",
-										color: "var(--text-muted)",
-										cursor: "pointer",
-										fontSize: "0.78rem",
-										fontWeight: 500,
-									}}
-								>
-									{t.common.close}
-								</button>
-							</div>
-							<ColorPicker
-								color={
-									customizations[activeVariable] ||
-									(theme === "dark"
-										? COLOR_VARIABLES.find((x) => x.key === activeVariable)
-												?.defaultDark
-										: COLOR_VARIABLES.find((x) => x.key === activeVariable)
-												?.defaultLight)
-								}
-								onChange={handleColorChange}
-								presets={getPresetsForVariable(activeVariable, theme)}
-							/>
-						</div>
+						<ThemeColorPickerPanel
+							activeVariable={activeVariable}
+							setActiveVariable={setActiveVariable}
+							getVarLabel={getVarLabel}
+							theme={theme}
+							customizations={customizations}
+							handleColorChange={handleColorChange}
+							t={t}
+						/>
 					)}
 				</div>
 			</div>

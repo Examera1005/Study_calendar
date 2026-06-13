@@ -117,6 +117,218 @@ function friendsReducer(
 	}
 }
 
+interface FriendsHeaderProps {
+	// biome-ignore lint/suspicious/noExplicitAny: translations object
+	t: any;
+	keyRecovered: boolean;
+	username: string;
+}
+
+function FriendsHeader({ t, keyRecovered, username }: FriendsHeaderProps) {
+	return (
+		<>
+			{keyRecovered && (
+				<div className="key-recovery-banner">
+					<span style={{ fontSize: "1.2rem" }}>🔑</span>
+					<span>{t.friends.keysRegenerated}</span>
+				</div>
+			)}
+			<div className="page-header">
+				<div>
+					<h1>{t.friends.title}</h1>
+					<div className="date-display">{t.friends.loggedInAs(username)}</div>
+				</div>
+			</div>
+		</>
+	);
+}
+
+interface FriendsNavigationTabsProps {
+	// biome-ignore lint/suspicious/noExplicitAny: translations object
+	t: any;
+	activeTab: "leaderboard" | "chat" | "manage";
+	totalUnreadMessages: number;
+	setActiveTab: (tab: "leaderboard" | "chat" | "manage") => void;
+}
+
+function FriendsNavigationTabs({
+	t,
+	activeTab,
+	totalUnreadMessages,
+	setActiveTab,
+}: FriendsNavigationTabsProps) {
+	return (
+		<div className="friends-nav-tabs">
+			<button
+				type="button"
+				className={`friend-tab-btn ${activeTab === "leaderboard" ? "active" : ""}`}
+				onClick={() => setActiveTab("leaderboard")}
+			>
+				{t.friends.leaderboardTab}
+			</button>
+			<button
+				type="button"
+				className={`friend-tab-btn ${activeTab === "chat" ? "active" : ""}`}
+				onClick={() => setActiveTab("chat")}
+				style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+			>
+				{t.friends.chatTab}
+				{totalUnreadMessages > 0 && (
+					<span className="chat-tab-unread-badge">{totalUnreadMessages}</span>
+				)}
+			</button>
+			<button
+				type="button"
+				className={`friend-tab-btn ${activeTab === "manage" ? "active" : ""}`}
+				onClick={() => setActiveTab("manage")}
+			>
+				{t.friends.manageTab}
+			</button>
+		</div>
+	);
+}
+
+interface UseFriendsActionsProps {
+	// biome-ignore lint/suspicious/noExplicitAny: Convex mutation
+	createProfile: any;
+	// biome-ignore lint/suspicious/noExplicitAny: Convex mutation
+	sendRequest: any;
+	// biome-ignore lint/suspicious/noExplicitAny: Convex mutation
+	respondRequest: any;
+	// biome-ignore lint/suspicious/noExplicitAny: Convex mutation
+	sendMessage: any;
+	// biome-ignore lint/suspicious/noExplicitAny: Convex mutation
+	importExam: any;
+	// biome-ignore lint/suspicious/noExplicitAny: Convex mutation
+	blockUser: any;
+	dispatch: React.Dispatch<FriendsAction>;
+	state: FriendsState;
+	// biome-ignore lint/suspicious/noExplicitAny: profile state
+	profile: any;
+	// biome-ignore lint/suspicious/noExplicitAny: translations object
+	t: any;
+}
+
+function useFriendsActions({
+	createProfile,
+	sendRequest,
+	respondRequest,
+	sendMessage,
+	importExam,
+	blockUser,
+	dispatch,
+	state,
+	profile,
+	t,
+}: UseFriendsActionsProps) {
+	const handleCreateProfile = async (e: React.FormEvent) => {
+		e.preventDefault();
+		dispatch({ type: "START_SUBMIT_PROFILE" });
+
+		try {
+			const pubKeyBase64 = await generateAndSaveKeys();
+			await createProfile({
+				username: state.usernameInput,
+				publicKey: pubKeyBase64,
+			} as any);
+			dispatch({ type: "SUBMIT_PROFILE_SUCCESS" });
+		} catch (err: any) {
+			dispatch({
+				type: "SUBMIT_PROFILE_ERROR",
+				payload: err.message || t.friends.setupProfileError,
+			});
+		}
+	};
+
+	const handleSendRequest = async (e: React.FormEvent) => {
+		e.preventDefault();
+		dispatch({ type: "SET_REQUEST_ERROR", payload: "" });
+		dispatch({ type: "SET_REQUEST_SUCCESS", payload: "" });
+		try {
+			await sendRequest({ username: state.searchQuery });
+			dispatch({
+				type: "SET_REQUEST_SUCCESS",
+				payload: t.friends.friendRequestSent(state.searchQuery),
+			});
+			dispatch({ type: "SET_SEARCH_QUERY", payload: "" });
+		} catch (err: any) {
+			dispatch({
+				type: "SET_REQUEST_ERROR",
+				payload: err.message || "Failed to send request.",
+			});
+		}
+	};
+
+	const handleRespond = async (
+		friendshipId: any,
+		action: "accept" | "reject",
+	) => {
+		try {
+			await respondRequest({ friendshipId, action });
+		} catch (err: any) {
+			alert(`${t.common.error}: ${err.message}`);
+		}
+	};
+
+	const handleSendMessage = async (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!state.chatInput.trim() || !state.activeChatFriend) return;
+
+		const messageText = state.chatInput.trim();
+		dispatch({ type: "SET_CHAT_INPUT", payload: "" });
+
+		try {
+			const [receiverCiphertext, senderCiphertext] = await Promise.all([
+				encryptMessage(messageText, state.activeChatFriend.publicKey),
+				encryptMessage(messageText, profile.publicKey),
+			]);
+
+			await sendMessage({
+				receiverId: state.activeChatFriend.userId,
+				encryptedBody: receiverCiphertext,
+				senderEncryptedBody: senderCiphertext,
+			});
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
+	const handleImportExam = async (examId: any) => {
+		try {
+			await importExam({ examId });
+			dispatch({ type: "SET_IMPORT_SUCCESS_ID", payload: examId });
+			setTimeout(
+				() => dispatch({ type: "SET_IMPORT_SUCCESS_ID", payload: null }),
+				2500,
+			);
+		} catch (err: any) {
+			alert(`${t.common.error}: ${err.message}`);
+		}
+	};
+
+	const handleBlockFriend = async (blockedUserId: string, username: string) => {
+		if (confirm(t.friends.confirmBlockUser(username))) {
+			try {
+				await blockUser({ blockedUserId });
+				if (state.activeChatFriend?.userId === blockedUserId) {
+					dispatch({ type: "SET_ACTIVE_CHAT_FRIEND", payload: null });
+				}
+			} catch (err: any) {
+				alert(`${t.common.error}: ${err.message}`);
+			}
+		}
+	};
+
+	return {
+		handleCreateProfile,
+		handleSendRequest,
+		handleRespond,
+		handleSendMessage,
+		handleImportExam,
+		handleBlockFriend,
+	};
+}
+
 export function FriendsView() {
 	const { t } = useLanguage();
 	const [state, dispatch] = useReducer(friendsReducer, initialState);
@@ -213,6 +425,26 @@ export function FriendsView() {
 		};
 	}, [profile, createProfile]);
 
+	const {
+		handleCreateProfile,
+		handleSendRequest,
+		handleRespond,
+		handleSendMessage,
+		handleImportExam,
+		handleBlockFriend,
+	} = useFriendsActions({
+		createProfile,
+		sendRequest,
+		respondRequest,
+		sendMessage,
+		importExam,
+		blockUser,
+		dispatch,
+		state,
+		profile,
+		t,
+	});
+
 	if (profile === undefined) {
 		return (
 			<div className="loading-spinner">
@@ -220,30 +452,6 @@ export function FriendsView() {
 			</div>
 		);
 	}
-
-	// Handle Profile Creation (Generates Keypair & chooses username)
-	const handleCreateProfile = async (e: React.FormEvent) => {
-		e.preventDefault();
-		dispatch({ type: "START_SUBMIT_PROFILE" });
-
-		try {
-			// 1. Generate RSA keypair on client
-			const pubKeyBase64 = await generateAndSaveKeys();
-
-			// 2. Upload to Convex
-			await createProfile({
-				username: state.usernameInput,
-				publicKey: pubKeyBase64,
-			});
-			dispatch({ type: "SUBMIT_PROFILE_SUCCESS" });
-			// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
-		} catch (err: any) {
-			dispatch({
-				type: "SUBMIT_PROFILE_ERROR",
-				payload: err.message || t.friends.setupProfileError,
-			});
-		}
-	};
 
 	// Profile Setup Screen
 	if (!profile) {
@@ -260,146 +468,22 @@ export function FriendsView() {
 		);
 	}
 
-	// Handle sending request
-	const handleSendRequest = async (e: React.FormEvent) => {
-		e.preventDefault();
-		dispatch({ type: "SET_REQUEST_ERROR", payload: "" });
-		dispatch({ type: "SET_REQUEST_SUCCESS", payload: "" });
-		try {
-			await sendRequest({ username: state.searchQuery });
-			dispatch({
-				type: "SET_REQUEST_SUCCESS",
-				payload: t.friends.friendRequestSent(state.searchQuery),
-			});
-			dispatch({ type: "SET_SEARCH_QUERY", payload: "" });
-			// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
-		} catch (err: any) {
-			dispatch({
-				type: "SET_REQUEST_ERROR",
-				payload: err.message || "Failed to send request.",
-			});
-		}
-	};
-
-	// Respond to request
-	const handleRespond = async (
-		// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
-		friendshipId: any,
-		action: "accept" | "reject",
-	) => {
-		try {
-			await respondRequest({ friendshipId, action });
-			// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
-		} catch (err: any) {
-			alert(`${t.common.error}: ${err.message}`);
-		}
-	};
-
-	// Send message
-	const handleSendMessage = async (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!state.chatInput.trim() || !state.activeChatFriend) return;
-
-		const messageText = state.chatInput.trim();
-		dispatch({ type: "SET_CHAT_INPUT", payload: "" });
-
-		try {
-			// 1. Parallel hybrid encryption (AES-GCM + RSA-OAEP key wrapping)
-			const [receiverCiphertext, senderCiphertext] = await Promise.all([
-				encryptMessage(messageText, state.activeChatFriend.publicKey),
-				encryptMessage(messageText, profile.publicKey),
-			]);
-
-			// 2. Send ciphertexts to Convex
-			await sendMessage({
-				receiverId: state.activeChatFriend.userId,
-				encryptedBody: receiverCiphertext,
-				senderEncryptedBody: senderCiphertext,
-			});
-		} catch (err) {
-			console.error(err);
-		}
-	};
-
-	// Import exam
-	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
-	const handleImportExam = async (examId: any) => {
-		try {
-			await importExam({ examId });
-			dispatch({ type: "SET_IMPORT_SUCCESS_ID", payload: examId });
-			setTimeout(
-				() => dispatch({ type: "SET_IMPORT_SUCCESS_ID", payload: null }),
-				2500,
-			);
-			// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
-		} catch (err: any) {
-			alert(`${t.common.error}: ${err.message}`);
-		}
-	};
-
-	// Block friend
-	const handleBlockFriend = async (blockedUserId: string, username: string) => {
-		if (confirm(t.friends.confirmBlockUser(username))) {
-			try {
-				await blockUser({ blockedUserId });
-				if (state.activeChatFriend?.userId === blockedUserId) {
-					dispatch({ type: "SET_ACTIVE_CHAT_FRIEND", payload: null });
-				}
-				// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
-			} catch (err: any) {
-				alert(`${t.common.error}: ${err.message}`);
-			}
-		}
-	};
-
 	return (
 		<div>
-			{state.keyRecovered && (
-				<div className="key-recovery-banner">
-					<span style={{ fontSize: "1.2rem" }}>🔑</span>
-					<span>{t.friends.keysRegenerated}</span>
-				</div>
-			)}
-			<div className="page-header">
-				<div>
-					<h1>{t.friends.title}</h1>
-					<div className="date-display">
-						{t.friends.loggedInAs(profile.username)}
-					</div>
-				</div>
-			</div>
+			<FriendsHeader
+				t={t}
+				keyRecovered={state.keyRecovered}
+				username={profile.username}
+			/>
 
-			<div className="friends-nav-tabs">
-				<button
-					type="button"
-					className={`friend-tab-btn ${state.activeTab === "leaderboard" ? "active" : ""}`}
-					onClick={() =>
-						dispatch({ type: "SET_ACTIVE_TAB", payload: "leaderboard" })
-					}
-				>
-					{t.friends.leaderboardTab}
-				</button>
-				<button
-					type="button"
-					className={`friend-tab-btn ${state.activeTab === "chat" ? "active" : ""}`}
-					onClick={() => dispatch({ type: "SET_ACTIVE_TAB", payload: "chat" })}
-					style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
-				>
-					{t.friends.chatTab}
-					{totalUnreadMessages > 0 && (
-						<span className="chat-tab-unread-badge">{totalUnreadMessages}</span>
-					)}
-				</button>
-				<button
-					type="button"
-					className={`friend-tab-btn ${state.activeTab === "manage" ? "active" : ""}`}
-					onClick={() =>
-						dispatch({ type: "SET_ACTIVE_TAB", payload: "manage" })
-					}
-				>
-					{t.friends.manageTab}
-				</button>
-			</div>
+			<FriendsNavigationTabs
+				t={t}
+				activeTab={state.activeTab}
+				totalUnreadMessages={totalUnreadMessages}
+				setActiveTab={(tab) =>
+					dispatch({ type: "SET_ACTIVE_TAB", payload: tab })
+				}
+			/>
 
 			{state.activeTab === "leaderboard" && (
 				<LeaderboardTab leaderboard={leaderboard} profile={profile} />

@@ -35,7 +35,9 @@ export default defineSchema({
 		subjectId: v.optional(v.id("subjects")),
 		content: v.string(),
 		duration: v.optional(v.number()),
-	}).index("by_userId_and_date", ["userId", "date"]),
+	})
+		.index("by_userId_and_date", ["userId", "date"])
+		.index("by_userId_and_subjectId", ["userId", "subjectId"]),
 
 	// Tasks (to-do items) — "daily" tasks are tied to a date, "general" are backlog items
 	tasks: defineTable({
@@ -50,7 +52,8 @@ export default defineSchema({
 	})
 		.index("by_userId_and_date", ["userId", "date"])
 		.index("by_userId", ["userId"])
-		.index("by_userId_and_taskType", ["userId", "taskType"]),
+		.index("by_userId_and_taskType", ["userId", "taskType"])
+		.index("by_userId_and_subjectId", ["userId", "subjectId"]),
 
 	// Events (time-blocked calendar events)
 	events: defineTable({
@@ -62,7 +65,9 @@ export default defineSchema({
 		description: v.optional(v.string()),
 		color: v.optional(v.string()),
 		subjectId: v.optional(v.id("subjects")),
-	}).index("by_userId_and_date", ["userId", "date"]),
+	})
+		.index("by_userId_and_date", ["userId", "date"])
+		.index("by_userId_and_subjectId", ["userId", "subjectId"]),
 
 	userProfiles: defineTable({
 		userId: v.string(),
