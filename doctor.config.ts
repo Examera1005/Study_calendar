@@ -1,7 +1,7 @@
 import type { ReactDoctorConfig } from "react-doctor/api";
 
 export default {
-  ignore: {
-    files: ["convex/**/*"]
-  }
+	ignore: {
+		files: ["convex/**/*"],
+	},
 } satisfies ReactDoctorConfig;

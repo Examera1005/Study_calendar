@@ -1,1 +1,69 @@
-{"nodes": [{"id": "index_html", "label": "Application HTML Entry Point", "file_type": "code", "source_file": "index.html", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "index_html_favicon_link", "label": "Favicon link in index.html", "file_type": "code", "source_file": "index.html", "source_location": 8, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [{"source": "index_html", "target": "react_frontend", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "index.html", "source_location": null, "weight": 1.0}, {"source": "index_html", "target": "study_calendar_app", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "index.html", "source_location": null, "weight": 1.0}, {"source": "public_logo_png", "target": "index_html_favicon_link", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "index.html", "source_location": 8, "weight": 1.0}, {"source": "index_html_favicon_link", "target": "brand_study_calendar", "relation": "implements", "confidence": "INFERRED", "confidence_score": 0.8, "source_file": "index.html", "source_location": 8, "weight": 0.8}], "hyperedges": []}
+{
+	"nodes": [
+		{
+			"id": "index_html",
+			"label": "Application HTML Entry Point",
+			"file_type": "code",
+			"source_file": "index.html",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "index_html_favicon_link",
+			"label": "Favicon link in index.html",
+			"file_type": "code",
+			"source_file": "index.html",
+			"source_location": 8,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		}
+	],
+	"edges": [
+		{
+			"source": "index_html",
+			"target": "react_frontend",
+			"relation": "references",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "index.html",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "index_html",
+			"target": "study_calendar_app",
+			"relation": "references",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "index.html",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "public_logo_png",
+			"target": "index_html_favicon_link",
+			"relation": "references",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "index.html",
+			"source_location": 8,
+			"weight": 1.0
+		},
+		{
+			"source": "index_html_favicon_link",
+			"target": "brand_study_calendar",
+			"relation": "implements",
+			"confidence": "INFERRED",
+			"confidence_score": 0.8,
+			"source_file": "index.html",
+			"source_location": 8,
+			"weight": 0.8
+		}
+	],
+	"hyperedges": []
+}

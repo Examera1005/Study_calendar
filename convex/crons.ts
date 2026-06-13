@@ -4,10 +4,10 @@ import { internal } from "./_generated/api";
 const crons = cronJobs();
 
 crons.interval(
-  "auto-delete-old-messages",
-  { hours: 6 },
-  internal.friends.deleteOldMessages,
-  {}
+	"auto-delete-old-messages",
+	{ hours: 6 },
+	internal.friends.deleteOldMessages,
+	{},
 );
 
 export default crons;

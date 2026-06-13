@@ -1,1 +1,75 @@
-{"nodes": [{"id": "dailylogs_module", "label": "Daily Logs Module", "file_type": "code", "source_file": "convex/dailyLogs.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "dailylogs_table", "label": "Daily Logs Table", "file_type": "code", "source_file": "convex/dailyLogs.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [{"source": "dailylogs_module", "target": "dailylogs_table", "relation": "shares_data_with", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/dailyLogs.ts", "source_location": null, "weight": 1.0}, {"source": "dailylogs_module", "target": "subjects_table", "relation": "shares_data_with", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/dailyLogs.ts", "source_location": null, "weight": 1.0}, {"source": "dailylogs_module", "target": "tasks_module", "relation": "conceptually_related_to", "confidence": "INFERRED", "confidence_score": 0.72, "source_file": "convex/dailyLogs.ts", "source_location": null, "weight": 1.0}], "hyperedges": [{"id": "study_planning_data_layer", "label": "Study Planning Data Layer", "nodes": ["dailylogs_module", "subjects_module", "exams_module", "events_module", "tasks_module"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.82, "source_file": "convex/dailyLogs.ts"}]}
+{
+	"nodes": [
+		{
+			"id": "dailylogs_module",
+			"label": "Daily Logs Module",
+			"file_type": "code",
+			"source_file": "convex/dailyLogs.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "dailylogs_table",
+			"label": "Daily Logs Table",
+			"file_type": "code",
+			"source_file": "convex/dailyLogs.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		}
+	],
+	"edges": [
+		{
+			"source": "dailylogs_module",
+			"target": "dailylogs_table",
+			"relation": "shares_data_with",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/dailyLogs.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "dailylogs_module",
+			"target": "subjects_table",
+			"relation": "shares_data_with",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/dailyLogs.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "dailylogs_module",
+			"target": "tasks_module",
+			"relation": "conceptually_related_to",
+			"confidence": "INFERRED",
+			"confidence_score": 0.72,
+			"source_file": "convex/dailyLogs.ts",
+			"source_location": null,
+			"weight": 1.0
+		}
+	],
+	"hyperedges": [
+		{
+			"id": "study_planning_data_layer",
+			"label": "Study Planning Data Layer",
+			"nodes": [
+				"dailylogs_module",
+				"subjects_module",
+				"exams_module",
+				"events_module",
+				"tasks_module"
+			],
+			"relation": "form",
+			"confidence": "INFERRED",
+			"confidence_score": 0.82,
+			"source_file": "convex/dailyLogs.ts"
+		}
+	]
+}

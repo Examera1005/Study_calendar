@@ -1,1 +1,60 @@
-{"nodes": [{"id": "auth_module", "label": "Auth Module", "file_type": "code", "source_file": "convex/auth.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "convex_auth_service", "label": "Convex Auth Service", "file_type": "code", "source_file": "convex/auth.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "password_provider", "label": "Password Provider", "file_type": "code", "source_file": "convex/auth.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [{"source": "auth_module", "target": "convex_auth_service", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/auth.ts", "source_location": null, "weight": 1.0}, {"source": "auth_module", "target": "password_provider", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/auth.ts", "source_location": null, "weight": 1.0}], "hyperedges": []}
+{
+	"nodes": [
+		{
+			"id": "auth_module",
+			"label": "Auth Module",
+			"file_type": "code",
+			"source_file": "convex/auth.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "convex_auth_service",
+			"label": "Convex Auth Service",
+			"file_type": "code",
+			"source_file": "convex/auth.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "password_provider",
+			"label": "Password Provider",
+			"file_type": "code",
+			"source_file": "convex/auth.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		}
+	],
+	"edges": [
+		{
+			"source": "auth_module",
+			"target": "convex_auth_service",
+			"relation": "implements",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/auth.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "auth_module",
+			"target": "password_provider",
+			"relation": "references",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/auth.ts",
+			"source_location": null,
+			"weight": 1.0
+		}
+	],
+	"hyperedges": []
+}

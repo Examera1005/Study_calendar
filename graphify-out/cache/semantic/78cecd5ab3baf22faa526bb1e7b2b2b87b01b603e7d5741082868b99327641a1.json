@@ -1,1 +1,244 @@
-{"nodes": [{"id": "convex_schema", "label": "Convex Schema", "file_type": "code", "source_file": "convex/schema.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "auth_tables", "label": "Auth Tables", "file_type": "code", "source_file": "convex/schema.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "subjects_table", "label": "subjects", "file_type": "code", "source_file": "convex/schema.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "exams_table", "label": "exams", "file_type": "code", "source_file": "convex/schema.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "dailylogs_table", "label": "dailyLogs", "file_type": "code", "source_file": "convex/schema.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "tasks_table", "label": "tasks", "file_type": "code", "source_file": "convex/schema.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "events_table", "label": "events", "file_type": "code", "source_file": "convex/schema.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "userprofiles_table", "label": "userProfiles", "file_type": "code", "source_file": "convex/schema.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "friendships_table", "label": "friendships", "file_type": "code", "source_file": "convex/schema.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [{"source": "convex_schema", "target": "auth_tables", "relation": "shares_data_with", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "convex_schema", "target": "subjects_table", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "convex_schema", "target": "exams_table", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "convex_schema", "target": "dailylogs_table", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "convex_schema", "target": "tasks_table", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "convex_schema", "target": "events_table", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "convex_schema", "target": "userprofiles_table", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "convex_schema", "target": "friendships_table", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "exams_table", "target": "subjects_table", "relation": "shares_data_with", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "dailylogs_table", "target": "subjects_table", "relation": "shares_data_with", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "tasks_table", "target": "subjects_table", "relation": "shares_data_with", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}, {"source": "events_table", "target": "subjects_table", "relation": "shares_data_with", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts", "source_location": null, "weight": 1.0}], "hyperedges": [{"id": "study_calendar_domain_model", "label": "Study Calendar Domain Model", "nodes": ["subjects_table", "exams_table", "dailylogs_table", "tasks_table", "events_table", "userprofiles_table", "friendships_table"], "relation": "form", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/schema.ts"}]}
+{
+	"nodes": [
+		{
+			"id": "convex_schema",
+			"label": "Convex Schema",
+			"file_type": "code",
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "auth_tables",
+			"label": "Auth Tables",
+			"file_type": "code",
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "subjects_table",
+			"label": "subjects",
+			"file_type": "code",
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "exams_table",
+			"label": "exams",
+			"file_type": "code",
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "dailylogs_table",
+			"label": "dailyLogs",
+			"file_type": "code",
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "tasks_table",
+			"label": "tasks",
+			"file_type": "code",
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "events_table",
+			"label": "events",
+			"file_type": "code",
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "userprofiles_table",
+			"label": "userProfiles",
+			"file_type": "code",
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "friendships_table",
+			"label": "friendships",
+			"file_type": "code",
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		}
+	],
+	"edges": [
+		{
+			"source": "convex_schema",
+			"target": "auth_tables",
+			"relation": "shares_data_with",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "convex_schema",
+			"target": "subjects_table",
+			"relation": "implements",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "convex_schema",
+			"target": "exams_table",
+			"relation": "implements",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "convex_schema",
+			"target": "dailylogs_table",
+			"relation": "implements",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "convex_schema",
+			"target": "tasks_table",
+			"relation": "implements",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "convex_schema",
+			"target": "events_table",
+			"relation": "implements",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "convex_schema",
+			"target": "userprofiles_table",
+			"relation": "implements",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "convex_schema",
+			"target": "friendships_table",
+			"relation": "implements",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "exams_table",
+			"target": "subjects_table",
+			"relation": "shares_data_with",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "dailylogs_table",
+			"target": "subjects_table",
+			"relation": "shares_data_with",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "tasks_table",
+			"target": "subjects_table",
+			"relation": "shares_data_with",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "events_table",
+			"target": "subjects_table",
+			"relation": "shares_data_with",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts",
+			"source_location": null,
+			"weight": 1.0
+		}
+	],
+	"hyperedges": [
+		{
+			"id": "study_calendar_domain_model",
+			"label": "Study Calendar Domain Model",
+			"nodes": [
+				"subjects_table",
+				"exams_table",
+				"dailylogs_table",
+				"tasks_table",
+				"events_table",
+				"userprofiles_table",
+				"friendships_table"
+			],
+			"relation": "form",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/schema.ts"
+		}
+	]
+}

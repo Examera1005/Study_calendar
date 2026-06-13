@@ -1,1 +1,49 @@
-{"nodes": [{"id": "events_module", "label": "Events Module", "file_type": "code", "source_file": "convex/events.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "events_table", "label": "Events Table", "file_type": "code", "source_file": "convex/events.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [{"source": "events_module", "target": "events_table", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/events.ts", "source_location": null, "weight": 1.0}, {"source": "events_module", "target": "subjects_table", "relation": "shares_data_with", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/events.ts", "source_location": null, "weight": 1.0}], "hyperedges": []}
+{
+	"nodes": [
+		{
+			"id": "events_module",
+			"label": "Events Module",
+			"file_type": "code",
+			"source_file": "convex/events.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "events_table",
+			"label": "Events Table",
+			"file_type": "code",
+			"source_file": "convex/events.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		}
+	],
+	"edges": [
+		{
+			"source": "events_module",
+			"target": "events_table",
+			"relation": "implements",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/events.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "events_module",
+			"target": "subjects_table",
+			"relation": "shares_data_with",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/events.ts",
+			"source_location": null,
+			"weight": 1.0
+		}
+	],
+	"hyperedges": []
+}

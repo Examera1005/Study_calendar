@@ -1,61 +1,113 @@
-import React from "react";
+import type React from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 
 interface ProfileSetupProps {
-  usernameInput: string;
-  setUsernameInput: (v: string) => void;
-  isSubmittingProfile: boolean;
-  profileError: string;
-  handleCreateProfile: (e: React.FormEvent) => void;
+	usernameInput: string;
+	setUsernameInput: (v: string) => void;
+	isSubmittingProfile: boolean;
+	profileError: string;
+	handleCreateProfile: (e: React.FormEvent) => void;
 }
 
 export function ProfileSetup({
-  usernameInput,
-  setUsernameInput,
-  isSubmittingProfile,
-  profileError,
-  handleCreateProfile,
+	usernameInput,
+	setUsernameInput,
+	isSubmittingProfile,
+	profileError,
+	handleCreateProfile,
 }: ProfileSetupProps) {
-  const { t } = useLanguage();
+	const { t } = useLanguage();
 
-  return (
-    <div className="card" style={{ maxWidth: 450, margin: "60px auto", padding: 30 }}>
-      <h2 style={{ textAlign: "center", marginBottom: 10 }}>👥 {t.friends.setupProfileTitle}</h2>
-      <p style={{ fontSize: "0.88rem", color: "var(--text-muted)", textAlign: "center", marginBottom: 24 }}>
-        {t.friends.setupProfileDesc}
-      </p>
+	return (
+		<div
+			className="card"
+			style={{ maxWidth: 450, margin: "60px auto", padding: 30 }}
+		>
+			<h2 style={{ textAlign: "center", marginBottom: 10 }}>
+				👥 {t.friends.setupProfileTitle}
+			</h2>
+			<p
+				style={{
+					fontSize: "0.88rem",
+					color: "var(--text-muted)",
+					textAlign: "center",
+					marginBottom: 24,
+				}}
+			>
+				{t.friends.setupProfileDesc}
+			</p>
 
-      {profileError && <div className="error-msg" style={{ marginBottom: 16 }}>{profileError}</div>}
+			{profileError && (
+				<div className="error-msg" style={{ marginBottom: 16 }}>
+					{profileError}
+				</div>
+			)}
 
-      <form onSubmit={handleCreateProfile}>
-        <div className="form-group">
-          <label htmlFor="friends-username">{t.friends.profileHandleLabel}</label>
-          <input
-            id="friends-username"
-            type="text"
-            value={usernameInput}
-            onChange={(e) => setUsernameInput(e.target.value)}
-            placeholder={t.friends.profileHandlePlaceholder}
-            required
-          />
-          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: 4, display: "block" }}>
-            {t.friends.onlyLettersAllowed}
-          </span>
-        </div>
+			<form onSubmit={handleCreateProfile}>
+				<div className="form-group">
+					<label htmlFor="friends-username">
+						{t.friends.profileHandleLabel}
+					</label>
+					<input
+						id="friends-username"
+						type="text"
+						value={usernameInput}
+						onChange={(e) => setUsernameInput(e.target.value)}
+						placeholder={t.friends.profileHandlePlaceholder}
+						required
+					/>
+					<span
+						style={{
+							fontSize: "0.75rem",
+							color: "var(--text-muted)",
+							marginTop: 4,
+							display: "block",
+						}}
+					>
+						{t.friends.onlyLettersAllowed}
+					</span>
+				</div>
 
-        <div style={{ background: "var(--accent-light)", padding: "12px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--accent-primary)", marginBottom: 24 }}>
-          <div style={{ fontSize: "0.8rem", color: "var(--accent-primary)", fontWeight: 700, marginBottom: 4 }}>
-            {t.friends.e2eTitle}
-          </div>
-          <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", lineHeight: "1.4" }}>
-            {t.friends.e2eDesc}
-          </div>
-        </div>
+				<div
+					style={{
+						background: "var(--accent-light)",
+						padding: "12px 14px",
+						borderRadius: "var(--radius-md)",
+						border: "1px solid var(--accent-primary)",
+						marginBottom: 24,
+					}}
+				>
+					<div
+						style={{
+							fontSize: "0.8rem",
+							color: "var(--accent-primary)",
+							fontWeight: 700,
+							marginBottom: 4,
+						}}
+					>
+						{t.friends.e2eTitle}
+					</div>
+					<div
+						style={{
+							fontSize: "0.75rem",
+							color: "var(--text-secondary)",
+							lineHeight: "1.4",
+						}}
+					>
+						{t.friends.e2eDesc}
+					</div>
+				</div>
 
-        <button type="submit" className="btn btn-primary btn-full" disabled={isSubmittingProfile}>
-          {isSubmittingProfile ? t.friends.generatingKeys : t.friends.saveProfileBtn}
-        </button>
-      </form>
-    </div>
-  );
+				<button
+					type="submit"
+					className="btn btn-primary btn-full"
+					disabled={isSubmittingProfile}
+				>
+					{isSubmittingProfile
+						? t.friends.generatingKeys
+						: t.friends.saveProfileBtn}
+				</button>
+			</form>
+		</div>
+	);
 }

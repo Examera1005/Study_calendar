@@ -1,35 +1,37 @@
 {
-  "name": "study-calendar",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "npx convex deploy && tsc -b && vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@auth/core": "0.37.0",
-    "@convex-dev/auth": "^0.0.92",
-    "convex": "^1.40.0",
-    "date-fns": "^4.3.0",
-    "react": "^19.2.6",
-    "react-doctor": "^0.2.16",
-    "react-dom": "^19.2.6",
-    "resend": "^6.12.4"
-  },
-  "devDependencies": {
-    "@types/react": "^19.2.15",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.2",
-    "typescript": "^6.0.3",
-    "vite": "^8.0.14"
-  },
-  "overrides": {
-    "ws": ">=8.20.1"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
-  }
+	"name": "study-calendar",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "npx convex deploy && tsc -b && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@auth/core": "0.37.0",
+		"@convex-dev/auth": "^0.0.92",
+		"convex": "^1.40.0",
+		"date-fns": "^4.3.0",
+		"react": "^19.2.6",
+		"react-dom": "^19.2.6",
+		"resend": "^6.12.4"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.0",
+		"@types/react": "^19.2.15",
+		"@types/react-dom": "^19.2.3",
+		"@vitejs/plugin-react": "^6.0.2",
+		"knip": "^6.16.1",
+		"react-doctor": "^0.2.16",
+		"typescript": "^6.0.3",
+		"vite": "^8.0.14"
+	},
+	"overrides": {
+		"ws": ">=8.20.1"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild"
+		]
+	}
 }

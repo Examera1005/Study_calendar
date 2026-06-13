@@ -1,1 +1,38 @@
-{"nodes": [{"id": "generated_api", "label": "Generated Convex API", "file_type": "code", "source_file": "convex/_generated/api.js", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [{"source": "generated_api", "target": "generated_server", "relation": "conceptually_related_to", "confidence": "INFERRED", "confidence_score": 0.7, "source_file": "convex/_generated/api.js", "source_location": null, "weight": 1.0}], "hyperedges": [{"id": "generated_convex_surface", "label": "Generated Convex Surface", "nodes": ["generated_api", "generated_server", "generated_data_model"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.7, "source_file": "convex/_generated/api.js"}]}
+{
+	"nodes": [
+		{
+			"id": "generated_api",
+			"label": "Generated Convex API",
+			"file_type": "code",
+			"source_file": "convex/_generated/api.js",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		}
+	],
+	"edges": [
+		{
+			"source": "generated_api",
+			"target": "generated_server",
+			"relation": "conceptually_related_to",
+			"confidence": "INFERRED",
+			"confidence_score": 0.7,
+			"source_file": "convex/_generated/api.js",
+			"source_location": null,
+			"weight": 1.0
+		}
+	],
+	"hyperedges": [
+		{
+			"id": "generated_convex_surface",
+			"label": "Generated Convex Surface",
+			"nodes": ["generated_api", "generated_server", "generated_data_model"],
+			"relation": "form",
+			"confidence": "INFERRED",
+			"confidence_score": 0.7,
+			"source_file": "convex/_generated/api.js"
+		}
+	]
+}

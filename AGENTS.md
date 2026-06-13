@@ -1,5 +1,5 @@
 <!-- convex-ai-start -->
-
+READ STANDARDS.md
 This project uses [Convex](https://convex.dev) as its backend.
 
 When working on Convex code, **always read

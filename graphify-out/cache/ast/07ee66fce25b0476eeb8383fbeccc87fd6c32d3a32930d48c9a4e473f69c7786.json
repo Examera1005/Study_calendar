@@ -1,1 +1,543 @@
-{"nodes": [{"id": "home_thelio_github_study_calendar_package_json", "label": "package.json", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L1"}, {"id": "study_calendar_package_name", "label": "name", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L2"}, {"id": "study_calendar_package_private", "label": "private", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L3"}, {"id": "study_calendar_package_type", "label": "type", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L4"}, {"id": "study_calendar_package_scripts", "label": "scripts", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L5"}, {"id": "study_calendar_package_scripts_dev", "label": "dev", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L6"}, {"id": "study_calendar_package_scripts_build", "label": "build", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L7"}, {"id": "study_calendar_package_scripts_preview", "label": "preview", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L8"}, {"id": "study_calendar_package_dependencies", "label": "dependencies", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L10"}, {"id": "study_calendar_package_dependencies_auth_core", "label": "@auth/core", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L11"}, {"id": "study_calendar_package_dependencies_convex_dev_auth", "label": "@convex-dev/auth", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L12"}, {"id": "study_calendar_package_dependencies_convex", "label": "convex", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L13"}, {"id": "study_calendar_package_dependencies_date_fns", "label": "date-fns", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L14"}, {"id": "study_calendar_package_dependencies_react", "label": "react", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L15"}, {"id": "study_calendar_package_dependencies_react_dom", "label": "react-dom", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L16"}, {"id": "study_calendar_package_devdependencies", "label": "devDependencies", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L18"}, {"id": "study_calendar_package_devdependencies_types_react", "label": "@types/react", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L19"}, {"id": "study_calendar_package_devdependencies_types_react_dom", "label": "@types/react-dom", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L20"}, {"id": "study_calendar_package_devdependencies_vitejs_plugin_react", "label": "@vitejs/plugin-react", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L21"}, {"id": "study_calendar_package_devdependencies_jose", "label": "jose", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L22"}, {"id": "study_calendar_package_devdependencies_typescript", "label": "typescript", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L23"}, {"id": "study_calendar_package_devdependencies_vite", "label": "vite", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L24"}, {"id": "study_calendar_package_overrides", "label": "overrides", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L26"}, {"id": "study_calendar_package_overrides_ws", "label": "ws", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L27"}, {"id": "study_calendar_package_pnpm", "label": "pnpm", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L29"}, {"id": "study_calendar_package_pnpm_onlybuiltdependencies", "label": "onlyBuiltDependencies", "file_type": "code", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L30"}], "edges": [{"source": "home_thelio_github_study_calendar_package_json", "target": "study_calendar_package_name", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L2", "weight": 1.0}, {"source": "home_thelio_github_study_calendar_package_json", "target": "study_calendar_package_private", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L3", "weight": 1.0}, {"source": "home_thelio_github_study_calendar_package_json", "target": "study_calendar_package_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L4", "weight": 1.0}, {"source": "home_thelio_github_study_calendar_package_json", "target": "study_calendar_package_scripts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L5", "weight": 1.0}, {"source": "study_calendar_package_scripts", "target": "study_calendar_package_scripts_dev", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L6", "weight": 1.0}, {"source": "study_calendar_package_scripts", "target": "study_calendar_package_scripts_build", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L7", "weight": 1.0}, {"source": "study_calendar_package_scripts", "target": "study_calendar_package_scripts_preview", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L8", "weight": 1.0}, {"source": "home_thelio_github_study_calendar_package_json", "target": "study_calendar_package_dependencies", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L10", "weight": 1.0}, {"source": "study_calendar_package_dependencies", "target": "study_calendar_package_dependencies_auth_core", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L11", "weight": 1.0}, {"source": "study_calendar_package_dependencies_auth_core", "target": "auth_core", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L11", "weight": 1.0, "context": "import"}, {"source": "study_calendar_package_dependencies", "target": "study_calendar_package_dependencies_convex_dev_auth", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L12", "weight": 1.0}, {"source": "study_calendar_package_dependencies_convex_dev_auth", "target": "convex_dev_auth", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L12", "weight": 1.0, "context": "import"}, {"source": "study_calendar_package_dependencies", "target": "study_calendar_package_dependencies_convex", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L13", "weight": 1.0}, {"source": "study_calendar_package_dependencies_convex", "target": "convex", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L13", "weight": 1.0, "context": "import"}, {"source": "study_calendar_package_dependencies", "target": "study_calendar_package_dependencies_date_fns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L14", "weight": 1.0}, {"source": "study_calendar_package_dependencies_date_fns", "target": "date_fns", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L14", "weight": 1.0, "context": "import"}, {"source": "study_calendar_package_dependencies", "target": "study_calendar_package_dependencies_react", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L15", "weight": 1.0}, {"source": "study_calendar_package_dependencies_react", "target": "react", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L15", "weight": 1.0, "context": "import"}, {"source": "study_calendar_package_dependencies", "target": "study_calendar_package_dependencies_react_dom", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L16", "weight": 1.0}, {"source": "study_calendar_package_dependencies_react_dom", "target": "react_dom", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L16", "weight": 1.0, "context": "import"}, {"source": "home_thelio_github_study_calendar_package_json", "target": "study_calendar_package_devdependencies", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L18", "weight": 1.0}, {"source": "study_calendar_package_devdependencies", "target": "study_calendar_package_devdependencies_types_react", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L19", "weight": 1.0}, {"source": "study_calendar_package_devdependencies_types_react", "target": "types_react", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L19", "weight": 1.0, "context": "import"}, {"source": "study_calendar_package_devdependencies", "target": "study_calendar_package_devdependencies_types_react_dom", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L20", "weight": 1.0}, {"source": "study_calendar_package_devdependencies_types_react_dom", "target": "types_react_dom", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L20", "weight": 1.0, "context": "import"}, {"source": "study_calendar_package_devdependencies", "target": "study_calendar_package_devdependencies_vitejs_plugin_react", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L21", "weight": 1.0}, {"source": "study_calendar_package_devdependencies_vitejs_plugin_react", "target": "vitejs_plugin_react", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L21", "weight": 1.0, "context": "import"}, {"source": "study_calendar_package_devdependencies", "target": "study_calendar_package_devdependencies_jose", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L22", "weight": 1.0}, {"source": "study_calendar_package_devdependencies_jose", "target": "jose", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L22", "weight": 1.0, "context": "import"}, {"source": "study_calendar_package_devdependencies", "target": "study_calendar_package_devdependencies_typescript", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L23", "weight": 1.0}, {"source": "study_calendar_package_devdependencies_typescript", "target": "typescript", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L23", "weight": 1.0, "context": "import"}, {"source": "study_calendar_package_devdependencies", "target": "study_calendar_package_devdependencies_vite", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L24", "weight": 1.0}, {"source": "study_calendar_package_devdependencies_vite", "target": "vite", "relation": "imports", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L24", "weight": 1.0, "context": "import"}, {"source": "home_thelio_github_study_calendar_package_json", "target": "study_calendar_package_overrides", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L26", "weight": 1.0}, {"source": "study_calendar_package_overrides", "target": "study_calendar_package_overrides_ws", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L27", "weight": 1.0}, {"source": "home_thelio_github_study_calendar_package_json", "target": "study_calendar_package_pnpm", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L29", "weight": 1.0}, {"source": "study_calendar_package_pnpm", "target": "study_calendar_package_pnpm_onlybuiltdependencies", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L30", "weight": 1.0}, {"source": "study_calendar_package_pnpm_onlybuiltdependencies", "target": "ref_esbuild", "relation": "extends", "confidence": "EXTRACTED", "source_file": "/home/thelio/Github/Study_calendar/package.json", "source_location": "L30", "weight": 1.0, "context": "import"}]}
+{
+	"nodes": [
+		{
+			"id": "home_thelio_github_study_calendar_package_json",
+			"label": "package.json",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L1"
+		},
+		{
+			"id": "study_calendar_package_name",
+			"label": "name",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L2"
+		},
+		{
+			"id": "study_calendar_package_private",
+			"label": "private",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L3"
+		},
+		{
+			"id": "study_calendar_package_type",
+			"label": "type",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L4"
+		},
+		{
+			"id": "study_calendar_package_scripts",
+			"label": "scripts",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L5"
+		},
+		{
+			"id": "study_calendar_package_scripts_dev",
+			"label": "dev",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L6"
+		},
+		{
+			"id": "study_calendar_package_scripts_build",
+			"label": "build",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L7"
+		},
+		{
+			"id": "study_calendar_package_scripts_preview",
+			"label": "preview",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L8"
+		},
+		{
+			"id": "study_calendar_package_dependencies",
+			"label": "dependencies",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L10"
+		},
+		{
+			"id": "study_calendar_package_dependencies_auth_core",
+			"label": "@auth/core",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L11"
+		},
+		{
+			"id": "study_calendar_package_dependencies_convex_dev_auth",
+			"label": "@convex-dev/auth",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L12"
+		},
+		{
+			"id": "study_calendar_package_dependencies_convex",
+			"label": "convex",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L13"
+		},
+		{
+			"id": "study_calendar_package_dependencies_date_fns",
+			"label": "date-fns",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L14"
+		},
+		{
+			"id": "study_calendar_package_dependencies_react",
+			"label": "react",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L15"
+		},
+		{
+			"id": "study_calendar_package_dependencies_react_dom",
+			"label": "react-dom",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L16"
+		},
+		{
+			"id": "study_calendar_package_devdependencies",
+			"label": "devDependencies",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L18"
+		},
+		{
+			"id": "study_calendar_package_devdependencies_types_react",
+			"label": "@types/react",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L19"
+		},
+		{
+			"id": "study_calendar_package_devdependencies_types_react_dom",
+			"label": "@types/react-dom",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L20"
+		},
+		{
+			"id": "study_calendar_package_devdependencies_vitejs_plugin_react",
+			"label": "@vitejs/plugin-react",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L21"
+		},
+		{
+			"id": "study_calendar_package_devdependencies_jose",
+			"label": "jose",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L22"
+		},
+		{
+			"id": "study_calendar_package_devdependencies_typescript",
+			"label": "typescript",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L23"
+		},
+		{
+			"id": "study_calendar_package_devdependencies_vite",
+			"label": "vite",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L24"
+		},
+		{
+			"id": "study_calendar_package_overrides",
+			"label": "overrides",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L26"
+		},
+		{
+			"id": "study_calendar_package_overrides_ws",
+			"label": "ws",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L27"
+		},
+		{
+			"id": "study_calendar_package_pnpm",
+			"label": "pnpm",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L29"
+		},
+		{
+			"id": "study_calendar_package_pnpm_onlybuiltdependencies",
+			"label": "onlyBuiltDependencies",
+			"file_type": "code",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L30"
+		}
+	],
+	"edges": [
+		{
+			"source": "home_thelio_github_study_calendar_package_json",
+			"target": "study_calendar_package_name",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L2",
+			"weight": 1.0
+		},
+		{
+			"source": "home_thelio_github_study_calendar_package_json",
+			"target": "study_calendar_package_private",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L3",
+			"weight": 1.0
+		},
+		{
+			"source": "home_thelio_github_study_calendar_package_json",
+			"target": "study_calendar_package_type",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L4",
+			"weight": 1.0
+		},
+		{
+			"source": "home_thelio_github_study_calendar_package_json",
+			"target": "study_calendar_package_scripts",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L5",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_scripts",
+			"target": "study_calendar_package_scripts_dev",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L6",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_scripts",
+			"target": "study_calendar_package_scripts_build",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L7",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_scripts",
+			"target": "study_calendar_package_scripts_preview",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L8",
+			"weight": 1.0
+		},
+		{
+			"source": "home_thelio_github_study_calendar_package_json",
+			"target": "study_calendar_package_dependencies",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L10",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_dependencies",
+			"target": "study_calendar_package_dependencies_auth_core",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L11",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_dependencies_auth_core",
+			"target": "auth_core",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L11",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "study_calendar_package_dependencies",
+			"target": "study_calendar_package_dependencies_convex_dev_auth",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L12",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_dependencies_convex_dev_auth",
+			"target": "convex_dev_auth",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L12",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "study_calendar_package_dependencies",
+			"target": "study_calendar_package_dependencies_convex",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L13",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_dependencies_convex",
+			"target": "convex",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L13",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "study_calendar_package_dependencies",
+			"target": "study_calendar_package_dependencies_date_fns",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L14",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_dependencies_date_fns",
+			"target": "date_fns",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L14",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "study_calendar_package_dependencies",
+			"target": "study_calendar_package_dependencies_react",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L15",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_dependencies_react",
+			"target": "react",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L15",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "study_calendar_package_dependencies",
+			"target": "study_calendar_package_dependencies_react_dom",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L16",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_dependencies_react_dom",
+			"target": "react_dom",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L16",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "home_thelio_github_study_calendar_package_json",
+			"target": "study_calendar_package_devdependencies",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L18",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_devdependencies",
+			"target": "study_calendar_package_devdependencies_types_react",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L19",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_devdependencies_types_react",
+			"target": "types_react",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L19",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "study_calendar_package_devdependencies",
+			"target": "study_calendar_package_devdependencies_types_react_dom",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L20",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_devdependencies_types_react_dom",
+			"target": "types_react_dom",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L20",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "study_calendar_package_devdependencies",
+			"target": "study_calendar_package_devdependencies_vitejs_plugin_react",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L21",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_devdependencies_vitejs_plugin_react",
+			"target": "vitejs_plugin_react",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L21",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "study_calendar_package_devdependencies",
+			"target": "study_calendar_package_devdependencies_jose",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L22",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_devdependencies_jose",
+			"target": "jose",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L22",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "study_calendar_package_devdependencies",
+			"target": "study_calendar_package_devdependencies_typescript",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L23",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_devdependencies_typescript",
+			"target": "typescript",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L23",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "study_calendar_package_devdependencies",
+			"target": "study_calendar_package_devdependencies_vite",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L24",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_devdependencies_vite",
+			"target": "vite",
+			"relation": "imports",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L24",
+			"weight": 1.0,
+			"context": "import"
+		},
+		{
+			"source": "home_thelio_github_study_calendar_package_json",
+			"target": "study_calendar_package_overrides",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L26",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_overrides",
+			"target": "study_calendar_package_overrides_ws",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L27",
+			"weight": 1.0
+		},
+		{
+			"source": "home_thelio_github_study_calendar_package_json",
+			"target": "study_calendar_package_pnpm",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L29",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_pnpm",
+			"target": "study_calendar_package_pnpm_onlybuiltdependencies",
+			"relation": "contains",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L30",
+			"weight": 1.0
+		},
+		{
+			"source": "study_calendar_package_pnpm_onlybuiltdependencies",
+			"target": "ref_esbuild",
+			"relation": "extends",
+			"confidence": "EXTRACTED",
+			"source_file": "/home/thelio/Github/Study_calendar/package.json",
+			"source_location": "L30",
+			"weight": 1.0,
+			"context": "import"
+		}
+	]
+}

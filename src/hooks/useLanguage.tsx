@@ -1,58 +1,64 @@
-import React, { createContext, use, useState, useMemo, useCallback } from "react";
-import { translations, TranslationSchema } from "../i18n/translations";
-import { fr, enUS } from "date-fns/locale";
+import { enUS, fr } from "date-fns/locale";
+import type React from "react";
+import { createContext, use, useCallback, useMemo, useState } from "react";
+import { type TranslationSchema, translations } from "../i18n/translations";
 
 type Language = "en" | "fr";
 
 interface LanguageContextType {
-  language: Language;
-  setLanguage: (lang: Language) => void;
-  t: TranslationSchema;
-  dateLocale: typeof fr | typeof enUS;
+	language: Language;
+	setLanguage: (lang: Language) => void;
+	t: TranslationSchema;
+	dateLocale: typeof fr | typeof enUS;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | undefined>(
+	undefined,
+);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>(() => {
-    const saved = localStorage.getItem("language");
-    if (saved === "en" || saved === "fr") return saved;
-    
-    // Autodetect browser language
-    if (typeof navigator !== "undefined") {
-      const browserLang = navigator.language.toLowerCase();
-      if (browserLang.startsWith("fr")) return "fr";
-    }
-    return "en";
-  });
+	const [language, setLanguageState] = useState<Language>(() => {
+		const saved = localStorage.getItem("language");
+		if (saved === "en" || saved === "fr") return saved;
 
-  const setLanguage = useCallback((lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem("language", lang);
-  }, []);
+		// Autodetect browser language
+		if (typeof navigator !== "undefined") {
+			const browserLang = navigator.language.toLowerCase();
+			if (browserLang.startsWith("fr")) return "fr";
+		}
+		return "en";
+	});
 
-  const t = translations[language];
-  const dateLocale = language === "en" ? enUS : fr;
+	const setLanguage = useCallback((lang: Language) => {
+		setLanguageState(lang);
+		localStorage.setItem("language", lang);
+	}, []);
 
-  const contextValue = useMemo(() => ({
-    language,
-    setLanguage,
-    t,
-    dateLocale
-  }), [language, setLanguage, t, dateLocale]);
+	const t = translations[language];
+	const dateLocale = language === "en" ? enUS : fr;
 
-  return (
-    <LanguageContext.Provider value={contextValue}>
-      {children}
-    </LanguageContext.Provider>
-  );
+	const contextValue = useMemo(
+		() => ({
+			language,
+			setLanguage,
+			t,
+			dateLocale,
+		}),
+		[language, setLanguage, t, dateLocale],
+	);
+
+	return (
+		<LanguageContext.Provider value={contextValue}>
+			{children}
+		</LanguageContext.Provider>
+	);
 }
 
 export function useLanguage() {
-  const context = use(LanguageContext);
-  if (!context) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
-  }
-  return context;
+	const context = use(LanguageContext);
+	if (!context) {
+		throw new Error("useLanguage must be used within a LanguageProvider");
+	}
+	return context;
 }
 export type { Language };

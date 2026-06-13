@@ -1,1 +1,49 @@
-{"nodes": [{"id": "convex_ai_directive", "label": "Convex AI Coding Directive", "file_type": "document", "source_file": "CLAUDE.md", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "convex_ai_guidelines", "label": "Convex AI Guidelines (referenced)", "file_type": "document", "source_file": "CLAUDE.md", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [{"source": "convex_ai_directive", "target": "convex_ai_guidelines", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "CLAUDE.md", "source_location": null, "weight": 1.0}, {"source": "convex_ai_directive", "target": "convex_backend", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "CLAUDE.md", "source_location": null, "weight": 1.0}], "hyperedges": []}
+{
+	"nodes": [
+		{
+			"id": "convex_ai_directive",
+			"label": "Convex AI Coding Directive",
+			"file_type": "document",
+			"source_file": "CLAUDE.md",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "convex_ai_guidelines",
+			"label": "Convex AI Guidelines (referenced)",
+			"file_type": "document",
+			"source_file": "CLAUDE.md",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		}
+	],
+	"edges": [
+		{
+			"source": "convex_ai_directive",
+			"target": "convex_ai_guidelines",
+			"relation": "references",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "CLAUDE.md",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "convex_ai_directive",
+			"target": "convex_backend",
+			"relation": "references",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "CLAUDE.md",
+			"source_location": null,
+			"weight": 1.0
+		}
+	],
+	"hyperedges": []
+}

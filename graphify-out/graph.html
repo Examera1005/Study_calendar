@@ -142,7 +142,7 @@ function showInfo(nodeId) {
   `;
 }
 
-function focusNode(nodeId) {
+function _focusNode(nodeId) {
   network.focus(nodeId, { scale: 1.4, animation: true });
   network.selectNodes([nodeId]);
   showInfo(nodeId);
@@ -213,7 +213,7 @@ function updateSelectAllState() {
   selectAllCb.indeterminate = hidden > 0 && hidden < total;
 }
 
-function toggleAllCommunities(hide) {
+function _toggleAllCommunities(hide) {
   document.querySelectorAll('.legend-item').forEach(item => {
     hide ? item.classList.add('dimmed') : item.classList.remove('dimmed');
   });
@@ -268,7 +268,7 @@ LEGEND.forEach(c => {
 const hyperedges = [{"id": "study_calendar_backend_stack", "label": "Study Calendar Backend Stack", "nodes": ["convex_backend", "convex_auth_config"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.78, "source_file": "convex/http.ts"}, {"id": "generated_convex_surface", "label": "Generated Convex Surface", "nodes": ["generated_api", "generated_server", "generated_data_model"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.7, "source_file": "convex/_generated/api.js"}, {"id": "performance_audit_reference_cluster", "label": "Performance Audit Reference Cluster", "nodes": ["convex_performance_audit_skill", "subscription_cost", "hot_path_rules", "function_budget", "occ_conflicts"], "relation": "form", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": ".agents/skills/convex-performance-audit/SKILL.md"}, {"id": "migration_helper_reference_cluster", "label": "Migration Helper Reference Cluster", "nodes": ["convex_migration_helper_skill", "migrations_component_ref", "migration_patterns_ref"], "relation": "form", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": ".agents/skills/convex-migration-helper/SKILL.md"}, {"id": "auth_provider_options_cluster", "label": "Auth Provider Options Cluster", "nodes": ["convex_setup_auth_skill", "convex_auth_ref", "clerk_ref", "workos_authkit_ref", "auth0_ref"], "relation": "form", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": ".agents/skills/convex-setup-auth/SKILL.md"}, {"id": "convex_component_design_skill_set", "label": "Convex Component Design Skill Set", "nodes": ["convex_create_component_agent", "advanced_component_patterns", "packaged_components_doc", "hybrid_components_doc"], "relation": "participate_in", "confidence": "INFERRED", "confidence_score": 0.9, "source_file": ".agents/skills/convex-create-component/agents/openai.yaml"}, {"id": "contechs_app_tech_stack", "label": "Convex + React + TypeScript + Vite + E2E Crypto", "nodes": ["convex_backend", "react_frontend", "end_to_end_encryption", "web_crypto_api", "theme_system", "pnpm_workspace_config"], "relation": "participate_in", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "README.md"}, {"id": "brand_assets_bundle", "label": "Study Calendar public brand assets", "nodes": ["public_logo_png", "index_html_favicon_link", "sidebar_logo_img", "brand_study_calendar", "brand_landing_text"], "relation": "participate_in", "confidence": "INFERRED", "confidence_score": 0.9, "source_file": "public/logo.png"}];
 // afterDrawing passes ctx already transformed to network coordinate space.
 // Draw node positions raw — no manual pan/zoom/DPR math needed.
-network.on('afterDrawing', function(ctx) {
+network.on('afterDrawing', (ctx) => {
     hyperedges.forEach(h => {
         const positions = h.nodes
             .map(nid => network.getPositions([nid])[nid])
@@ -288,6 +288,7 @@ network.on('afterDrawing', function(ctx) {
             y: cy + (p.y - cy) * 1.15
         }));
         ctx.moveTo(expanded[0].x, expanded[0].y);
+        // biome-ignore lint/suspicious/useIterableCallbackReturn: Dynamic Convex API / third-party type
         expanded.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
         ctx.closePath();
         ctx.fill();

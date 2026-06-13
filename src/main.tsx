@@ -1,7 +1,7 @@
+import { ConvexAuthProvider } from "@convex-dev/auth/react";
+import { ConvexReactClient } from "convex/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ConvexReactClient } from "convex/react";
-import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import App from "./App";
 import { LanguageProvider } from "./hooks/useLanguage";
 import "./index.css";
@@ -9,23 +9,37 @@ import "./index.css";
 const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 
 if (!convexUrl) {
-  ReactDOM.createRoot(document.getElementById("root")!).render(
-    <div style={{ padding: "40px", fontFamily: "sans-serif", color: "white", background: "#1a1a1a", height: "100vh" }}>
-      <h2>Missing Environment Variable</h2>
-      <p>The <code>VITE_CONVEX_URL</code> environment variable is missing.</p>
-      <p>If you are on Vercel, please ensure it is added in <b>Settings &gt; Environment Variables</b> and that you have triggered a <b>Redeploy</b>.</p>
-    </div>
-  );
+	ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+		<div
+			style={{
+				padding: "40px",
+				fontFamily: "sans-serif",
+				color: "white",
+				background: "#1a1a1a",
+				height: "100vh",
+			}}
+		>
+			<h2>Missing Environment Variable</h2>
+			<p>
+				The <code>VITE_CONVEX_URL</code> environment variable is missing.
+			</p>
+			<p>
+				If you are on Vercel, please ensure it is added in{" "}
+				<b>Settings &gt; Environment Variables</b> and that you have triggered a{" "}
+				<b>Redeploy</b>.
+			</p>
+		</div>,
+	);
 } else {
-  const convex = new ConvexReactClient(convexUrl);
+	const convex = new ConvexReactClient(convexUrl);
 
-  ReactDOM.createRoot(document.getElementById("root")!).render(
-    <React.StrictMode>
-      <ConvexAuthProvider client={convex}>
-        <LanguageProvider>
-          <App />
-        </LanguageProvider>
-      </ConvexAuthProvider>
-    </React.StrictMode>
-  );
+	ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+		<React.StrictMode>
+			<ConvexAuthProvider client={convex}>
+				<LanguageProvider>
+					<App />
+				</LanguageProvider>
+			</ConvexAuthProvider>
+		</React.StrictMode>,
+	);
 }

@@ -1,214 +1,253 @@
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { useMutation, useQuery } from "convex/react";
 import { useState } from "react";
-import { Modal } from "../components/ui/Modal";
+import { api } from "../../convex/_generated/api";
 import { ColorPicker } from "../components/ui/ColorPicker";
 import { EmojiPicker } from "../components/ui/EmojiPicker";
+import { Modal } from "../components/ui/Modal";
 import { useLanguage } from "../hooks/useLanguage";
 
 export function SubjectsView() {
-  const { t } = useLanguage();
-  const subjects = useQuery(api.subjects.list);
-  const createSubject = useMutation(api.subjects.create);
-  const updateSubject = useMutation(api.subjects.update);
-  const removeSubject = useMutation(api.subjects.remove);
+	const { t } = useLanguage();
+	const subjects = useQuery(api.subjects.list);
+	const createSubject = useMutation(api.subjects.create);
+	const updateSubject = useMutation(api.subjects.update);
+	const removeSubject = useMutation(api.subjects.remove);
 
-  // Grouped state variables to satisfy the `prefer-useReducer` / related useState audit
-  const [addForm, setAddForm] = useState({
-    isOpen: false,
-    color: "#7c3aed",
-    icon: "",
-  });
+	// Grouped state variables to satisfy the `prefer-useReducer` / related useState audit
+	const [addForm, setAddForm] = useState({
+		isOpen: false,
+		color: "#7c3aed",
+		icon: "",
+	});
 
-  const [editForm, setEditForm] = useState<{
-    id: string | null;
-    color: string;
-    icon: string;
-  }>({
-    id: null,
-    color: "#7c3aed",
-    icon: "",
-  });
+	const [editForm, setEditForm] = useState<{
+		id: string | null;
+		color: string;
+		icon: string;
+	}>({
+		id: null,
+		color: "#7c3aed",
+		icon: "",
+	});
 
-  const editingSubject = subjects?.find((s) => s._id === editForm.id);
+	const editingSubject = subjects?.find((s) => s._id === editForm.id);
 
-  return (
-    <div>
-      <div className="page-header">
-        <h1>{t.subjects.title}</h1>
-      </div>
+	return (
+		<div>
+			<div className="page-header">
+				<h1>{t.subjects.title}</h1>
+			</div>
 
-      <div className="card">
-        <div className="card-header">
-          <h3>📚 {t.subjects.title}</h3>
-          <button
-            type="button"
-            className="btn btn-primary btn-sm"
-            onClick={() => setAddForm({ isOpen: true, color: "#7c3aed", icon: "" })}
-            id="add-subject-btn"
-          >
-            + {t.subjects.addSubject}
-          </button>
-        </div>
+			<div className="card">
+				<div className="card-header">
+					<h3>📚 {t.subjects.title}</h3>
+					<button
+						type="button"
+						className="btn btn-primary btn-sm"
+						onClick={() =>
+							setAddForm({ isOpen: true, color: "#7c3aed", icon: "" })
+						}
+						id="add-subject-btn"
+					>
+						+ {t.subjects.addSubject}
+					</button>
+				</div>
 
-        {!subjects || subjects.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">📚</div>
-            <p>{t.subjects.noSubjectsYet}</p>
-          </div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {subjects.map((s) => (
-              <div
-                key={s._id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  padding: "12px 16px",
-                  borderRadius: "var(--radius-md)",
-                  background: "var(--bg-glass)",
-                  border: "1px solid var(--border-subtle)",
-                }}
-              >
-                <div style={{ width: 12, height: 12, borderRadius: "50%", background: s.color, flexShrink: 0 }} />
-                {s.icon && <span style={{ fontSize: "1rem" }}>{s.icon}</span>}
-                <span style={{ flex: 1, fontWeight: 500 }}>{s.name}</span>
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => {
-                    setEditForm({
-                      id: s._id,
-                      color: s.color,
-                      icon: s.icon ?? "",
-                    });
-                  }}
-                >
-                  {t.common.edit}
-                </button>
-                <button
-                  type="button"
-                  className="btn-icon"
-                  style={{ width: 28, height: 28 }}
-                  aria-label={`${t.common.delete} ${s.name}`}
-                  onClick={() => {
-                    if (confirm(t.subjects.confirmDeleteSubject(s.name))) {
-                      void removeSubject({ id: s._id });
-                    }
-                  }}
-                >
-                  🗑
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+				{!subjects || subjects.length === 0 ? (
+					<div className="empty-state">
+						<div className="empty-icon">📚</div>
+						<p>{t.subjects.noSubjectsYet}</p>
+					</div>
+				) : (
+					<div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+						{subjects.map((s) => (
+							<div
+								key={s._id}
+								style={{
+									display: "flex",
+									alignItems: "center",
+									gap: 12,
+									padding: "12px 16px",
+									borderRadius: "var(--radius-md)",
+									background: "var(--bg-glass)",
+									border: "1px solid var(--border-subtle)",
+								}}
+							>
+								<div
+									style={{
+										width: 12,
+										height: 12,
+										borderRadius: "50%",
+										background: s.color,
+										flexShrink: 0,
+									}}
+								/>
+								{s.icon && <span style={{ fontSize: "1rem" }}>{s.icon}</span>}
+								<span style={{ flex: 1, fontWeight: 500 }}>{s.name}</span>
+								<button
+									type="button"
+									className="btn btn-ghost btn-sm"
+									onClick={() => {
+										setEditForm({
+											id: s._id,
+											color: s.color,
+											icon: s.icon ?? "",
+										});
+									}}
+								>
+									{t.common.edit}
+								</button>
+								<button
+									type="button"
+									className="btn-icon"
+									style={{ width: 28, height: 28 }}
+									aria-label={`${t.common.delete} ${s.name}`}
+									onClick={() => {
+										if (confirm(t.subjects.confirmDeleteSubject(s.name))) {
+											void removeSubject({ id: s._id });
+										}
+									}}
+								>
+									🗑
+								</button>
+							</div>
+						))}
+					</div>
+				)}
+			</div>
 
-      {addForm.isOpen && (
-        <Modal title={t.subjects.createSubjectTitle} onClose={() => setAddForm((prev) => ({ ...prev, isOpen: false }))}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const fd = new FormData(e.currentTarget);
-              void createSubject({
-                name: fd.get("name") as string,
-                color: addForm.color,
-                icon: (fd.get("icon") as string) || undefined,
-              });
-              setAddForm({ isOpen: false, color: "#7c3aed", icon: "" });
-            }}
-          >
-            <div className="form-group">
-              <label htmlFor="add-subject-name">{t.subjects.subjectNameLabel}</label>
-              <input
-                id="add-subject-name"
-                name="name"
-                required
-                placeholder={t.subjects.subjectNamePlaceholder}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="add-subject-icon">{t.subjects.subjectIconLabel}</label>
-              <EmojiPicker
-                id="add-subject-icon"
-                value={addForm.icon}
-                onChange={(icon) => setAddForm((prev) => ({ ...prev, icon }))}
-                placeholder="📐"
-              />
-              <input type="hidden" name="icon" value={addForm.icon} />
-            </div>
-            <div className="form-group">
-              <span className="form-label">{t.subjects.subjectColorLabel}</span>
-              <ColorPicker
-                value={addForm.color}
-                onChange={(color) => setAddForm((prev) => ({ ...prev, color }))}
-              />
-            </div>
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setAddForm((prev) => ({ ...prev, isOpen: false }))}
-              >
-                {t.common.cancel}
-              </button>
-              <button type="submit" className="btn btn-primary">{t.subjects.addSubject}</button>
-            </div>
-          </form>
-        </Modal>
-      )}
+			{addForm.isOpen && (
+				<Modal
+					title={t.subjects.createSubjectTitle}
+					onClose={() => setAddForm((prev) => ({ ...prev, isOpen: false }))}
+				>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							const fd = new FormData(e.currentTarget);
+							void createSubject({
+								name: fd.get("name") as string,
+								color: addForm.color,
+								icon: (fd.get("icon") as string) || undefined,
+							});
+							setAddForm({ isOpen: false, color: "#7c3aed", icon: "" });
+						}}
+					>
+						<div className="form-group">
+							<label htmlFor="add-subject-name">
+								{t.subjects.subjectNameLabel}
+							</label>
+							<input
+								id="add-subject-name"
+								name="name"
+								required
+								placeholder={t.subjects.subjectNamePlaceholder}
+							/>
+						</div>
+						<div className="form-group">
+							<label htmlFor="add-subject-icon">
+								{t.subjects.subjectIconLabel}
+							</label>
+							<EmojiPicker
+								id="add-subject-icon"
+								value={addForm.icon}
+								onChange={(icon) => setAddForm((prev) => ({ ...prev, icon }))}
+								placeholder="📐"
+							/>
+							<input type="hidden" name="icon" value={addForm.icon} />
+						</div>
+						<div className="form-group">
+							<span className="form-label">{t.subjects.subjectColorLabel}</span>
+							<ColorPicker
+								value={addForm.color}
+								onChange={(color) => setAddForm((prev) => ({ ...prev, color }))}
+							/>
+						</div>
+						<div className="modal-actions">
+							<button
+								type="button"
+								className="btn btn-secondary"
+								onClick={() =>
+									setAddForm((prev) => ({ ...prev, isOpen: false }))
+								}
+							>
+								{t.common.cancel}
+							</button>
+							<button type="submit" className="btn btn-primary">
+								{t.subjects.addSubject}
+							</button>
+						</div>
+					</form>
+				</Modal>
+			)}
 
-      {editingSubject && (
-        <Modal title={t.subjects.editSubjectTitle} onClose={() => setEditForm({ id: null, color: "#7c3aed", icon: "" })}>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const fd = new FormData(e.currentTarget);
-              void updateSubject({
-                id: editingSubject._id,
-                name: fd.get("name") as string,
-                color: editForm.color,
-                icon: (fd.get("icon") as string) || undefined,
-              });
-              setEditForm({ id: null, color: "#7c3aed", icon: "" });
-            }}
-          >
-            <div className="form-group">
-              <label htmlFor="edit-subject-name">{t.subjects.subjectNameLabel}</label>
-              <input id="edit-subject-name" name="name" required defaultValue={editingSubject.name} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="edit-subject-icon">{t.subjects.subjectIconLabel}</label>
-              <EmojiPicker
-                id="edit-subject-icon"
-                value={editForm.icon}
-                onChange={(icon) => setEditForm((prev) => ({ ...prev, icon }))}
-                placeholder={editingSubject.icon ?? "📐"}
-              />
-              <input type="hidden" name="icon" value={editForm.icon} />
-            </div>
-            <div className="form-group">
-              <span className="form-label">{t.subjects.subjectColorLabel}</span>
-              <ColorPicker
-                value={editForm.color}
-                onChange={(color) => setEditForm((prev) => ({ ...prev, color }))}
-              />
-            </div>
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setEditForm({ id: null, color: "#7c3aed", icon: "" })}
-              >
-                {t.common.cancel}
-              </button>
-              <button type="submit" className="btn btn-primary">{t.common.save}</button>
-            </div>
-          </form>
-        </Modal>
-      )}
-    </div>
-  );
+			{editingSubject && (
+				<Modal
+					title={t.subjects.editSubjectTitle}
+					onClose={() => setEditForm({ id: null, color: "#7c3aed", icon: "" })}
+				>
+					<form
+						onSubmit={(e) => {
+							e.preventDefault();
+							const fd = new FormData(e.currentTarget);
+							void updateSubject({
+								id: editingSubject._id,
+								name: fd.get("name") as string,
+								color: editForm.color,
+								icon: (fd.get("icon") as string) || undefined,
+							});
+							setEditForm({ id: null, color: "#7c3aed", icon: "" });
+						}}
+					>
+						<div className="form-group">
+							<label htmlFor="edit-subject-name">
+								{t.subjects.subjectNameLabel}
+							</label>
+							<input
+								id="edit-subject-name"
+								name="name"
+								required
+								defaultValue={editingSubject.name}
+							/>
+						</div>
+						<div className="form-group">
+							<label htmlFor="edit-subject-icon">
+								{t.subjects.subjectIconLabel}
+							</label>
+							<EmojiPicker
+								id="edit-subject-icon"
+								value={editForm.icon}
+								onChange={(icon) => setEditForm((prev) => ({ ...prev, icon }))}
+								placeholder={editingSubject.icon ?? "📐"}
+							/>
+							<input type="hidden" name="icon" value={editForm.icon} />
+						</div>
+						<div className="form-group">
+							<span className="form-label">{t.subjects.subjectColorLabel}</span>
+							<ColorPicker
+								value={editForm.color}
+								onChange={(color) =>
+									setEditForm((prev) => ({ ...prev, color }))
+								}
+							/>
+						</div>
+						<div className="modal-actions">
+							<button
+								type="button"
+								className="btn btn-secondary"
+								onClick={() =>
+									setEditForm({ id: null, color: "#7c3aed", icon: "" })
+								}
+							>
+								{t.common.cancel}
+							</button>
+							<button type="submit" className="btn btn-primary">
+								{t.common.save}
+							</button>
+						</div>
+					</form>
+				</Modal>
+			)}
+		</div>
+	);
 }

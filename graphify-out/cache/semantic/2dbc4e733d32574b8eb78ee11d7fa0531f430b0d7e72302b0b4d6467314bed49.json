@@ -1,1 +1,38 @@
-{"nodes": [{"id": "convex_readme_docs", "label": "Convex README Docs", "file_type": "document", "source_file": "convex/README.md", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [{"source": "convex_readme_docs", "target": "generated_api", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/README.md", "source_location": null, "weight": 1.0}, {"source": "convex_readme_docs", "target": "generated_server", "relation": "references", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/README.md", "source_location": null, "weight": 1.0}], "hyperedges": []}
+{
+	"nodes": [
+		{
+			"id": "convex_readme_docs",
+			"label": "Convex README Docs",
+			"file_type": "document",
+			"source_file": "convex/README.md",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		}
+	],
+	"edges": [
+		{
+			"source": "convex_readme_docs",
+			"target": "generated_api",
+			"relation": "references",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/README.md",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "convex_readme_docs",
+			"target": "generated_server",
+			"relation": "references",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/README.md",
+			"source_location": null,
+			"weight": 1.0
+		}
+	],
+	"hyperedges": []
+}

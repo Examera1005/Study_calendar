@@ -1,1 +1,149 @@
-{"nodes": [{"id": "app", "label": "App", "file_type": "code", "source_file": "src/App.tsx", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [{"source": "app", "target": "signin", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}, {"source": "app", "target": "sidebar", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}, {"source": "app", "target": "dashboard", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}, {"source": "app", "target": "calendarview", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}, {"source": "app", "target": "examsview", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}, {"source": "app", "target": "tasksview", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}, {"source": "app", "target": "dailylogview", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}, {"source": "app", "target": "settingsview", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}, {"source": "app", "target": "subjectsview", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}, {"source": "app", "target": "friendsview", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}, {"source": "app", "target": "modal", "relation": "calls", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "src/App.tsx", "source_location": null, "weight": 1.0}], "hyperedges": [{"id": "study_navigation_shell", "label": "Study app navigation shell", "nodes": ["app", "sidebar", "dashboard", "calendarview", "examsview", "tasksview", "dailylogview", "settingsview", "subjectsview", "friendsview"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.84, "source_file": "src/App.tsx"}]}
+{
+	"nodes": [
+		{
+			"id": "app",
+			"label": "App",
+			"file_type": "code",
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		}
+	],
+	"edges": [
+		{
+			"source": "app",
+			"target": "signin",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "app",
+			"target": "sidebar",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "app",
+			"target": "dashboard",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "app",
+			"target": "calendarview",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "app",
+			"target": "examsview",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "app",
+			"target": "tasksview",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "app",
+			"target": "dailylogview",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "app",
+			"target": "settingsview",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "app",
+			"target": "subjectsview",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "app",
+			"target": "friendsview",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "app",
+			"target": "modal",
+			"relation": "calls",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "src/App.tsx",
+			"source_location": null,
+			"weight": 1.0
+		}
+	],
+	"hyperedges": [
+		{
+			"id": "study_navigation_shell",
+			"label": "Study app navigation shell",
+			"nodes": [
+				"app",
+				"sidebar",
+				"dashboard",
+				"calendarview",
+				"examsview",
+				"tasksview",
+				"dailylogview",
+				"settingsview",
+				"subjectsview",
+				"friendsview"
+			],
+			"relation": "form",
+			"confidence": "INFERRED",
+			"confidence_score": 0.84,
+			"source_file": "src/App.tsx"
+		}
+	]
+}

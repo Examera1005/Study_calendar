@@ -1,1 +1,107 @@
-{"nodes": [{"id": "friends_module", "label": "Friends Module", "file_type": "code", "source_file": "convex/friends.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "user_profiles_table", "label": "User Profiles Table", "file_type": "code", "source_file": "convex/friends.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "friendships_table", "label": "Friendships Table", "file_type": "code", "source_file": "convex/friends.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}, {"id": "blocks_table", "label": "Blocks Table", "file_type": "code", "source_file": "convex/friends.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [{"source": "friends_module", "target": "user_profiles_table", "relation": "implements", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/friends.ts", "source_location": null, "weight": 1.0}, {"source": "friends_module", "target": "friendships_table", "relation": "shares_data_with", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/friends.ts", "source_location": null, "weight": 1.0}, {"source": "friends_module", "target": "blocks_table", "relation": "shares_data_with", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "convex/friends.ts", "source_location": null, "weight": 1.0}, {"source": "friends_module", "target": "auth_module", "relation": "conceptually_related_to", "confidence": "INFERRED", "confidence_score": 0.75, "source_file": "convex/friends.ts", "source_location": null, "weight": 1.0}], "hyperedges": [{"id": "social_identity_layer", "label": "Social Identity Layer", "nodes": ["auth_module", "friends_module", "user_profiles_table", "friendships_table", "blocks_table"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.78, "source_file": "convex/friends.ts"}]}
+{
+	"nodes": [
+		{
+			"id": "friends_module",
+			"label": "Friends Module",
+			"file_type": "code",
+			"source_file": "convex/friends.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "user_profiles_table",
+			"label": "User Profiles Table",
+			"file_type": "code",
+			"source_file": "convex/friends.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "friendships_table",
+			"label": "Friendships Table",
+			"file_type": "code",
+			"source_file": "convex/friends.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		},
+		{
+			"id": "blocks_table",
+			"label": "Blocks Table",
+			"file_type": "code",
+			"source_file": "convex/friends.ts",
+			"source_location": null,
+			"source_url": null,
+			"captured_at": null,
+			"author": null,
+			"contributor": null
+		}
+	],
+	"edges": [
+		{
+			"source": "friends_module",
+			"target": "user_profiles_table",
+			"relation": "implements",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/friends.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "friends_module",
+			"target": "friendships_table",
+			"relation": "shares_data_with",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/friends.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "friends_module",
+			"target": "blocks_table",
+			"relation": "shares_data_with",
+			"confidence": "EXTRACTED",
+			"confidence_score": 1.0,
+			"source_file": "convex/friends.ts",
+			"source_location": null,
+			"weight": 1.0
+		},
+		{
+			"source": "friends_module",
+			"target": "auth_module",
+			"relation": "conceptually_related_to",
+			"confidence": "INFERRED",
+			"confidence_score": 0.75,
+			"source_file": "convex/friends.ts",
+			"source_location": null,
+			"weight": 1.0
+		}
+	],
+	"hyperedges": [
+		{
+			"id": "social_identity_layer",
+			"label": "Social Identity Layer",
+			"nodes": [
+				"auth_module",
+				"friends_module",
+				"user_profiles_table",
+				"friendships_table",
+				"blocks_table"
+			],
+			"relation": "form",
+			"confidence": "INFERRED",
+			"confidence_score": 0.78,
+			"source_file": "convex/friends.ts"
+		}
+	]
+}
