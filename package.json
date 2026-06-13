@@ -14,7 +14,8 @@
     "date-fns": "^4.3.0",
     "react": "^19.2.6",
     "react-doctor": "^0.2.16",
-    "react-dom": "^19.2.6"
+    "react-dom": "^19.2.6",
+    "resend": "^6.12.4"
   },
   "devDependencies": {
     "@types/react": "^19.2.15",

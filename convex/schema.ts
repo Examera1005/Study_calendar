@@ -111,5 +111,12 @@ export default defineSchema({
     theme: v.optional(v.union(v.literal("light"), v.literal("dark"))),
     customizations: v.optional(v.string()), // JSON string of all customizations
   }).index("by_userId", ["userId"]),
+
+  // Rate limits table to track action attempts (e.g., login, password resets)
+  rateLimits: defineTable({
+    key: v.string(),
+    count: v.number(),
+    resetTime: v.number(), // Milliseconds timestamp
+  }).index("by_key", ["key"]),
 });
 

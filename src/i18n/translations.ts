@@ -502,6 +502,18 @@ export interface TranslationSchema {
     toggleSignUpPrompt: string;
     toggleSignInPrompt: string;
     copyright: string;
+    forgotPasswordBtn: string;
+    resetPasswordTitle: string;
+    resetPasswordSubtitle: string;
+    codeLabel: string;
+    codePlaceholder: string;
+    newPasswordLabel: string;
+    newPasswordPlaceholder: string;
+    sendResetCodeBtn: string;
+    resetPasswordBtn: string;
+    checkEmailMsg: string;
+    passwordResetSuccess: string;
+    backToSignIn: string;
   };
 }
 
@@ -1026,6 +1038,18 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
       toggleSignUpPrompt: "Don't have an account? Sign up",
       toggleSignInPrompt: "Already have an account? Sign in",
       copyright: "Study Calendar",
+      forgotPasswordBtn: "Forgot password?",
+      resetPasswordTitle: "Reset Password",
+      resetPasswordSubtitle: "Enter your email to request a reset code",
+      codeLabel: "Verification Code",
+      codePlaceholder: "12345678",
+      newPasswordLabel: "New Password",
+      newPasswordPlaceholder: "Min. 8 characters",
+      sendResetCodeBtn: "Send Reset Code",
+      resetPasswordBtn: "Update Password",
+      checkEmailMsg: "A verification code has been sent to your email.",
+      passwordResetSuccess: "Password reset successfully! You can now sign in.",
+      backToSignIn: "Back to Sign In",
     },
   },
   fr: {
@@ -1548,6 +1572,18 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
       toggleSignUpPrompt: "Pas encore de compte ? S'inscrire",
       toggleSignInPrompt: "Déjà un compte ? Se connecter",
       copyright: "Study Calendar",
+      forgotPasswordBtn: "Mot de passe oublié ?",
+      resetPasswordTitle: "Réinitialiser le mot de passe",
+      resetPasswordSubtitle: "Entrez votre e-mail pour demander un code de réinitialisation",
+      codeLabel: "Code de vérification",
+      codePlaceholder: "12345678",
+      newPasswordLabel: "Nouveau mot de passe",
+      newPasswordPlaceholder: "Min. 8 caractères",
+      sendResetCodeBtn: "Envoyer le code",
+      resetPasswordBtn: "Mettre à jour le mot de passe",
+      checkEmailMsg: "Un code de vérification a été envoyé à votre e-mail.",
+      passwordResetSuccess: "Mot de passe réinitialisé ! Vous pouvez maintenant vous connecter.",
+      backToSignIn: "Retour à la connexion",
     },
   },
 };

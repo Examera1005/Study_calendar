@@ -9,12 +9,14 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as crons from "../crons.js";
 import type * as dailyLogs from "../dailyLogs.js";
 import type * as events from "../events.js";
 import type * as exams from "../exams.js";
 import type * as friends from "../friends.js";
 import type * as http from "../http.js";
 import type * as migration from "../migration.js";
+import type * as rateLimit from "../rateLimit.js";
 import type * as subjects from "../subjects.js";
 import type * as tasks from "../tasks.js";
 import type * as userSettings from "../userSettings.js";
@@ -27,12 +29,14 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  crons: typeof crons;
   dailyLogs: typeof dailyLogs;
   events: typeof events;
   exams: typeof exams;
   friends: typeof friends;
   http: typeof http;
   migration: typeof migration;
+  rateLimit: typeof rateLimit;
   subjects: typeof subjects;
   tasks: typeof tasks;
   userSettings: typeof userSettings;
