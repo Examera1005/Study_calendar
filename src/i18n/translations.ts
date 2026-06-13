@@ -249,6 +249,7 @@ export interface TranslationSchema {
 		activeConversation: string;
 		e2eLocked: string;
 		e2eNotice: string;
+		messagesDeletedNotice: string;
 		sayHello: string;
 		searchFriendsHeader: string;
 		searchFriendsDesc: string;
@@ -778,6 +779,8 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			activeConversation: "Active Conversation",
 			e2eLocked: "E2EE Locked",
 			e2eNotice: "🔒 Messages are encrypted end-to-end.",
+			messagesDeletedNotice:
+				"🕒 Note: Messages are automatically deleted after 72 hours.",
 			sayHello: "Say hello to start the secure conversation!",
 			searchFriendsHeader: "🔍 Search & Add Friends",
 			searchFriendsDesc:
@@ -1364,6 +1367,8 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			activeConversation: "Discussion active",
 			e2eLocked: "Chiffré de bout en bout",
 			e2eNotice: "🔒 Les messages sont chiffrés de bout en bout.",
+			messagesDeletedNotice:
+				"🕒 Note : Les messages sont automatiquement supprimés après 72 heures.",
 			sayHello: "Dites bonjour pour démarrer la discussion sécurisée !",
 			searchFriendsHeader: "🔍 Rechercher & ajouter des amis",
 			searchFriendsDesc:
