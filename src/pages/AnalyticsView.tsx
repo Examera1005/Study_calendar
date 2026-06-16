@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Doc } from "../../convex/_generated/dataModel";
 import { AnalyticsHeader } from "../components/analytics/AnalyticsHeader";
@@ -26,63 +26,24 @@ export function AnalyticsView() {
 	const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(
 		null,
 	);
-	const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
-		null,
-	);
-	const slideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-	const triggerSlide = useCallback((dir: "left" | "right") => {
-		if (slideTimeoutRef.current) {
-			clearTimeout(slideTimeoutRef.current);
-		}
-		setSlideDirection(dir);
-		slideTimeoutRef.current = setTimeout(() => {
-			setSlideDirection(null);
-		}, 350);
-	}, []);
-
-	const handleSetEndDate = useCallback(
-		(newDate: string) => {
-			if (newDate !== endDate) {
-				const dir = newDate > endDate ? "left" : "right";
-				triggerSlide(dir);
-				setEndDate(newDate);
-			}
-		},
-		[endDate, triggerSlide],
-	);
-
-	const handleAdjustDate = useCallback(
-		(days: number) => {
-			const d = new Date(`${endDate}T00:00:00`);
-			d.setDate(d.getDate() + days);
-			const todayStr = formatLocalDate();
-			const newDateStr = formatLocalDate(d);
-			const targetDate = newDateStr > todayStr ? todayStr : newDateStr;
-
-			if (targetDate !== endDate) {
-				const dir = targetDate > endDate ? "left" : "right";
-				triggerSlide(dir);
-				setEndDate(targetDate);
-			}
-		},
-		[endDate, triggerSlide],
-	);
-
-	useEffect(() => {
-		const ref = slideTimeoutRef.current;
-		return () => {
-			if (ref) {
-				clearTimeout(ref);
-			}
-		};
-	}, []);
 
 	const startDate = useMemo(() => {
 		const d = new Date(`${endDate}T00:00:00`);
 		d.setDate(d.getDate() - (timeRange - 1));
 		return formatLocalDate(d);
 	}, [endDate, timeRange]);
+
+	const adjustDate = (days: number) => {
+		const d = new Date(`${endDate}T00:00:00`);
+		d.setDate(d.getDate() + days);
+		const todayStr = formatLocalDate();
+		const newDateStr = formatLocalDate(d);
+		if (newDateStr > todayStr) {
+			setEndDate(todayStr);
+		} else {
+			setEndDate(newDateStr);
+		}
+	};
 
 	const isToday = endDate === formatLocalDate();
 
@@ -134,88 +95,42 @@ export function AnalyticsView() {
 	}, [allLogs, allTasks, t]);
 
 	return (
-		<div style={{ overflowX: "hidden" }}>
+		<div>
 			<AnalyticsHeader
 				title={t.analytics.title}
 				startDate={startDate}
 				endDate={endDate}
 				timeRange={timeRange}
 				setTimeRange={setTimeRange}
-				adjustDate={handleAdjustDate}
-				setEndDate={handleSetEndDate}
+				adjustDate={adjustDate}
+				setEndDate={setEndDate}
 				isToday={isToday}
 				t={t}
 				dateLocale={dateLocale}
 			/>
 
-			<div className={slideDirection ? `slide-animate-${slideDirection}` : ""}>
-				<KpiCards stats={stats} />
+			<KpiCards stats={stats} />
 
-				<div
-					style={{
-						display: "grid",
-						gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-						gap: 24,
-						marginBottom: 24,
-					}}
-				>
-					<div className="card">
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "space-between",
-								alignItems: "center",
-								marginBottom: 16,
-							}}
-						>
-							<h3
-								style={{
-									margin: 0,
-									display: "flex",
-									alignItems: "center",
-									gap: 8,
-								}}
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2.5"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									aria-hidden="true"
-									style={{
-										width: "16px",
-										height: "16px",
-										color: "var(--accent-primary)",
-									}}
-								>
-									<polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-								</svg>
-								<span>{chartTitleText}</span>
-							</h3>
-							{selectedSubjectId && (
-								<button
-									type="button"
-									onClick={() => setSelectedSubjectId(null)}
-									className="analytics-reset-btn"
-								>
-									{t.analytics.viewAllBtn}
-								</button>
-							)}
-						</div>
-						<ProgressionChart
-							allLogs={allLogs || []}
-							timeRange={timeRange}
-							selectedSubjectId={selectedSubjectId}
-							endDate={endDate}
-						/>
-					</div>
-					<div className="card">
+			<div
+				style={{
+					display: "grid",
+					gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+					gap: 24,
+					marginBottom: 24,
+				}}
+			>
+				<div className="card">
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "space-between",
+							alignItems: "center",
+							marginBottom: 16,
+						}}
+					>
 						<h3
 							style={{
-								marginBottom: 16,
+								margin: 0,
 								display: "flex",
 								alignItems: "center",
 								gap: 8,
@@ -236,20 +151,27 @@ export function AnalyticsView() {
 									color: "var(--accent-primary)",
 								}}
 							>
-								<path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
-								<path d="M22 12A10 10 0 0 0 12 2v10z" />
+								<polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
 							</svg>
-							{t.analytics.subjectDistributionTitle}
+							<span>{chartTitleText}</span>
 						</h3>
-						<SubjectDistribution
-							allLogs={periodLogs}
-							subjects={subjects}
-							selectedSubjectId={selectedSubjectId}
-							onSelectSubject={setSelectedSubjectId}
-						/>
+						{selectedSubjectId && (
+							<button
+								type="button"
+								onClick={() => setSelectedSubjectId(null)}
+								className="analytics-reset-btn"
+							>
+								{t.analytics.viewAllBtn}
+							</button>
+						)}
 					</div>
+					<ProgressionChart
+						allLogs={allLogs || []}
+						timeRange={timeRange}
+						selectedSubjectId={selectedSubjectId}
+						endDate={endDate}
+					/>
 				</div>
-
 				<div className="card">
 					<h3
 						style={{
@@ -268,36 +190,73 @@ export function AnalyticsView() {
 							strokeLinecap="round"
 							strokeLinejoin="round"
 							aria-hidden="true"
-							style={{ width: "18px", height: "18px", color: "var(--warning)" }}
+							style={{
+								width: "16px",
+								height: "16px",
+								color: "var(--accent-primary)",
+							}}
 						>
-							<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-							<path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-							<path d="M4 22h16" />
-							<path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34" />
-							<path d="M12 2a6 6 0 0 0-6 6v3.34c0 .87.35 1.7 1 2.34l3 3h4l3-3c.65-.64 1-1.47 1-2.34V8a6 6 0 0 0-6-6z" />
+							<path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+							<path d="M22 12A10 10 0 0 0 12 2v10z" />
 						</svg>
-						{t.analytics.badgesTitle}
+						{t.analytics.subjectDistributionTitle}
 					</h3>
-					<p
-						style={{
-							fontSize: "0.85rem",
-							color: "var(--text-muted)",
-							marginBottom: 20,
-						}}
+					<SubjectDistribution
+						allLogs={periodLogs}
+						subjects={subjects}
+						selectedSubjectId={selectedSubjectId}
+						onSelectSubject={setSelectedSubjectId}
+					/>
+				</div>
+			</div>
+
+			<div className="card">
+				<h3
+					style={{
+						marginBottom: 16,
+						display: "flex",
+						alignItems: "center",
+						gap: 8,
+					}}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						aria-hidden="true"
+						style={{ width: "18px", height: "18px", color: "var(--warning)" }}
 					>
-						{t.analytics.badgesDesc}
-					</p>
-					<div
-						style={{
-							display: "grid",
-							gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-							gap: 16,
-						}}
-					>
-						{achievementsList.map((badge) => (
-							<BadgeCard key={badge.id} badge={badge} />
-						))}
-					</div>
+						<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+						<path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+						<path d="M4 22h16" />
+						<path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34" />
+						<path d="M12 2a6 6 0 0 0-6 6v3.34c0 .87.35 1.7 1 2.34l3 3h4l3-3c.65-.64 1-1.47 1-2.34V8a6 6 0 0 0-6-6z" />
+					</svg>
+					{t.analytics.badgesTitle}
+				</h3>
+				<p
+					style={{
+						fontSize: "0.85rem",
+						color: "var(--text-muted)",
+						marginBottom: 20,
+					}}
+				>
+					{t.analytics.badgesDesc}
+				</p>
+				<div
+					style={{
+						display: "grid",
+						gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+						gap: 16,
+					}}
+				>
+					{achievementsList.map((badge) => (
+						<BadgeCard key={badge.id} badge={badge} />
+					))}
 				</div>
 			</div>
 		</div>

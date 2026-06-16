@@ -408,12 +408,7 @@ export function WeeklyActivityChart({
 					{/* Left: SVG Chart */}
 					<div style={{ position: "relative", width: "100%", height: "100%" }}>
 						{/** biome-ignore lint/a11y/noSvgWithoutTitle: Dynamic Convex API / third-party type */}
-						<svg
-							className="weekly-activity-chart-svg"
-							viewBox="0 0 500 200"
-							width="100%"
-							height="100%"
-						>
+						<svg viewBox="0 0 500 200" width="100%" height="100%">
 							{/* Y Axis grid lines and labels */}
 							{[0, 0.25, 0.5, 0.75, 1].map((pct) => {
 								const yVal = 20 + (1 - pct) * 150;

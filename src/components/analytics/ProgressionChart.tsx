@@ -185,11 +185,7 @@ export function ProgressionChart({
 	return (
 		<div style={{ position: "relative", width: "100%" }}>
 			{/** biome-ignore lint/a11y/noSvgWithoutTitle: Dynamic Convex API / third-party type */}
-			<svg
-				className="progression-chart-svg"
-				viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-				width="100%"
-			>
+			<svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width="100%">
 				<defs>
 					<linearGradient id="area-grad" x1="0" y1="0" x2="0" y2="1">
 						<stop
