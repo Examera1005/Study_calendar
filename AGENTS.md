@@ -21,6 +21,6 @@ npm run validate
 This script runs the following sequence under non-interactive modes:
 1. `npx biome check --write .` (code formatting and lint checks)
 2. `npx knip` (dead code check)
-3. `npx react-doctor -y` (non-interactive React environment and rules check)
+3. `npx react-doctor -y --verbose` (non-interactive React environment and rules check)
 
 Ensure that all tools report zero errors/warnings before presenting the solution. Do not run interactive versions of these tools.

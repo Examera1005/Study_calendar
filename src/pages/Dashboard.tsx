@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { format } from "date-fns";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { View } from "../App";
 import { DashboardCardGrid } from "../components/dashboard/DashboardCardGrid";
@@ -325,6 +325,41 @@ export function Dashboard({
 
 	const today = formatLocalDate();
 	const activeDate = selectedDate || today;
+
+	const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(
+		null,
+	);
+	const slideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	const triggerSlide = useCallback((dir: "left" | "right") => {
+		if (slideTimeoutRef.current) {
+			clearTimeout(slideTimeoutRef.current);
+		}
+		setSlideDirection(dir);
+		slideTimeoutRef.current = setTimeout(() => {
+			setSlideDirection(null);
+		}, 350);
+	}, []);
+
+	const handleSetSelectedDate = useCallback(
+		(newDate: string) => {
+			if (newDate !== activeDate) {
+				const dir = newDate > activeDate ? "left" : "right";
+				triggerSlide(dir);
+				setSelectedDate(newDate);
+			}
+		},
+		[activeDate, triggerSlide, setSelectedDate],
+	);
+
+	useEffect(() => {
+		const ref = slideTimeoutRef.current;
+		return () => {
+			if (ref) {
+				clearTimeout(ref);
+			}
+		};
+	}, []);
 	const yesterday = (() => {
 		const d = new Date(`${activeDate}T00:00:00`);
 		d.setDate(d.getDate() - 1);
@@ -489,56 +524,58 @@ export function Dashboard({
 	})();
 
 	return (
-		<div>
+		<div style={{ overflowX: "hidden" }}>
 			<DashboardHeader
 				t={t}
 				activeDate={activeDate}
 				today={today}
 				dateFormat={dateFormat}
 				dateLocale={dateLocale}
-				setSelectedDate={setSelectedDate}
+				setSelectedDate={handleSetSelectedDate}
 			/>
 
-			<DashboardStatsRow
-				t={t}
-				activeDate={activeDate}
-				today={today}
-				upcomingExams={upcomingExams}
-				completedTasks={completedTasks}
-				totalTasks={totalTasks}
-				setView={setView}
-				streak={streak}
-				totalMinutes={totalMinutes}
-				yesterdayLogs={yesterdayLogs}
-				todayChangePct={todayChangePct}
-			/>
+			<div className={slideDirection ? `slide-animate-${slideDirection}` : ""}>
+				<DashboardStatsRow
+					t={t}
+					activeDate={activeDate}
+					today={today}
+					upcomingExams={upcomingExams}
+					completedTasks={completedTasks}
+					totalTasks={totalTasks}
+					setView={setView}
+					streak={streak}
+					totalMinutes={totalMinutes}
+					yesterdayLogs={yesterdayLogs}
+					todayChangePct={todayChangePct}
+				/>
 
-			{/* Weekly Study Activity Chart */}
-			<WeeklyActivityChart
-				allLogs={allLogs}
-				subjects={subjects}
-				selectedDate={activeDate}
-				setSelectedDate={setSelectedDate}
-				today={today}
-				getSubject={getSubject}
-				comparisonData={comparisonData}
-			/>
+				{/* Weekly Study Activity Chart */}
+				<WeeklyActivityChart
+					allLogs={allLogs}
+					subjects={subjects}
+					selectedDate={activeDate}
+					setSelectedDate={handleSetSelectedDate}
+					today={today}
+					getSubject={getSubject}
+					comparisonData={comparisonData}
+				/>
 
-			{/* Cards Grid */}
-			<DashboardCardGrid
-				upcomingExams={upcomingExams}
-				todayTasks={todayTasks}
-				generalTasks={generalTasks}
-				todayEvents={todayEvents}
-				todayLogs={todayLogs}
-				subjectBreakdown={subjectBreakdown}
-				activeDate={activeDate}
-				today={today}
-				setView={setView}
-				setSelectedDate={setSelectedDate}
-				getSubject={getSubject}
-				generalIncomplete={generalIncomplete}
-			/>
+				{/* Cards Grid */}
+				<DashboardCardGrid
+					upcomingExams={upcomingExams}
+					todayTasks={todayTasks}
+					generalTasks={generalTasks}
+					todayEvents={todayEvents}
+					todayLogs={todayLogs}
+					subjectBreakdown={subjectBreakdown}
+					activeDate={activeDate}
+					today={today}
+					setView={setView}
+					setSelectedDate={handleSetSelectedDate}
+					getSubject={getSubject}
+					generalIncomplete={generalIncomplete}
+				/>
+			</div>
 		</div>
 	);
 }

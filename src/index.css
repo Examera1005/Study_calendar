@@ -3630,3 +3630,51 @@ select option {
 	line-height: 1;
 	flex-shrink: 0;
 }
+
+/* Smooth SVG Chart Transitions */
+.progression-chart-svg path,
+.progression-chart-svg circle,
+.weekly-activity-chart-svg rect,
+.weekly-activity-chart-svg text {
+	transition:
+		d 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+		cx 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+		cy 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+		x 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+		y 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+		width 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+		height 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+		stroke 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+		fill 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Date Navigation Slide Animations */
+@keyframes slide-in-from-right {
+	from {
+		transform: translateX(18px);
+		opacity: 0.7;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes slide-in-from-left {
+	from {
+		transform: translateX(-18px);
+		opacity: 0.7;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+.slide-animate-left {
+	animation: slide-in-from-right 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide-animate-right {
+	animation: slide-in-from-left 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
