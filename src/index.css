@@ -1393,6 +1393,18 @@ select option {
 	flex-wrap: wrap;
 }
 
+.date-navigation-capsule {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	background: var(--bg-glass);
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-md);
+	padding: 4px 8px;
+	backdrop-filter: blur(8px);
+	box-shadow: var(--shadow-sm);
+}
+
 @media (max-width: 480px) {
 	.tasks-date-nav h2 {
 		font-size: 0.95rem;

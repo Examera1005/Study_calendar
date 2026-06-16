@@ -31,8 +31,24 @@ function DashboardHeader({
 	dateLocale,
 	setSelectedDate,
 }: DashboardHeaderProps) {
+	const adjustDate = (days: number) => {
+		const d = new Date(`${activeDate}T00:00:00`);
+		d.setDate(d.getDate() + days);
+		setSelectedDate(formatLocalDate(d));
+	};
+
 	return (
-		<div className="page-header">
+		<div
+			className="page-header"
+			style={{
+				display: "flex",
+				justifyContent: "space-between",
+				alignItems: "center",
+				flexWrap: "wrap",
+				gap: 16,
+				marginBottom: 24,
+			}}
+		>
 			<div>
 				<h1>{t.dashboard.title}</h1>
 				<div
@@ -43,6 +59,7 @@ function DashboardHeader({
 						gap: 12,
 						flexWrap: "wrap",
 						minHeight: "32px",
+						marginTop: 4,
 					}}
 				>
 					<span>
@@ -50,25 +67,131 @@ function DashboardHeader({
 							locale: dateLocale,
 						})}
 					</span>
-					{activeDate !== today && (
-						<button
-							type="button"
-							className="btn btn-ghost btn-sm"
-							onClick={() => setSelectedDate(today)}
-							style={{
-								padding: "4px 8px",
-								fontSize: "0.75rem",
-								border: "1px solid var(--border-medium)",
-								borderRadius: "var(--radius-sm)",
-								background: "var(--bg-glass)",
-								color: "var(--text-primary)",
-								cursor: "pointer",
-							}}
-						>
-							{t.dashboard.returnToday}
-						</button>
-					)}
 				</div>
+			</div>
+
+			<div className="date-navigation-capsule">
+				<button
+					type="button"
+					className="btn-icon"
+					onClick={() => adjustDate(-7)}
+					title={t.dashboard.prevWeek}
+					aria-label={t.dashboard.prevWeek}
+					style={{ width: "32px", height: "32px" }}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						style={{ width: 14, height: 14 }}
+						aria-hidden="true"
+					>
+						<polyline points="11 17 6 12 11 7" />
+						<polyline points="18 17 13 12 18 7" />
+					</svg>
+				</button>
+				<button
+					type="button"
+					className="btn-icon"
+					onClick={() => adjustDate(-1)}
+					title={t.dashboard.prevDay}
+					aria-label={t.dashboard.prevDay}
+					style={{ width: "32px", height: "32px" }}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						style={{ width: 14, height: 14 }}
+						aria-hidden="true"
+					>
+						<polyline points="15 18 9 12 15 6" />
+					</svg>
+				</button>
+
+				{activeDate !== today ? (
+					<button
+						type="button"
+						className="btn btn-ghost btn-sm"
+						onClick={() => setSelectedDate(today)}
+						style={{
+							padding: "4px 10px",
+							fontSize: "0.78rem",
+							fontWeight: 600,
+							height: "32px",
+							borderRadius: "var(--radius-sm)",
+							color: "var(--accent-primary)",
+						}}
+					>
+						{t.common.today}
+					</button>
+				) : (
+					<span
+						style={{
+							padding: "0 10px",
+							fontSize: "0.78rem",
+							fontWeight: 600,
+							color: "var(--text-muted)",
+							userSelect: "none",
+						}}
+					>
+						{t.common.today}
+					</span>
+				)}
+
+				<button
+					type="button"
+					className="btn-icon"
+					onClick={() => adjustDate(1)}
+					title={t.dashboard.nextDay}
+					aria-label={t.dashboard.nextDay}
+					style={{ width: "32px", height: "32px" }}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						style={{ width: 14, height: 14 }}
+						aria-hidden="true"
+					>
+						<polyline points="9 18 15 12 9 6" />
+					</svg>
+				</button>
+				<button
+					type="button"
+					className="btn-icon"
+					onClick={() => adjustDate(7)}
+					title={t.dashboard.nextWeek}
+					aria-label={t.dashboard.nextWeek}
+					style={{ width: "32px", height: "32px" }}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="2.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						style={{ width: 14, height: 14 }}
+						aria-hidden="true"
+					>
+						<polyline points="13 17 18 12 13 7" />
+						<polyline points="6 17 11 12 6 7" />
+					</svg>
+				</button>
 			</div>
 		</div>
 	);
@@ -216,7 +339,7 @@ export function Dashboard({
 	const todayEvents = useQuery(api.events.getByDate, { date: activeDate });
 	const subjects = useQuery(api.subjects.list);
 	const allLogs = useQuery(api.dailyLogs.list);
-	const streak = calculateStreak(allLogs || []);
+	const streak = calculateStreak(allLogs || [], activeDate);
 
 	const getSubject = (id: string) => subjects?.find((s) => s._id === id);
 
@@ -229,16 +352,16 @@ export function Dashboard({
 				currentTotal: 0,
 			};
 
-		// Current 7 days: today to 6 days ago
+		// Current 7 days: activeDate to 6 days before
 		const currentWeekDates = Array.from({ length: 7 }, (_, i) => {
-			const d = new Date();
+			const d = new Date(`${activeDate}T00:00:00`);
 			d.setDate(d.getDate() - (6 - i));
 			return formatLocalDate(d);
 		});
 
-		// Previous 7 days: 7 days ago to 13 days ago
+		// Previous 7 days: 7 days before activeDate to 13 days before
 		const prevWeekDates = Array.from({ length: 7 }, (_, i) => {
-			const d = new Date();
+			const d = new Date(`${activeDate}T00:00:00`);
 			d.setDate(d.getDate() - (13 - i));
 			return formatLocalDate(d);
 		});
@@ -302,7 +425,7 @@ export function Dashboard({
 			subjectChanges,
 			currentSubjectTotals,
 		};
-	}, [allLogs]);
+	}, [allLogs, activeDate]);
 
 	const subjectBreakdown = useMemo(() => {
 		if (!allLogs) return [];

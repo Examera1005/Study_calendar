@@ -67,6 +67,10 @@ export interface TranslationSchema {
 	dashboard: {
 		title: string;
 		returnToday: string;
+		prevWeek: string;
+		nextWeek: string;
+		prevDay: string;
+		nextDay: string;
 		upcomingExams: string;
 		todaysTasks: string;
 		tasksOfDay: string;
@@ -587,6 +591,10 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 		dashboard: {
 			title: "Dashboard",
 			returnToday: "Back to Today",
+			prevWeek: "Previous Week",
+			nextWeek: "Next Week",
+			prevDay: "Previous Day",
+			nextDay: "Next Day",
 			upcomingExams: "Upcoming Exams",
 			todaysTasks: "Today's Tasks",
 			tasksOfDay: "Tasks of the Day",
@@ -1168,6 +1176,10 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 		dashboard: {
 			title: "Tableau de bord",
 			returnToday: "Retour à Aujourd'hui",
+			prevWeek: "Semaine précédente",
+			nextWeek: "Semaine suivante",
+			prevDay: "Jour précédent",
+			nextDay: "Jour suivant",
 			upcomingExams: "Examens à venir",
 			todaysTasks: "Tâches d'aujourd'hui",
 			tasksOfDay: "Tâches du jour",

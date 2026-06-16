@@ -52,13 +52,14 @@ function shortLabel(
 function buildChartData(
 	allLogs: Log[],
 	timeRange: number,
+	endDate: string,
 	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
 	dateLocale: any,
 	dateFormatShort: string,
 ): { dateStr: string; label: string; minutes: number }[] {
 	const days: string[] = [];
 	for (let i = 0; i < timeRange; i++) {
-		const d = new Date();
+		const d = new Date(`${endDate}T00:00:00`);
 		d.setDate(d.getDate() - (timeRange - 1 - i));
 		days.push(formatLocalDate(d));
 	}
@@ -132,10 +133,12 @@ export function ProgressionChart({
 	allLogs,
 	timeRange,
 	selectedSubjectId,
+	endDate,
 }: {
 	allLogs: Log[];
 	timeRange: number;
 	selectedSubjectId?: string | null;
+	endDate: string;
 }) {
 	const [hoveredPoint, setHoveredPoint] = useState<Point | null>(null);
 	// biome-ignore lint/correctness/noUnusedVariables: Dynamic Convex API / third-party type
@@ -151,10 +154,11 @@ export function ProgressionChart({
 			buildChartData(
 				filteredLogs,
 				timeRange,
+				endDate,
 				dateLocale,
 				t.common.dateFormatShort,
 			),
-		[filteredLogs, timeRange, dateLocale, t.common.dateFormatShort],
+		[filteredLogs, timeRange, endDate, dateLocale, t.common.dateFormatShort],
 	);
 	const elements = useMemo(
 		() => buildChartElements(progressionData),

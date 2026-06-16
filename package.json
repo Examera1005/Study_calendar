@@ -6,7 +6,8 @@
 		"dev": "vite",
 		"build": "npx convex deploy && tsc -b && vite build",
 		"preview": "vite preview",
-		"knip": "knip"
+		"knip": "knip",
+		"validate": "npx biome check --write . && npx knip && npx react-doctor -y"
 	},
 	"dependencies": {
 		"@auth/core": "0.37.0",

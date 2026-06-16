@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { Modal } from "../components/ui/Modal";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import { useLanguage } from "../hooks/useLanguage";
@@ -35,7 +35,7 @@ interface ExamCardProps {
 	dateLocale: any;
 	// biome-ignore lint/suspicious/noExplicitAny: Convex mutation
 	updateExam: any;
-	setEditingExam: (exam: any) => void;
+	setEditingExam: (exam: Doc<"exams"> | null) => void;
 	// biome-ignore lint/suspicious/noExplicitAny: Convex mutation
 	removeExam: any;
 }
@@ -269,7 +269,7 @@ interface EditExamModalProps {
 	subjects: any[] | undefined;
 	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
 	editingExam: any;
-	setEditingExam: (exam: any) => void;
+	setEditingExam: (exam: Doc<"exams"> | null) => void;
 	// biome-ignore lint/suspicious/noExplicitAny: Convex mutation
 	updateExam: any;
 }
@@ -424,8 +424,7 @@ export function ExamsView() {
 	const updateExam = useMutation(api.exams.update);
 	const removeExam = useMutation(api.exams.remove);
 	const [showAdd, setShowAdd] = useState(false);
-	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
-	const [editingExam, setEditingExam] = useState<any>(null);
+	const [editingExam, setEditingExam] = useState<Doc<"exams"> | null>(null);
 	// biome-ignore lint/correctness/noUnusedVariables: Dynamic Convex API / third-party type
 	const { t, language, dateLocale } = useLanguage();
 

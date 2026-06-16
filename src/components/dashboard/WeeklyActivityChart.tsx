@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { useMemo, useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
-import { formatDuration } from "../../utils/dateUtils";
+import { formatDuration, getWeekDays } from "../../utils/dateUtils";
 
 export const PercentageBadge = ({ pct }: { pct: number }) => {
 	if (pct > 0) {
@@ -326,27 +326,20 @@ export function WeeklyActivityChart({
 	const [hoveredDayIndex, setHoveredDayIndex] = useState<number | null>(null);
 	const { t, dateLocale } = useLanguage();
 
+	const days = useMemo(() => {
+		return getWeekDays(selectedDate);
+	}, [selectedDate]);
+
 	const clickedDayIndex = useMemo(() => {
 		if (selectedDate === today) {
 			return null;
 		}
-		const days = Array.from({ length: 7 }, (_, i) => {
-			const d = new Date();
-			d.setDate(d.getDate() - (6 - i));
-			return format(d, "yyyy-MM-dd");
-		});
 		const index = days.indexOf(selectedDate);
 		return index !== -1 ? index : null;
-	}, [selectedDate, today]);
+	}, [selectedDate, today, days]);
 
 	const chartData = useMemo(() => {
 		if (!allLogs) return [];
-
-		const days = Array.from({ length: 7 }, (_, i) => {
-			const d = new Date();
-			d.setDate(d.getDate() - (6 - i));
-			return format(d, "yyyy-MM-dd");
-		});
 
 		return days.map((dateStr) => {
 			const logs = allLogs.filter((l) => l.date === dateStr);
@@ -369,7 +362,7 @@ export function WeeklyActivityChart({
 				total,
 			};
 		});
-	}, [allLogs, dateLocale]);
+	}, [allLogs, dateLocale, days]);
 
 	const maxTime = useMemo(() => {
 		return Math.max(...chartData.map((d) => d.total), 60);

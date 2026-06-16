@@ -13,34 +13,41 @@ No code changes shall be finalized, committed, or considered done until they suc
 * **Execution Command:**
   ```bash
   npx @biomejs/biome check --write .
-Agent Requirement: You must run this immediately after modifying files. If Biome reports errors that cannot be auto-fixed, you must refactor your generated code until it passes with zero warnings.
+  ```
+* **Agent Requirement:** You must run this immediately after modifying files. If Biome reports errors that cannot be auto-fixed, you must refactor your generated code until it passes with zero warnings.
 
-🔍 GATE 2: KNIP (Dead Code & Orphan Analysis)
-Purpose: Prevents technical debt accumulation during fast-paced vibe coding sessions. Knip scans the entire dependency graph to find unused files, unused exports (types, functions, components), and ghost dependencies.
+### 🔍 GATE 2: KNIP (Dead Code & Orphan Analysis)
+* **Purpose:** Prevents technical debt accumulation during fast-paced vibe coding sessions. Knip scans the entire dependency graph to find unused files, unused exports (types, functions, components), and ghost dependencies.
+* **Execution Command:**
+  ```bash
+  npx knip
+  ```
+* **Agent Requirement:** If you extract a component or refactor a utility, you must ensure you didn't leave unused exports or orphan imports behind. Clean up your trash before declaring the task complete.
 
-Execution Command:
+### 🩺 GATE 3: REACT DOCTOR (Ecosystem & Configuration Health)
+* **Purpose:** Audits dependency mismatches, configuration health, build pipelines, and strict ecosystem compatibility.
+* **Execution Command:**
+  ```bash
+  npx react-doctor -y
+  ```
+* **Agent Requirement:** Ensure that no packages or configurations introduced or altered by your code break the runtime or compilation health of the React ecosystem. Always use the `-y` non-interactive CLI flag.
 
-Bash
-npx knip
-Agent Requirement: If you extract a component or refactor a utility, you must ensure you didn't leave unused exports or orphan imports behind. Clean up your trash before declaring the task complete.
+---
 
-🩺 GATE 3: REACT DOCTOR (Ecosystem & Configuration Health)
-Purpose: Audits dependency mismatches, configuration health, build pipelines, and strict ecosystem compatibility.
+## 2. SHORTHAND VALIDATION
+To execute all three gates simultaneously under non-interactive modes, run:
+```bash
+npm run validate
+```
 
-Execution Command:
-
-Bash
-npx react-doctor
-Agent Requirement: Ensure that no packages or configurations introduced or altered by your code break the runtime or compilation health of the React ecosystem.
-
-2. STANDARD RUNTIME WORKFLOW FOR THE AGENT
+## 3. STANDARD RUNTIME WORKFLOW FOR THE AGENT
 When the user asks you to implement a feature, refactor code, or fix a bug, you must structure your operational cycle as follows:
 
 Implementation Phase: Write the code matching the user's requirements (Astro, React, TypeScript, Convex, etc.).
 
 Sanitization Phase: Run npx @biomejs/biome check --write . to auto-format and fix linting anomalies.
 
-Audit Phase: Run npx knip followed by npx react-doctor.
+Audit Phase: Run npm run validate (or npx knip followed by npx react-doctor -y).
 
 Correction Loop: If any of the tools fail, read the exact stdout/stderr logs, patch your code, and restart from step 2.
 

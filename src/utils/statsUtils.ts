@@ -19,6 +19,7 @@ function getLocalDateString(d: Date = new Date()): string {
 // Calculate current consecutive study days streak
 export function calculateStreak(
 	logs: { date: string; duration?: number }[],
+	todayDateStr?: string,
 ): number {
 	if (!logs || logs.length === 0) return 0;
 
@@ -34,9 +35,10 @@ export function calculateStreak(
 
 	if (studyDates.size === 0) return 0;
 
-	const todayStr = getLocalDateString(new Date());
+	const todayStr = todayDateStr || getLocalDateString(new Date());
 
-	const yesterday = new Date();
+	const baseDate = new Date(`${todayStr}T00:00:00`);
+	const yesterday = new Date(baseDate);
 	yesterday.setDate(yesterday.getDate() - 1);
 	const yesterdayStr = getLocalDateString(yesterday);
 

@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { addDays, format, subDays } from "date-fns";
 import { useState } from "react";
 import { api } from "../../convex/_generated/api";
-import type { Id } from "../../convex/_generated/dataModel";
+import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { Modal } from "../components/ui/Modal";
 import { SubjectBadge } from "../components/ui/SubjectBadge";
 import { useLanguage } from "../hooks/useLanguage";
@@ -195,7 +195,7 @@ function DailyLogAddModal({
 interface DailyLogEditModalProps {
 	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
 	editingLog: any;
-	setEditingLog: (v: any) => void;
+	setEditingLog: (v: Doc<"dailyLogs"> | null) => void;
 	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
 	subjects: any[] | undefined;
 	// biome-ignore lint/suspicious/noExplicitAny: Convex mutation
@@ -301,8 +301,7 @@ export function DailyLogView({
 	const removeLog = useMutation(api.dailyLogs.remove);
 	const updateLog = useMutation(api.dailyLogs.update);
 	const [showAdd, setShowAdd] = useState(false);
-	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
-	const [editingLog, setEditingLog] = useState<any | null>(null);
+	const [editingLog, setEditingLog] = useState<Doc<"dailyLogs"> | null>(null);
 
 	const getSubject = (id: string) => subjects?.find((s) => s._id === id);
 	const totalMinutes = logs?.reduce((a, l) => a + (l.duration ?? 0), 0) ?? 0;

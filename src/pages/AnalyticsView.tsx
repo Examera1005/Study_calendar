@@ -2,11 +2,13 @@ import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Doc } from "../../convex/_generated/dataModel";
+import { AnalyticsHeader } from "../components/analytics/AnalyticsHeader";
 import { BadgeCard } from "../components/analytics/BadgeCard";
-import { KpiCards, TimeRangeToggle } from "../components/analytics/KpiCards";
+import { KpiCards } from "../components/analytics/KpiCards";
 import { ProgressionChart } from "../components/analytics/ProgressionChart";
 import { SubjectDistribution } from "../components/analytics/SubjectDistribution";
 import { useLanguage } from "../hooks/useLanguage";
+import { formatLocalDate } from "../utils/dateUtils";
 import { calculateStreak, getAchievements } from "../utils/statsUtils";
 
 type Log = Doc<"dailyLogs">;
@@ -17,13 +19,38 @@ export function AnalyticsView() {
 	const allLogs = useQuery(api.dailyLogs.list) as Log[] | undefined;
 	const subjects = useQuery(api.subjects.list) as Subject[] | undefined;
 	const allTasks = useQuery(api.tasks.listAll) as Task[] | undefined;
-	// biome-ignore lint/correctness/noUnusedVariables: Dynamic Convex API / third-party type
-	const { t, language } = useLanguage();
+	const { t, dateLocale } = useLanguage();
 
 	const [timeRange, setTimeRange] = useState<7 | 30>(7);
+	const [endDate, setEndDate] = useState<string>(() => formatLocalDate());
 	const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(
 		null,
 	);
+
+	const startDate = useMemo(() => {
+		const d = new Date(`${endDate}T00:00:00`);
+		d.setDate(d.getDate() - (timeRange - 1));
+		return formatLocalDate(d);
+	}, [endDate, timeRange]);
+
+	const adjustDate = (days: number) => {
+		const d = new Date(`${endDate}T00:00:00`);
+		d.setDate(d.getDate() + days);
+		const todayStr = formatLocalDate();
+		const newDateStr = formatLocalDate(d);
+		if (newDateStr > todayStr) {
+			setEndDate(todayStr);
+		} else {
+			setEndDate(newDateStr);
+		}
+	};
+
+	const isToday = endDate === formatLocalDate();
+
+	const periodLogs = useMemo(() => {
+		if (!allLogs) return [];
+		return allLogs.filter((l) => l.date >= startDate && l.date <= endDate);
+	}, [allLogs, startDate, endDate]);
 
 	const selectedSubject = useMemo(() => {
 		if (!selectedSubjectId || !subjects) return null;
@@ -39,39 +66,48 @@ export function AnalyticsView() {
 	const stats = useMemo(() => {
 		if (!allLogs || !allTasks)
 			return { totalHours: 0, totalSessions: 0, completedTasks: 0, streak: 0 };
-		const studySessions = allLogs.filter((l) => l.duration && l.duration > 0);
+
+		const studySessions = periodLogs.filter(
+			(l) => l.duration && l.duration > 0,
+		);
 		const totalMinutes = studySessions.reduce(
 			(acc, l) => acc + (l.duration || 0),
 			0,
 		);
+
+		const periodTasks = allTasks.filter(
+			(t) => t.completed && t.date && t.date >= startDate && t.date <= endDate,
+		);
+
 		return {
 			totalHours: Math.round((totalMinutes / 60) * 10) / 10,
 			totalSessions: studySessions.length,
-			completedTasks: allTasks.filter((t) => t.completed).length,
-			streak: calculateStreak(allLogs),
+			completedTasks: periodTasks.length,
+			streak: calculateStreak(allLogs, endDate),
 		};
-	}, [allLogs, allTasks]);
+	}, [allLogs, allTasks, periodLogs, startDate, endDate]);
 
-	const achievementsList = useMemo(
-		() => getAchievements(allLogs || [], stats.completedTasks, stats.streak, t),
-		[allLogs, stats.completedTasks, stats.streak, t],
-	);
+	const achievementsList = useMemo(() => {
+		if (!allLogs || !allTasks) return [];
+		const allTimeCompletedTasks = allTasks.filter((t) => t.completed).length;
+		const currentStreak = calculateStreak(allLogs);
+		return getAchievements(allLogs, allTimeCompletedTasks, currentStreak, t);
+	}, [allLogs, allTasks, t]);
 
 	return (
 		<div>
-			<div
-				className="page-header"
-				style={{
-					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "center",
-				}}
-			>
-				<div>
-					<h1>{t.analytics.title}</h1>
-				</div>
-				<TimeRangeToggle value={timeRange} onChange={setTimeRange} />
-			</div>
+			<AnalyticsHeader
+				title={t.analytics.title}
+				startDate={startDate}
+				endDate={endDate}
+				timeRange={timeRange}
+				setTimeRange={setTimeRange}
+				adjustDate={adjustDate}
+				setEndDate={setEndDate}
+				isToday={isToday}
+				t={t}
+				dateLocale={dateLocale}
+			/>
 
 			<KpiCards stats={stats} />
 
@@ -133,6 +169,7 @@ export function AnalyticsView() {
 						allLogs={allLogs || []}
 						timeRange={timeRange}
 						selectedSubjectId={selectedSubjectId}
+						endDate={endDate}
 					/>
 				</div>
 				<div className="card">
@@ -165,7 +202,7 @@ export function AnalyticsView() {
 						{t.analytics.subjectDistributionTitle}
 					</h3>
 					<SubjectDistribution
-						allLogs={allLogs}
+						allLogs={periodLogs}
 						subjects={subjects}
 						selectedSubjectId={selectedSubjectId}
 						onSelectSubject={setSelectedSubjectId}

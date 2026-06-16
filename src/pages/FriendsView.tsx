@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import type React from "react";
 import { useEffect, useReducer, useRef } from "react";
 import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { ChatTab } from "../components/friends/ChatTab";
 import { LeaderboardTab } from "../components/friends/LeaderboardTab";
 import { ManageFriendsTab } from "../components/friends/ManageFriendsTab";
@@ -230,12 +231,13 @@ function useFriendsActions({
 			await createProfile({
 				username: state.usernameInput,
 				publicKey: pubKeyBase64,
-			} as any);
+			});
 			dispatch({ type: "SUBMIT_PROFILE_SUCCESS" });
-		} catch (err: any) {
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : String(err);
 			dispatch({
 				type: "SUBMIT_PROFILE_ERROR",
-				payload: err.message || t.friends.setupProfileError,
+				payload: message || t.friends.setupProfileError,
 			});
 		}
 	};
@@ -251,22 +253,24 @@ function useFriendsActions({
 				payload: t.friends.friendRequestSent(state.searchQuery),
 			});
 			dispatch({ type: "SET_SEARCH_QUERY", payload: "" });
-		} catch (err: any) {
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : String(err);
 			dispatch({
 				type: "SET_REQUEST_ERROR",
-				payload: err.message || "Failed to send request.",
+				payload: message || "Failed to send request.",
 			});
 		}
 	};
 
 	const handleRespond = async (
-		friendshipId: any,
+		friendshipId: Id<"friendships">,
 		action: "accept" | "reject",
 	) => {
 		try {
 			await respondRequest({ friendshipId, action });
-		} catch (err: any) {
-			alert(`${t.common.error}: ${err.message}`);
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : String(err);
+			alert(`${t.common.error}: ${message}`);
 		}
 	};
 
@@ -293,7 +297,7 @@ function useFriendsActions({
 		}
 	};
 
-	const handleImportExam = async (examId: any) => {
+	const handleImportExam = async (examId: Id<"exams">) => {
 		try {
 			await importExam({ examId });
 			dispatch({ type: "SET_IMPORT_SUCCESS_ID", payload: examId });
@@ -301,8 +305,9 @@ function useFriendsActions({
 				() => dispatch({ type: "SET_IMPORT_SUCCESS_ID", payload: null }),
 				2500,
 			);
-		} catch (err: any) {
-			alert(`${t.common.error}: ${err.message}`);
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : String(err);
+			alert(`${t.common.error}: ${message}`);
 		}
 	};
 
@@ -313,8 +318,9 @@ function useFriendsActions({
 				if (state.activeChatFriend?.userId === blockedUserId) {
 					dispatch({ type: "SET_ACTIVE_CHAT_FRIEND", payload: null });
 				}
-			} catch (err: any) {
-				alert(`${t.common.error}: ${err.message}`);
+			} catch (err: unknown) {
+				const message = err instanceof Error ? err.message : String(err);
+				alert(`${t.common.error}: ${message}`);
 			}
 		}
 	};
