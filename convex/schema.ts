@@ -73,6 +73,9 @@ export default defineSchema({
 		userId: v.string(),
 		username: v.string(),
 		publicKey: v.string(),
+		// Zero-Knowledge Escrow fields (optional for backward-compatibility)
+		userSalt: v.optional(v.string()), // Base64 of 16-byte PBKDF2 salt
+		encryptedPrivateKey: v.optional(v.string()), // Base64: iv(12B) || AES-GCM ciphertext of PKCS8 private key
 	})
 		.index("by_userId", ["userId"])
 		.index("by_username", ["username"]),

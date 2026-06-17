@@ -268,6 +268,20 @@ export interface TranslationSchema {
 		importExamsDesc: string;
 		addedToast: string;
 		addToCalendarBtn: string;
+		// Zero-Knowledge Escrow (ZKE) strings
+		setupPasswordLabel: string;
+		setupPasswordPlaceholder: string;
+		setupPasswordHint: string;
+		keyRecoveryTitle: string;
+		keyRecoveryDesc: string;
+		keyRecoveryZeroKnowledgeNotice: string;
+		keyRecoveryPasswordLabel: string;
+		keyRecoveryPasswordPlaceholder: string;
+		keyRecoveryBtn: string;
+		keyRecoveryLoading: string;
+		keyRecoveryError: string;
+		keyRecoveryForgotDesc: string;
+		keyRecoveryRegenerateLink: string;
 	};
 	subjects: {
 		title: string;
@@ -806,6 +820,24 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 				"If you share these exams or want to remember when they happen, click 'Add to My Calendar' to copy them directly into your exam list.",
 			addedToast: "✓ Added!",
 			addToCalendarBtn: "+ Add to My Calendar",
+			// Zero-Knowledge Escrow (ZKE)
+			setupPasswordLabel: "Your account password (for key recovery)",
+			setupPasswordPlaceholder: "Enter your password",
+			setupPasswordHint:
+				"Optional but recommended. Used only to securely encrypt your key — never sent to the server.",
+			keyRecoveryTitle: "Restore Your Encryption Key",
+			keyRecoveryDesc:
+				"Your private key is missing from this browser. Enter your password to decrypt and restore it from secure escrow.",
+			keyRecoveryZeroKnowledgeNotice:
+				"Your password never leaves your browser. Decryption happens entirely on your device.",
+			keyRecoveryPasswordLabel: "Account password",
+			keyRecoveryPasswordPlaceholder: "Enter your password",
+			keyRecoveryBtn: "Restore access",
+			keyRecoveryLoading: "Decrypting key...",
+			keyRecoveryError: "Incorrect password. Please try again.",
+			keyRecoveryForgotDesc: "Can't remember your password?",
+			keyRecoveryRegenerateLink:
+				"Generate a new key pair (previous messages will be unreadable)",
 		},
 		subjects: {
 			title: "Subjects",
@@ -857,19 +889,20 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			privacyPolicyTitle: "Privacy Policy",
 			termsOfServiceTitle: "Terms of Service",
 			privacyPolicyText: [
-				"Effective Date: June 9, 2026",
+				"Effective Date: June 17, 2026",
 				"Your privacy is important to us. This Privacy Policy details how we handle information in the Study Calendar application.",
 				"1. Data We Collect: We collect and store your email address (for authentication purposes), and study logs, task lists, calendar events, and academic exams you record.",
 				"2. How We Use Data: Your data is processed strictly to display dashboards, track deadlines, aggregate study statistics, and provide core planning utilities.",
-				"3. Security & Database: All data is hosted securely within Convex databases. We use secure modern cryptographical methods to ensure user account and token integrity.",
+				"3. Security & Cryptography: All database logs are hosted securely on Convex. Direct message bodies are fully end-to-end encrypted (E2EE) using RSA-OAEP 2048-bit keys generated on the client. Keys can be optionally backed up using a Zero-Knowledge Escrow (ZKE) system; your decryption password and plaintext private key are never sent to the server.",
 				"4. Deletion Rights: You can request to purge all associated entries, logs, and account records by contacting our support team or deleting them inside settings.",
 			],
 			termsOfServiceText: [
-				"Effective Date: June 9, 2026",
+				"Effective Date: June 17, 2026",
 				"Welcome to Study Calendar. By signing up, you agree to these Terms of Service.",
 				"1. User License: We grant you a non-commercial, personal, revocable license to plan academic schedules and record study activity.",
 				'2. Disclaimer of Warranties: Study Calendar is provided "as is" and "as available". We do not guarantee that the tool will prevent exam failures or maintain 100% database uptime.',
 				"3. Account Termination: We reserve the right to suspend or block access to accounts that violate normal usage patterns or threaten application database stability.",
+				"4. Cryptographic Key Management: You are solely responsible for remembering and securing your recovery password. Because our security design is Zero-Knowledge, we have no mechanism to recover or reset this password. Losing it means any encrypted message backups will be permanently unrecoverable.",
 			],
 			languageTitle: "🌐 Language Preference",
 			languageDesc: "Choose your preferred interface language.",
@@ -990,7 +1023,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 				"Block out lectures, review blocks, and exam dates on a real-time calendar that syncs instantly across devices.",
 			encryptedChatTitle: "End-to-End Encrypted Chat",
 			encryptedChatDesc:
-				"Message study partners with military-grade client-side encryption. Server never sees your text; keys are stored locally.",
+				"Message study partners with military-grade encryption. Private keys are protected locally and backed up via Zero-Knowledge Escrow.",
 			analyticsTitle: "Academic Analytics",
 			playgroundTitle: "Test-drive the core planner engine",
 			playgroundDesc:
@@ -1031,7 +1064,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			cryptoTag: "Encryption Block",
 			cryptoTitle: "E2E Message Encryptor",
 			cryptoDesc:
-				"We use local 2048-bit RSA keys. Test encryption on the browser; watch client text scramble and descramble at recipient side.",
+				"We use client-side 2048-bit RSA keys backed up via Zero-Knowledge Escrow. Test encryption below; see client text scramble and descramble.",
 			cryptoInitialMessage: "Let's review the calculus answers together!",
 			cryptoSender: "Alice (You)",
 			cryptoSenderKey: "RSA Public",
@@ -1398,6 +1431,25 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 				"Si vous partagez ces examens ou si vous voulez vous rappeler quand ils ont lieu, cliquez sur 'Ajouter à mon calendrier' pour les copier directement dans votre liste d'examens.",
 			addedToast: "✓ Ajouté !",
 			addToCalendarBtn: "+ Ajouter à mon calendrier",
+			// Zero-Knowledge Escrow (ZKE)
+			setupPasswordLabel: "Votre mot de passe (pour la récupération de clé)",
+			setupPasswordPlaceholder: "Entrez votre mot de passe",
+			setupPasswordHint:
+				"Optionnel mais recommandé. Utilisé uniquement pour chiffrer votre clé — jamais envoyé au serveur.",
+			keyRecoveryTitle: "Restaurer votre clé de chiffrement",
+			keyRecoveryDesc:
+				"Votre clé privée est absente de ce navigateur. Entrez votre mot de passe pour la déchiffrer et la restaurer depuis l'entrepôt sécurisé.",
+			keyRecoveryZeroKnowledgeNotice:
+				"Votre mot de passe ne quitte jamais votre navigateur. Le déchiffrement s'effectue entièrement sur votre appareil.",
+			keyRecoveryPasswordLabel: "Mot de passe du compte",
+			keyRecoveryPasswordPlaceholder: "Entrez votre mot de passe",
+			keyRecoveryBtn: "Restaurer l'accès",
+			keyRecoveryLoading: "Déchiffrement de la clé...",
+			keyRecoveryError: "Mot de passe incorrect. Veuillez réessayer.",
+			keyRecoveryForgotDesc:
+				"Vous ne vous souvenez plus de votre mot de passe ?",
+			keyRecoveryRegenerateLink:
+				"Générer une nouvelle paire de clés (les anciens messages ne seront plus lisibles)",
 		},
 		subjects: {
 			title: "Matières",
@@ -1449,19 +1501,20 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			privacyPolicyTitle: "Politique de confidentialité",
 			termsOfServiceTitle: "Conditions d'utilisation",
 			privacyPolicyText: [
-				"Date d'effet : 9 juin 2026",
+				"Date d'effet : 17 juin 2026",
 				"Votre vie privée est importante pour nous. Cette politique détaille la gestion de vos informations dans Study Calendar.",
 				"1. Données collectées : Nous stockons votre adresse e-mail (pour l'authentification) ainsi que vos sessions d'étude, tâches, événements et examens.",
 				"2. Utilisation : Vos données servent exclusivement à afficher vos statistiques, gérer vos échéances et proposer les fonctionnalités d'organisation.",
-				"3. Sécurité : Toutes vos données sont hébergées de manière sécurisée dans les bases de données Convex.",
+				"3. Sécurité et Chiffrement : Vos données de planification sont hébergées de manière sécurisée sur Convex. Les messages privés sont chiffrés de bout en bout (E2EE) par des clés RSA-OAEP 2048-bits locales. Vos clés peuvent être sauvegardées via un dépôt Zero-Knowledge (ZKE) ; ni votre mot de passe de déchiffrement ni votre clé privée en clair ne transitent vers le serveur.",
 				"4. Droit de suppression : Vous pouvez demander la suppression complète de vos données et comptes en nous contactant ou via l'application.",
 			],
 			termsOfServiceText: [
-				"Date d'effet : 9 juin 2026",
+				"Date d'effet : 17 juin 2026",
 				"Bienvenue dans Study Calendar. En créant un compte, vous acceptez ces conditions d'utilisation.",
 				"1. Licence utilisateur : Nous vous accordons une licence personnelle, non commerciale et révocable pour planifier vos études.",
 				"2. Exclusion de garanties : L'application est fournie \"en l'état\". Nous ne garantissons pas de réussite aux examens ni une disponibilité permanente à 100%.",
 				"3. Clôture de compte : Nous nous réservons le droit de suspendre les comptes ne respectant pas les règles d'utilisation courante.",
+				"4. Gestion des clés de chiffrement : Vous êtes seul responsable du choix et de la mémorisation de votre mot de passe de récupération. L'architecture de sécurité étant de type Zero-Knowledge, nous n'avons aucun moyen de récupérer ce mot de passe. Sa perte entraînera la perte définitive de l'accès à vos messages chiffrés.",
 			],
 			languageTitle: "🌐 Préférence de langue",
 			languageDesc: "Choisissez la langue de l'interface utilisateur.",
@@ -1584,7 +1637,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 				"Bloquez les cours, révisions et examens sur un calendrier en temps réel synchronisé instantanément.",
 			encryptedChatTitle: "Discussion chiffrée de bout en bout",
 			encryptedChatDesc:
-				"Échangez avec vos partenaires d'études avec un chiffrement de bout en bout. Le serveur ne voit jamais vos messages.",
+				"Échangez avec un chiffrement de bout en bout militaire. Vos clés privées sont sécurisées en local et sauvegardées en Zero-Knowledge.",
 			analyticsTitle: "Analyses Académiques",
 			playgroundTitle: "Testez le moteur du planificateur",
 			playgroundDesc:
@@ -1626,7 +1679,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			cryptoTag: "Bloc de chiffrement",
 			cryptoTitle: "Chiffrement de message E2E",
 			cryptoDesc:
-				"Nous utilisons des clés RSA 2048 bits locales. Testez le chiffrement dans le navigateur ; regardez le texte se brouiller et se déchiffrer.",
+				"Nous utilisons des clés RSA 2048 bits sauvegardées en Zero-Knowledge. Testez le chiffrement ci-dessous et observez le texte se brouiller.",
 			cryptoInitialMessage: "Revoyons les réponses de calcul ensemble !",
 			cryptoSender: "Alice (Vous)",
 			cryptoSenderKey: "RSA Publique",

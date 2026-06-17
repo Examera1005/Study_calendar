@@ -4,6 +4,7 @@ import { useEffect, useReducer, useRef } from "react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { ChatTab } from "../components/friends/ChatTab";
+import { KeyRecoveryModal } from "../components/friends/KeyRecoveryModal";
 import { LeaderboardTab } from "../components/friends/LeaderboardTab";
 import { ManageFriendsTab } from "../components/friends/ManageFriendsTab";
 // Sub-components
@@ -11,6 +12,8 @@ import { ProfileSetup } from "../components/friends/ProfileSetup";
 import { ViewExamsModal } from "../components/friends/ViewExamsModal";
 import { useLanguage } from "../hooks/useLanguage";
 import {
+	backupPrivateKey,
+	deriveAesKeyFromPassword,
 	encryptMessage,
 	generateAndSaveKeys,
 	hasPrivateKey,
@@ -19,6 +22,7 @@ import {
 interface FriendsState {
 	activeTab: "leaderboard" | "chat" | "manage";
 	usernameInput: string;
+	passwordInput: string; // Captured for ZKE key backup (never stored)
 	isSubmittingProfile: boolean;
 	profileError: string;
 	searchQuery: string;
@@ -31,11 +35,14 @@ interface FriendsState {
 	viewExamsFriend: any | null;
 	importSuccessId: string | null;
 	keyRecovered: boolean;
+	/** True when private key is missing but escrow is available — shows KeyRecoveryModal */
+	keyRecoveryMode: boolean;
 }
 
 type FriendsAction =
 	| { type: "SET_ACTIVE_TAB"; payload: "leaderboard" | "chat" | "manage" }
 	| { type: "SET_USERNAME_INPUT"; payload: string }
+	| { type: "SET_PASSWORD_INPUT"; payload: string }
 	| { type: "START_SUBMIT_PROFILE" }
 	| { type: "SUBMIT_PROFILE_SUCCESS" }
 	| { type: "SUBMIT_PROFILE_ERROR"; payload: string }
@@ -48,7 +55,8 @@ type FriendsAction =
 	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
 	| { type: "SET_VIEW_EXAMS_FRIEND"; payload: any | null }
 	| { type: "SET_IMPORT_SUCCESS_ID"; payload: string | null }
-	| { type: "SET_KEY_RECOVERED"; payload: boolean };
+	| { type: "SET_KEY_RECOVERED"; payload: boolean }
+	| { type: "SET_KEY_RECOVERY_MODE"; payload: boolean };
 
 const getInitialActiveTab = (): "leaderboard" | "chat" | "manage" => {
 	if (typeof window !== "undefined") {
@@ -63,6 +71,7 @@ const getInitialActiveTab = (): "leaderboard" | "chat" | "manage" => {
 const initialState: FriendsState = {
 	activeTab: getInitialActiveTab(),
 	usernameInput: "",
+	passwordInput: "",
 	isSubmittingProfile: false,
 	profileError: "",
 	searchQuery: "",
@@ -73,6 +82,7 @@ const initialState: FriendsState = {
 	viewExamsFriend: null,
 	importSuccessId: null,
 	keyRecovered: false,
+	keyRecoveryMode: false,
 };
 
 function friendsReducer(
@@ -87,6 +97,8 @@ function friendsReducer(
 			return { ...state, activeTab: action.payload };
 		case "SET_USERNAME_INPUT":
 			return { ...state, usernameInput: action.payload };
+		case "SET_PASSWORD_INPUT":
+			return { ...state, passwordInput: action.payload };
 		case "START_SUBMIT_PROFILE":
 			return { ...state, isSubmittingProfile: true, profileError: "" };
 		case "SUBMIT_PROFILE_SUCCESS":
@@ -113,6 +125,8 @@ function friendsReducer(
 			return { ...state, importSuccessId: action.payload };
 		case "SET_KEY_RECOVERED":
 			return { ...state, keyRecovered: action.payload };
+		case "SET_KEY_RECOVERY_MODE":
+			return { ...state, keyRecoveryMode: action.payload };
 		default:
 			return state;
 	}
@@ -227,11 +241,54 @@ function useFriendsActions({
 		dispatch({ type: "START_SUBMIT_PROFILE" });
 
 		try {
+			// 1. Generate RSA key pair — private key saved to localStorage by this call
 			const pubKeyBase64 = await generateAndSaveKeys();
+
+			// 2. ZKE backup: if a password was provided, encrypt the private key
+			let userSalt: string | undefined;
+			let encryptedPrivateKey: string | undefined;
+
+			if (state.passwordInput) {
+				// Generate a random 16-byte PBKDF2 salt
+				const saltBytes = window.crypto.getRandomValues(new Uint8Array(16));
+				const saltBase64 = window.btoa(
+					Array.from(saltBytes)
+						.map((b) => String.fromCharCode(b))
+						.join(""),
+				);
+
+				// Derive AES key from the password + salt (PBKDF2, 600k iterations)
+				const aesKey = await deriveAesKeyFromPassword(
+					state.passwordInput,
+					saltBytes,
+				);
+
+				// Export the CryptoKey from localStorage so we can encrypt it
+				const privateKeyBase64 = localStorage.getItem("e2ee_private_key") ?? "";
+				const privBuffer = Uint8Array.from(atob(privateKeyBase64), (c) =>
+					c.charCodeAt(0),
+				);
+				const rsaPrivKey = await window.crypto.subtle.importKey(
+					"pkcs8",
+					privBuffer,
+					{ name: "RSA-OAEP", hash: "SHA-256" },
+					true,
+					["decrypt"],
+				);
+
+				// Encrypt the private key → Base64 payload
+				encryptedPrivateKey = await backupPrivateKey(rsaPrivKey, aesKey);
+				userSalt = saltBase64;
+			}
+
+			// 3. Persist to Convex (escrow fields only sent if password was provided)
 			await createProfile({
 				username: state.usernameInput,
 				publicKey: pubKeyBase64,
+				userSalt,
+				encryptedPrivateKey,
 			});
+
 			dispatch({ type: "SUBMIT_PROFILE_SUCCESS" });
 		} catch (err: unknown) {
 			const message = err instanceof Error ? err.message : String(err);
@@ -402,34 +459,39 @@ export function FriendsView() {
 		}
 	}, [state.activeChatFriend, chatMessages, markMessagesAsRead]);
 
-	// ── Key recovery: regenerate keypair if private key is missing ────
+	// ── Key recovery: ZKE escrow or fallback regeneration ────────────
 	useEffect(() => {
 		let timerId: ReturnType<typeof setTimeout> | undefined;
-		if (profile && !hasPrivateKey()) {
-			(async () => {
-				try {
-					const newPubKey = await generateAndSaveKeys();
-					await createProfile({
-						username: profile.username,
-						publicKey: newPubKey,
-					});
-					dispatch({ type: "SET_KEY_RECOVERED", payload: true });
-					// Auto-dismiss after 8 seconds
-					timerId = setTimeout(
-						() => dispatch({ type: "SET_KEY_RECOVERED", payload: false }),
-						8000,
-					);
-				} catch (err) {
-					console.error("Key recovery failed:", err);
-				}
-			})();
-		}
-		return () => {
-			if (timerId) {
-				clearTimeout(timerId);
+
+		if (profile && !hasPrivateKey() && !state.keyRecoveryMode) {
+			if (profile.encryptedPrivateKey && profile.userSalt) {
+				// Escrow data exists → show the password prompt modal
+				dispatch({ type: "SET_KEY_RECOVERY_MODE", payload: true });
+			} else {
+				// No escrow (pre-ZKE profile) → silently regenerate keys
+				(async () => {
+					try {
+						const newPubKey = await generateAndSaveKeys();
+						await createProfile({
+							username: profile.username,
+							publicKey: newPubKey,
+						});
+						dispatch({ type: "SET_KEY_RECOVERED", payload: true });
+						timerId = setTimeout(
+							() => dispatch({ type: "SET_KEY_RECOVERED", payload: false }),
+							8000,
+						);
+					} catch (err) {
+						console.error("Key regeneration failed:", err);
+					}
+				})();
 			}
+		}
+
+		return () => {
+			if (timerId) clearTimeout(timerId);
 		};
-	}, [profile, createProfile]);
+	}, [profile, createProfile, state.keyRecoveryMode]);
 
 	const {
 		handleCreateProfile,
@@ -459,6 +521,41 @@ export function FriendsView() {
 		);
 	}
 
+	// ── Key recovery modal (escrow path) ────────────────────────────
+	if (
+		state.keyRecoveryMode &&
+		profile?.encryptedPrivateKey &&
+		profile?.userSalt
+	) {
+		return (
+			<KeyRecoveryModal
+				userSalt={profile.userSalt}
+				encryptedPrivateKey={profile.encryptedPrivateKey}
+				onRestored={() => {
+					dispatch({ type: "SET_KEY_RECOVERY_MODE", payload: false });
+				}}
+				onRegenerate={async () => {
+					// User chose to ditch old key and generate a fresh pair
+					dispatch({ type: "SET_KEY_RECOVERY_MODE", payload: false });
+					try {
+						const newPubKey = await generateAndSaveKeys();
+						await createProfile({
+							username: profile.username,
+							publicKey: newPubKey,
+						});
+						dispatch({ type: "SET_KEY_RECOVERED", payload: true });
+						setTimeout(
+							() => dispatch({ type: "SET_KEY_RECOVERED", payload: false }),
+							8000,
+						);
+					} catch (err) {
+						console.error("Key regeneration failed:", err);
+					}
+				}}
+			/>
+		);
+	}
+
 	// Profile Setup Screen
 	if (!profile) {
 		return (
@@ -466,6 +563,10 @@ export function FriendsView() {
 				usernameInput={state.usernameInput}
 				setUsernameInput={(v) =>
 					dispatch({ type: "SET_USERNAME_INPUT", payload: v })
+				}
+				passwordInput={state.passwordInput}
+				setPasswordInput={(v) =>
+					dispatch({ type: "SET_PASSWORD_INPUT", payload: v })
 				}
 				isSubmittingProfile={state.isSubmittingProfile}
 				profileError={state.profileError}

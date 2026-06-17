@@ -194,19 +194,6 @@ export function ChatTab({
 							</div>
 						</div>
 
-						<div
-							style={{
-								padding: "8px 16px",
-								background: "var(--bg-elevated)",
-								borderBottom: "1px solid var(--border-subtle)",
-								fontSize: "0.78rem",
-								color: "var(--text-muted)",
-								textAlign: "center",
-							}}
-						>
-							{t.friends.messagesDeletedNotice}
-						</div>
-
 						<div className="chat-messages">
 							{chatMessages && chatMessages.length > 0 ? (
 								// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type

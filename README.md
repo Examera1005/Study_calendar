@@ -1,157 +1,268 @@
 # 📚 Study Calendar
 
-A full-stack study productivity app for students to organize exams, track study sessions, manage tasks, and stay motivated — with built-in Pomodoro timer, analytics, and end-to-end encrypted friend messaging.
+A high-performance, full-stack study productivity application designed to help students organize course materials, track exams with GPA mapping, log study time, schedule time-blocked calendar events, and build motivation through social study leaderboards and end-to-end encrypted messaging.
 
-Built with **React 19**, **Convex** (real-time backend), **TypeScript**, and **Vite**.
+Built with a modern stack of **React 19**, **Convex** (real-time reactive backend), **TypeScript 6**, **Vite 8**, and **Web Crypto API**.
 
 ---
 
-## Features
+## 🏗️ Architectural Overview & Design System
 
-| Feature | Description |
+The application is architected around two core principles: **real-time synchronization** and **Zero-Knowledge privacy**. 
+
+```mermaid
+graph TD
+    subgraph Client Browser
+        UI[React 19 View / State] <--> LS[(Local Storage: Private Key)]
+        UI <--> Crypto[Web Crypto API]
+    end
+
+    subgraph Convex Cloud Backend
+        Auth[Convex Auth] <--> DB[(Convex Realtime DB)]
+        Scheduler[Convex Scheduled Actions] --> DB
+        DB <--> ClientSync[Reactive Queries & Mutations]
+    end
+
+    ClientSync <--> UI
+    Crypto -. Ciphertext Only .-> DB
+```
+
+### 🎨 Theme & Styling System
+The visual style is built using a highly premium, dark-first styling system (supporting light/dark mode toggles) written entirely in **Vanilla CSS**.
+- **Dynamic CSS Variables**: All design tokens (borders, glassmorphic backdrops, gradients, core colors, accents, font weightings) are fully tokenized.
+- **Custom Accent Colors**: Users can customize their accent color, border style, and layouts dynamically. Custom styles are persisted in the `userSettings` Convex collection and applied in real time to the document root variables.
+- **Glassmorphism & Micro-animations**: Focus rings, button scale hovers, and animated progress SVGs provide a responsive, premium tactile feel.
+
+---
+
+## 🔒 Security Architecture: E2EE & Zero-Knowledge Escrow (ZKE)
+
+Study Calendar implements a robust security model for user-to-user messaging. By combining a **hybrid encryption scheme** with a client-derived **Zero-Knowledge Escrow (ZKE)**, it ensures that your private chat history is completely secure against third parties, including database breaches and compromised server infrastructure.
+
+### 1. Hybrid Encryption Flow (AES-GCM + RSA-OAEP)
+To secure direct chat, the client utilizes standard hybrid envelope cryptography via the native browser `SubtleCrypto` API:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Alice as Alice (Sender)
+    participant Server as Convex Backend
+    actor Bob as Bob (Receiver)
+
+    Bob->>Server: Publish RSA Public Key (SPKI)
+    Alice->>Server: Query Bob's Public Key
+    Server-->>Alice: Bob's Public Key
+    Note over Alice: Generate Ephemeral AES-256 Key
+    Note over Alice: Encrypt Message Body with AES-GCM-256 (IV)
+    Note over Alice: Encrypt Ephemeral AES Key with Bob's RSA-OAEP-2048 Key
+    Alice->>Server: Send Message Envelope { v: 2, iv, key, data }
+    Server-->>Bob: Real-time Sync Message Envelope
+    Note over Bob: Decrypt Ephemeral AES Key with Bob's RSA-OAEP-2048 Private Key
+    Note over Bob: Decrypt Message Body with AES-GCM-256 Key
+```
+
+* **AES-256-GCM**: Message bodies are encrypted with a random, one-time 256-bit AES key using a 96-bit initialization vector (IV).
+* **RSA-OAEP-2048**: The one-time AES key is wrapped (encrypted) with the recipient's 2048-bit RSA public key.
+* **Envelope Format**: Transmitted messages are encapsulated in a versioned JSON payload:
+  ```json
+  {
+    "v": 2,
+    "iv": "Base64(96-bit IV)",
+    "key": "Base64(RSA-Wrapped AES Key)",
+    "data": "Base64(AES-GCM Ciphertext)"
+  }
+  ```
+
+---
+
+### 2. Zero-Knowledge Private Key Escrow (ZKE)
+Historically, E2EE private keys were saved strictly in the client's `localStorage`. If the user cleared their browser cache, the private key was lost forever, rendering all historical message history unreadable. 
+
+To solve this, Study Calendar implements a **Zero-Knowledge Escrow** which backs up the private key to the Convex cloud database *without* revealing the password or plaintext private key to the server.
+
+#### A. Key Escrow (Backup Flow)
+When configuring their profile, the user enters a secure recovery password.
+
+```mermaid
+graph TD
+    Pwd[Recovery Password] & Salt[Random Salt 16B] --> PBKDF2[PBKDF2-HMAC-SHA256 <br> 600,000 Iterations]
+    PBKDF2 --> AES[Derived AES-256-GCM Key]
+    PrivKey[RSA-OAEP-2048 Private Key] --> Export[Export to PKCS#8 Raw Bytes]
+    Export & AES --> Encrypt[AES-GCM-256 Encryption]
+    Encrypt --> Ciphertext[Base64 Payload: IV || Ciphertext]
+    Ciphertext --> Convex[Convex: userProfiles.encryptedPrivateKey]
+    Salt --> ConvexSalt[Convex: userProfiles.userSalt]
+```
+
+1. **Key Derivation (PBKDF2)**: A cryptographically strong, random 16-byte salt is generated client-side. The client derives a 256-bit AES key from the user's password using **PBKDF2-HMAC-SHA256** with **600,000 iterations** (exceeding NIST guidelines).
+2. **Encryption**: The 2048-bit RSA private key is exported as PKCS#8 bytes, encrypted using the derived AES key with AES-GCM-256 (using a unique 12-byte IV), and packed into a combined format (`iv || ciphertext`).
+3. **Storage**: The `salt` (Base64) and the encrypted payload are uploaded to Convex. The raw password and the derived AES key **never leave the client's browser memory**.
+
+#### B. Key Recovery (Restore Flow)
+If `localStorage` is cleared or the user signs in on another browser:
+
+1. The client queries the database for the user's `userSalt` and `encryptedPrivateKey`.
+2. A recovery modal prompts the user to enter their recovery password.
+3. The client derives the AES key again using the retrieved salt and the entered password.
+4. The client decrypts the encrypted payload. If the password is correct, the AES-GCM authentication tag validates, yielding the raw PKCS#8 private key bytes.
+5. The decrypted key is imported as a SubtleCrypto key object and saved back to local storage.
+
+> [!IMPORTANT]
+> **No Password Transmissions**: The server cannot decrypt messages because it only hosts the salt, initialization vector, and encrypted private key bytes. It never has access to the user's recovery password or the derived AES key.
+> 
+> **Persistent Message History**: With the introduction of ZKE, the 72-hour automated message deletion cron job is **disabled** by default, allowing users to keep their chat history permanently.
+
+---
+
+## 🛠️ Complete Feature Modules
+
+| Module | Features & Technical Details |
 |---|---|
-| **Dashboard** | At-a-glance overview: upcoming exams, today's tasks & events, daily log, study streak, weekly time chart |
-| **Calendar** | Visual calendar with events, study sessions, and color-coded subjects |
-| **Exams** | Track exams with dates, coefficients, and grades |
-| **Tasks** | Daily and general to-do items with priority levels (low/medium/high) |
-| **Daily Log** | Log study time per subject with duration tracking |
-| **Pomodoro Timer** | Built-in work/break timer with session logging |
-| **Subjects** | Color-coded course management |
-| **Analytics** | Study statistics, donut charts, line charts, achievements/badges system |
-| **Friends & Chat** | Friend system with **end-to-end encrypted** messaging (RSA-OAEP 2048-bit) |
-| **Theme Customization** | Dark/light mode with customizable accent colors, backgrounds, and UI variables |
+| **📊 Dashboard** | - At-a-glance visualization of upcoming exams, today's schedule, backlog tasks, and daily study log summaries.<br>- Calculates active study streak (consecutive days with logs) and tracks weekly progress through dynamic charts. |
+| **📅 Interactive Calendar** | - Unified monthly grid visualizing time-blocked schedule events, daily to-do deadlines, and study session records.<br>- Color-coded representations dynamically linked to individual subject definitions. |
+| **📝 Exams & Gradebook** | - Grade entry tracking with weighted GPA calculation support based on course coefficients.<br>- Shared metadata allowing users to import exams direct from their friend network. |
+| **📋 Tasks & Backlog** | - Segmented between **Daily Tasks** (date-specific) and **General Backlog**.<br>- Custom priority weighting (low, medium, high) and status tracking (todo, in progress, complete). |
+| **⏳ Daily Activity Log** | - Accurate time tracking tool allowing users to log study sessions with notes, categorized by course/subject. |
+| **🍅 Pomodoro Timer** | - Fully customizable Pomodoro intervals (work block, short break, long break) with an animated circular progress ring.<br>- Option to automatically compile and commit completed timers directly into the study log history. |
+| **⏱️ Floating Stopwatch** | - Float widget that overlays the workspace with draggable placement, customizable scale, and background opacity controls. |
+| **👥 Friends & Social Leaderboard** | - Social networking via unique handles (e.g. `@username`).<br>- Real-time status indicators (online/offline/active) and block/unblock tools.<br>- Weekly leaderboard displaying aggregated study hours per friend to motivate learning. |
+| **💬 Secure Encrypted Chat** | - Real-time client-to-client chatting protected by ZKE and hybrid E2EE, including read-receipt tracking. |
+| **🌐 Internationalization (i18n)** | - Full English (`en`) and French (`fr`) translation dictionaries. Real-time language switching without page reloads. |
 
 ---
 
-## Tech Stack
+## 📂 Project Structure
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | React 19, TypeScript 6, Vite 8 |
-| **Backend** | Convex (real-time database + serverless functions) |
-| **Auth** | Convex Auth (built-in provider) |
-| **Encryption** | Web Crypto API (RSA-OAEP, SHA-256) |
-| **Styling** | Custom CSS with CSS custom properties theme system |
-| **Utilities** | date-fns, jose |
+```
+Study_calendar/
+├── convex/                  # Convex Cloud Backend
+│   ├── auth.config.ts       # Auth provider configurations
+│   ├── auth.ts              # Custom Convex-Auth mutation hooks
+│   ├── crons.ts             # Scheduled backend jobs (Auto-delete disabled)
+│   ├── dailyLogs.ts         # Study duration tracking functions
+│   ├── events.ts            # Calendar schedule functions
+│   ├── exams.ts             # Grade & exam functions
+│   ├── friends.ts           # Social graphs, block lists, and E2EE messaging
+│   ├── http.ts              # External webhook/HTTP routes
+│   ├── schema.ts            # Definitive Convex database schema
+│   ├── subjects.ts          # Course mapping database actions
+│   └── tasks.ts             # Backlog & daily to-do actions
+├── src/                     # React Single Page Application (Vite)
+│   ├── components/
+│   │   ├── auth/            # Sign In, Sign Up, and OTP Password Reset UI
+│   │   ├── friends/         # Direct Messages, Key Escrow Recovery, Leaderboard & Friend Lists
+│   │   ├── layout/          # Premium Navigation bars and theme providers
+│   │   └── ui/              # Glassmorphic modals, tooltips, buttons, select inputs, and status badges
+│   ├── i18n/
+│   │   └── translations.ts  # Dictionary containing EN and FR keymaps
+│   ├── pages/
+│   │   ├── AnalyticsView.tsx    # Donut statistics, time graphs, and dynamic achievements
+│   │   ├── CalendarView.tsx     # Full Month Grid with unified logs/events
+│   │   ├── Dashboard.tsx        # Overview dashboard widget system
+│   │   ├── ExamsView.tsx        # Grade tracking spreadsheet & imports
+│   │   ├── FriendsView.tsx      # Social hub & encrypted messenger container
+│   │   ├── PomodoroView.tsx     # Timers and logs compiler
+│   │   ├── SettingsView.tsx     # Language, theme, profile handle, and block configuration
+│   │   ├── SubjectsView.tsx     # Course category manager
+│   │   └── TasksView.tsx        # Priority Kanban columns
+│   ├── utils/
+│   │   ├── colorUtils.ts    # HSL-persisted color shifting utilities
+│   │   ├── crypto.ts        # Core Web Crypto algorithms (AES, PBKDF2, RSA)
+│   │   └── statsUtils.ts    # Date algorithms for study streaks and achievements
+│   ├── App.tsx              # Application layout router
+│   ├── main.tsx             # Application bootstrap & Convex Client Provider
+│   └── index.css            # System CSS tokens, variables, & customized components
+├── biome.json               # Code style & quality configuration
+├── knip.json                # Dead code analyzer configurations
+└── doctor.config.ts         # React environment audit setups
+```
 
 ---
 
-## Getting Started
+## 💾 Database Schema
+
+The database model is defined statically in [convex/schema.ts](file:///home/thelio/Github/Study_calendar/convex/schema.ts). Below is a summary of the schema configuration:
+
+| Table Name | Indexed Fields | Key Columns | Purpose |
+|---|---|---|---|
+| `subjects` | `by_userId` | `userId`, `name`, `color`, `icon` | Course category tags |
+| `exams` | `by_userId`, `by_userId_and_date`, `by_subjectId` | `userId`, `subjectId`, `title`, `date`, `coefficient`, `grade`, `completed` | Grade tracking & coefficients |
+| `dailyLogs` | `by_userId_and_date`, `by_userId_and_subjectId` | `userId`, `date`, `subjectId`, `content`, `duration` | Study session recording logs |
+| `tasks` | `by_userId`, `by_userId_and_date`, `by_userId_and_taskType` | `userId`, `date`, `title`, `completed`, `priority`, `subjectId`, `taskType` | To-do lists (Daily/Backlog) |
+| `events` | `by_userId_and_date`, `by_userId_and_subjectId` | `userId`, `date`, `startTime`, `endTime`, `title`, `subjectId` | Time-blocked calendar items |
+| `userProfiles` | `by_userId`, `by_username` | `userId`, `username`, `publicKey`, `userSalt`, `encryptedPrivateKey` | Profile metadata, public keys, and ZKE escrow |
+| `friendships` | `by_user1`, `by_user2`, `by_user1_and_user2` | `user1`, `user2`, `status`, `senderId` | Bilateral friend links |
+| `messages` | `by_conversation`, `by_receiverId`, `by_timestamp` | `senderId`, `receiverId`, `encryptedBody`, `senderEncryptedBody`, `timestamp`, `read` | E2EE direct chat logs |
+| `blocks` | `by_userId`, `by_userId_and_blockedUserId` | `userId`, `blockedUserId` | Personal block associations |
+| `userSettings` | `by_userId` | `userId`, `theme`, `customizations` | Custom layouts and colors |
+| `rateLimits` | `by_key` | `key`, `count`, `resetTime` | Rate limit tracker |
+
+---
+
+## 🚀 Installation & Setup
 
 ### Prerequisites
-
 - Node.js >= 18
-- pnpm
-- A Convex account + deployment
+- `npm` or `pnpm`
+- A free account on [Convex Cloud](https://dashboard.convex.dev)
+- A free account on [Resend](https://resend.com) for sending OTP emails
 
-### Setup
+### Steps
 
+1. **Clone & Install Dependencies**
+   ```bash
+   npm install
+   # Or using pnpm
+   pnpm install
+   ```
+
+2. **Configure Environment Variables**
+   Create a `.env.local` file in the root directory:
+   ```bash
+   cp .env.local.example .env.local
+   ```
+   Provide the credentials for your Convex backend:
+   ```env
+   VITE_CONVEX_URL=https://your-project.convex.cloud
+   ```
+
+3. **Initialize the Convex Dev Engine**
+   Run the dev command to spin up the local reactive functions compiler and hook it to your Convex Cloud deployment:
+   ```bash
+   npx convex dev
+   ```
+   > [!TIP]
+   > Ensure you configure `AUTH_RESEND_KEY` (your Resend API key) inside your Convex project dashboard environment variables. This enables the password-reset OTP verification mechanism.
+
+4. **Launch the Frontend Client**
+   In a separate terminal shell, run:
+   ```bash
+   npm run dev
+   # Or using pnpm
+   pnpm dev
+   ```
+   Open `http://localhost:5173` in your browser.
+
+---
+
+## 🧪 Testing & Validation Pipeline
+
+We run a strict, automated, non-interactive validation script before releasing code changes. This is configured in `package.json` under `npm run validate`.
+
+To validate linting, dead code, and React framework standards:
 ```bash
-# 1. Install dependencies
-pnpm install
-
-# 2. Set up environment variables
-cp .env.local.example .env.local
-# Edit .env.local and add your Convex deployment URL:
-# VITE_CONVEX_URL=https://your-project.convex.cloud
-
-# 3. Start the Convex dev server (in one terminal)
-npx convex dev
-
-# 4. Start the Vite dev server (in another terminal)
-pnpm dev
+npm run validate
 ```
 
-The app will be available at `http://localhost:5173`.
+This commands executes:
+1. **Biome Compiler (`npx biome check --write .`)**: Assures code style formatting, semantic rules, and standard React 19 hook implementations.
+2. **Knip Compiler (`npx knip`)**: Checks for unused dependencies, orphaned files, and dead exports.
+3. **React Doctor (`npx react-doctor -y --verbose`)**: Scans for configuration issues, version conflicts, and general performance bugs in the React dependency graph.
 
-### Build for Production
-
-```bash
-pnpm build
-```
-
-This runs `convex deploy`, TypeScript type-checking, and Vite production build in sequence.
+All checks must exit with code `0` for code validation to succeed.
 
 ---
 
-## Project Structure
+## 📄 License
 
-```
-study-calendar/
-├── convex/                  # Convex backend (serverless functions + schema)
-│   ├── auth.config.ts       # Auth provider config
-│   ├── auth.ts              # Auth mutation handlers
-│   ├── dailyLogs.ts         # Daily study log queries/mutations
-│   ├── events.ts            # Calendar event queries/mutations
-│   ├── exams.ts             # Exam queries/mutations
-│   ├── friends.ts           # Friend system + E2E encrypted chat
-│   ├── http.ts              # HTTP action handlers
-│   ├── schema.ts            # Database schema (all tables)
-│   ├── subjects.ts          # Subject queries/mutations
-│   └── tasks.ts             # Task queries/mutations
-├── src/
-│   ├── components/
-│   │   ├── auth/            # Sign-in component
-│   │   ├── layout/          # Sidebar navigation
-│   │   └── ui/              # Shared UI components (Modal, SubjectBadge, etc.)
-│   ├── pages/
-│   │   ├── AnalyticsView.tsx    # Stats, charts, achievements
-│   │   ├── CalendarView.tsx     # Calendar with events
-│   │   ├── DailyLogView.tsx     # Daily study logging
-│   │   ├── Dashboard.tsx        # Home overview
-│   │   ├── ExamsView.tsx        # Exam management
-│   │   ├── FriendsView.tsx      # Friends + encrypted chat
-│   │   ├── PomodoroView.tsx     # Pomodoro timer
-│   │   ├── SettingsView.tsx     # Theme + customization
-│   │   ├── SubjectsView.tsx     # Subject management
-│   │   └── TasksView.tsx        # Task management
-│   ├── utils/
-│   │   ├── colorUtils.ts    # Theme customization utilities
-│   │   ├── crypto.ts        # RSA-OAEP end-to-end encryption
-│   │   └── statsUtils.ts    # Streak & achievement calculations
-│   ├── App.tsx              # Root app + global state
-│   ├── main.tsx             # Entry point + Convex client setup
-│   └── index.css            # Complete theme system with CSS variables
-├── index.html
-├── package.json
-├── vite.config.ts
-└── tsconfig.json
-```
-
----
-
-## Database Schema
-
-| Table | Purpose |
-|---|---|
-| `subjects` | Color-coded courses/subjects |
-| `exams` | Exams with dates, coefficients, grades |
-| `dailyLogs` | Daily study session logs with duration |
-| `tasks` | To-do items (daily + general) with priorities |
-| `events` | Time-blocked calendar events |
-| `userProfiles` | User display names + E2E public keys |
-| `friendships` | Friend connections with pending/accepted status |
-| `messages` | End-to-end encrypted chat messages |
-| `blocks` | User block list |
-
----
-
-## Key Features in Detail
-
-### 🎨 Theme System
-Fully customizable via CSS custom properties. Dark mode default with light mode toggle. Users can customize accent colors, backgrounds, text colors, and borders — all persisted across sessions.
-
-### 🔒 End-to-End Encryption
-Friend chat uses RSA-OAEP 2048-bit keys generated via the Web Crypto API. Public keys are stored in user profiles; messages are encrypted client-side before being stored in Convex.
-
-### 📊 Analytics & Achievements
-Tracks total study hours, sessions completed, task completion rates, and study streaks. Awards badges/achievements for milestones like "First Log", "Centurion" (100 sessions), "Marathon" (7-day streak), etc.
-
-### 🍅 Pomodoro Timer
-Built-in Pomodoro technique timer with configurable work/break durations, visual progress ring, and automatic study session logging on completion.
-
----
-
-## License
-
-Private project.
+Proprietary Codebase. All rights reserved.

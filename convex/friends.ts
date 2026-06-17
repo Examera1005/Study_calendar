@@ -72,6 +72,9 @@ export const createOrUpdateProfile = mutation({
 	args: {
 		username: v.string(),
 		publicKey: v.string(),
+		// Zero-Knowledge Escrow: derived and encrypted entirely client-side
+		userSalt: v.optional(v.string()),
+		encryptedPrivateKey: v.optional(v.string()),
 	},
 	handler: async (ctx, args) => {
 		const userId = await getAuthUserId(ctx);
@@ -102,10 +105,20 @@ export const createOrUpdateProfile = mutation({
 			.withIndex("by_userId", (q) => q.eq("userId", userId))
 			.unique();
 
+		// Build the patch/insert payload — only include escrow fields if provided
+		const escrowPatch =
+			args.userSalt !== undefined && args.encryptedPrivateKey !== undefined
+				? {
+						userSalt: args.userSalt,
+						encryptedPrivateKey: args.encryptedPrivateKey,
+					}
+				: {};
+
 		if (currentProfile) {
 			await ctx.db.patch(currentProfile._id, {
 				username: cleanUsername,
 				publicKey: args.publicKey,
+				...escrowPatch,
 			});
 			return currentProfile._id;
 		} else {
@@ -113,8 +126,31 @@ export const createOrUpdateProfile = mutation({
 				userId,
 				username: cleanUsername,
 				publicKey: args.publicKey,
+				...escrowPatch,
 			});
 		}
+	},
+});
+
+/**
+ * Returns only the Zero-Knowledge Escrow fields for the authenticated user.
+ * The server never receives or returns the raw private key or AES key —
+ * only the ciphertext (encrypted client-side) and the public PBKDF2 salt.
+ */
+export const getEscrowData = query({
+	args: {},
+	handler: async (ctx) => {
+		const userId = await getAuthUserId(ctx);
+		if (!userId) return null;
+		const profile = await ctx.db
+			.query("userProfiles")
+			.withIndex("by_userId", (q) => q.eq("userId", userId))
+			.unique();
+		if (!profile) return null;
+		return {
+			userSalt: profile.userSalt ?? null,
+			encryptedPrivateKey: profile.encryptedPrivateKey ?? null,
+		};
 	},
 });
 

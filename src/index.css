@@ -3630,3 +3630,54 @@ select option {
 	line-height: 1;
 	flex-shrink: 0;
 }
+
+/* ========== KEY RECOVERY MODAL ========== */
+.key-recovery-modal-body {
+	padding: 4px 0 8px;
+}
+
+.key-recovery-icon-row {
+	text-align: center;
+	margin-bottom: 16px;
+}
+
+.key-recovery-icon {
+	font-size: 2.5rem;
+	display: block;
+	margin-bottom: 8px;
+}
+
+.key-recovery-desc {
+	font-size: 0.84rem;
+	color: var(--text-muted);
+	line-height: 1.5;
+	margin: 0;
+}
+
+.key-recovery-zk-notice {
+	background: var(--accent-light);
+	border: 1px solid var(--accent-primary);
+	border-radius: var(--radius-md);
+	padding: 10px 14px;
+	margin-bottom: 20px;
+	font-size: 0.78rem;
+	color: var(--accent-primary);
+	line-height: 1.4;
+}
+
+.key-recovery-regenerate-section {
+	margin-top: 20px;
+	padding-top: 16px;
+	border-top: 1px solid var(--border-subtle);
+	text-align: center;
+}
+
+.key-recovery-forgot-desc {
+	font-size: 0.78rem;
+	color: var(--text-muted);
+	margin-bottom: 10px;
+}
+
+.key-recovery-regenerate-btn {
+	font-size: 0.8rem;
+}

@@ -4,6 +4,8 @@ import { useLanguage } from "../../hooks/useLanguage";
 interface ProfileSetupProps {
 	usernameInput: string;
 	setUsernameInput: (v: string) => void;
+	passwordInput: string;
+	setPasswordInput: (v: string) => void;
 	isSubmittingProfile: boolean;
 	profileError: string;
 	handleCreateProfile: (e: React.FormEvent) => void;
@@ -12,6 +14,8 @@ interface ProfileSetupProps {
 export function ProfileSetup({
 	usernameInput,
 	setUsernameInput,
+	passwordInput,
+	setPasswordInput,
 	isSubmittingProfile,
 	profileError,
 	handleCreateProfile,
@@ -65,6 +69,31 @@ export function ProfileSetup({
 						}}
 					>
 						{t.friends.onlyLettersAllowed}
+					</span>
+				</div>
+
+				{/* Password field for Zero-Knowledge Escrow key backup */}
+				<div className="form-group">
+					<label htmlFor="friends-password">
+						{t.friends.setupPasswordLabel}
+					</label>
+					<input
+						id="friends-password"
+						type="password"
+						value={passwordInput}
+						onChange={(e) => setPasswordInput(e.target.value)}
+						placeholder={t.friends.setupPasswordPlaceholder}
+						autoComplete="current-password"
+					/>
+					<span
+						style={{
+							fontSize: "0.75rem",
+							color: "var(--text-muted)",
+							marginTop: 4,
+							display: "block",
+						}}
+					>
+						{t.friends.setupPasswordHint}
 					</span>
 				</div>
 
