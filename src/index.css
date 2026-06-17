@@ -230,6 +230,19 @@ h6 {
 	color: var(--accent-hover);
 }
 
+/* Screen reader only utility */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
+}
+
 /* ========== FORMS ========== */
 .form-group {
 	margin-bottom: 16px;
@@ -2323,11 +2336,23 @@ select option {
 	max-width: 1200px;
 	margin: 0 auto;
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	grid-template-columns: 1fr;
 	gap: 24px;
 	padding: 0 24px;
 	position: relative;
 	z-index: 1;
+}
+
+@media (min-width: 640px) {
+	.lp-features-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (min-width: 1024px) {
+	.lp-features-grid {
+		grid-template-columns: repeat(4, 1fr);
+	}
 }
 
 .lp-feat-card {
@@ -2380,14 +2405,14 @@ select option {
 
 .lp-demo-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+	grid-template-columns: 1fr;
 	gap: 32px;
 	margin-top: 40px;
 }
 
-@media (max-width: 600px) {
+@media (min-width: 900px) {
 	.lp-demo-grid {
-		grid-template-columns: 1fr;
+		grid-template-columns: repeat(2, 1fr);
 	}
 }
 
