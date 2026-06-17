@@ -41,10 +41,17 @@ function LegalText({ paragraphs }: { paragraphs: string[] }) {
 
 interface LandingHeaderProps {
 	t: TranslationSchema;
+	language: string;
+	setLanguage: (lang: "en" | "fr") => void;
 	onSignIn: () => void;
 }
 
-function LandingHeader({ t, onSignIn }: LandingHeaderProps) {
+function LandingHeader({
+	t,
+	language,
+	setLanguage,
+	onSignIn,
+}: LandingHeaderProps) {
 	return (
 		<header className="lp-header">
 			<div className="lp-logo-container">
@@ -58,6 +65,24 @@ function LandingHeader({ t, onSignIn }: LandingHeaderProps) {
 				<a className="lp-nav-link" href="#playground">
 					{t.landingPage.navInteractiveDemo}
 				</a>
+
+				<div className="lp-lang-switcher">
+					<button
+						type="button"
+						onClick={() => setLanguage("en")}
+						className={`lp-lang-btn ${language === "en" ? "active" : ""}`}
+					>
+						🇬🇧 EN
+					</button>
+					<button
+						type="button"
+						onClick={() => setLanguage("fr")}
+						className={`lp-lang-btn ${language === "fr" ? "active" : ""}`}
+					>
+						🇫🇷 FR
+					</button>
+				</div>
+
 				<button
 					type="button"
 					id="lp-nav-signin-btn"
@@ -80,12 +105,15 @@ interface LandingHeroProps {
 function LandingHero({ t, onGetStarted }: LandingHeroProps) {
 	return (
 		<section className="lp-hero">
-			<h1>
-				<span className="lp-title-sans">{t.landingPage.heroTitleLine1}</span>
-				<br />
-				<span className="lp-title-sans">{t.landingPage.heroTitleLine2}</span>
-				<span className="lp-gradient-accent lp-title-serif">
-					{t.landingPage.heroTitleAccent}
+			<h1 className="lp-hero-title">
+				<span className="lp-title-line lp-title-sans">
+					{t.landingPage.heroTitleLine1}
+				</span>
+				<span className="lp-title-line">
+					<span className="lp-title-sans">{t.landingPage.heroTitleLine2}</span>{" "}
+					<span className="lp-gradient-accent lp-title-serif">
+						{t.landingPage.heroTitleAccent}
+					</span>
 				</span>
 			</h1>
 
@@ -735,7 +763,7 @@ function LandingFooter({ t, onShowLegal }: LandingFooterProps) {
 }
 
 export function LandingPage() {
-	const { t } = useLanguage();
+	const { t, language, setLanguage } = useLanguage();
 	const [showAuthModal, setShowAuthModal] = useState(false);
 	const [showLegal, setShowLegal] = useState<"privacy" | "terms" | null>(null);
 
@@ -759,7 +787,12 @@ export function LandingPage() {
 			<div className="lp-glow" />
 			<div className="lp-glow-secondary" />
 
-			<LandingHeader t={t} onSignIn={handleOpenAuth} />
+			<LandingHeader
+				t={t}
+				language={language}
+				setLanguage={setLanguage}
+				onSignIn={handleOpenAuth}
+			/>
 			<LandingHero t={t} onGetStarted={handleOpenAuth} />
 			<LandingFeatures t={t} />
 			<LandingPlayground t={t} />
