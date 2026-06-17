@@ -248,7 +248,7 @@ export async function deriveAesKeyFromPassword(
 	return window.crypto.subtle.deriveKey(
 		{
 			name: "PBKDF2",
-			salt,
+			salt: salt as unknown as BufferSource,
 			iterations: 600_000,
 			hash: "SHA-256",
 		},
