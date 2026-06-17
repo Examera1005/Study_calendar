@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 import type { TranslationSchema } from "../../i18n/translations";
 import { Modal } from "../ui/Modal";
+import { ScrollReveal } from "../ui/ScrollReveal";
 import { ChecklistDemo } from "./landing/ChecklistDemo";
 import { CryptoDemo } from "./landing/CryptoDemo";
 import { PomodoroDemo } from "./landing/PomodoroDemo";
@@ -414,7 +415,12 @@ function LandingFeatures({ t }: LandingFeaturesProps) {
 			<div className="lp-features-list">
 				{/* 1. Structured Timetable */}
 				<div className="lp-feature-row">
-					<div className="lp-feature-text-col">
+					<ScrollReveal
+						className="lp-feature-text-col"
+						animation="fade-up"
+						duration={700}
+						delay={50}
+					>
 						<span className="lp-feature-num">01</span>
 						<h3>{t.landingPage.structuredTimetableTitle}</h3>
 						<p>{t.landingPage.structuredTimetableDesc}</p>
@@ -446,21 +452,27 @@ function LandingFeatures({ t }: LandingFeaturesProps) {
 								</span>
 							</div>
 						</div>
-					</div>
-					<div className="lp-feature-visual-col">
-						<TiltCard
-							className="lp-feature-visual-card"
-							neonColor="#3b82f6"
-							disableTilt
-						>
+					</ScrollReveal>
+					<ScrollReveal
+						className="lp-feature-visual-col"
+						animation="scale"
+						duration={850}
+						delay={150}
+					>
+						<TiltCard className="lp-feature-visual-card" neonColor="#3b82f6">
 							<TimetableMock />
 						</TiltCard>
-					</div>
+					</ScrollReveal>
 				</div>
 
 				{/* 2. Pomodoro Focus Engine */}
 				<div className="lp-feature-row">
-					<div className="lp-feature-text-col">
+					<ScrollReveal
+						className="lp-feature-text-col"
+						animation="fade-up"
+						duration={700}
+						delay={50}
+					>
 						<span className="lp-feature-num">02</span>
 						<h3>{t.pomodoro.title}</h3>
 						<p>{t.landingPage.feature2Desc}</p>
@@ -487,21 +499,27 @@ function LandingFeatures({ t }: LandingFeaturesProps) {
 								<span>Ambient notifications & sound cues to keep rhythm</span>
 							</div>
 						</div>
-					</div>
-					<div className="lp-feature-visual-col">
-						<TiltCard
-							className="lp-feature-visual-card"
-							neonColor="#ef4444"
-							disableTilt
-						>
+					</ScrollReveal>
+					<ScrollReveal
+						className="lp-feature-visual-col"
+						animation="scale"
+						duration={850}
+						delay={150}
+					>
+						<TiltCard className="lp-feature-visual-card" neonColor="#ef4444">
 							<PomodoroMock />
 						</TiltCard>
-					</div>
+					</ScrollReveal>
 				</div>
 
 				{/* 3. Encrypted Chat */}
 				<div className="lp-feature-row">
-					<div className="lp-feature-text-col">
+					<ScrollReveal
+						className="lp-feature-text-col"
+						animation="fade-up"
+						duration={700}
+						delay={50}
+					>
 						<span className="lp-feature-num">03</span>
 						<h3>{t.landingPage.encryptedChatTitle}</h3>
 						<p>{t.landingPage.encryptedChatDesc}</p>
@@ -532,21 +550,27 @@ function LandingFeatures({ t }: LandingFeaturesProps) {
 								<span>Automatic chat message deletion after 72 hours</span>
 							</div>
 						</div>
-					</div>
-					<div className="lp-feature-visual-col">
-						<TiltCard
-							className="lp-feature-visual-card"
-							neonColor="#10b981"
-							disableTilt
-						>
+					</ScrollReveal>
+					<ScrollReveal
+						className="lp-feature-visual-col"
+						animation="scale"
+						duration={850}
+						delay={150}
+					>
+						<TiltCard className="lp-feature-visual-card" neonColor="#10b981">
 							<ChatMock />
 						</TiltCard>
-					</div>
+					</ScrollReveal>
 				</div>
 
 				{/* 4. Academic Analytics */}
 				<div className="lp-feature-row">
-					<div className="lp-feature-text-col">
+					<ScrollReveal
+						className="lp-feature-text-col"
+						animation="fade-up"
+						duration={700}
+						delay={50}
+					>
 						<span className="lp-feature-num">04</span>
 						<h3>{t.landingPage.analyticsTitle}</h3>
 						<p>{t.landingPage.feature4Desc}</p>
@@ -573,16 +597,17 @@ function LandingFeatures({ t }: LandingFeaturesProps) {
 								<span>Weekly study hour progression metrics</span>
 							</div>
 						</div>
-					</div>
-					<div className="lp-feature-visual-col">
-						<TiltCard
-							className="lp-feature-visual-card"
-							neonColor="#f59e0b"
-							disableTilt
-						>
+					</ScrollReveal>
+					<ScrollReveal
+						className="lp-feature-visual-col"
+						animation="scale"
+						duration={850}
+						delay={150}
+					>
+						<TiltCard className="lp-feature-visual-card" neonColor="#f59e0b">
 							<AnalyticsMock />
 						</TiltCard>
-					</div>
+					</ScrollReveal>
 				</div>
 			</div>
 		</section>
