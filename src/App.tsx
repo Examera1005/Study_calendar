@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import {
 	Authenticated,
 	AuthLoading,
@@ -215,6 +216,7 @@ export default function App() {
 
 	return (
 		<>
+			<Analytics />
 			<AuthLoading>
 				<div className="auth-page">
 					<div className="loading-spinner">
