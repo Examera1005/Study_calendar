@@ -232,6 +232,173 @@ function LandingHero({ t, onGetStarted }: LandingHeroProps) {
 	);
 }
 
+function TimetableMock() {
+	return (
+		<div className="lp-mock-calendar">
+			<div className="lp-mock-cal-header">
+				<span style={{ fontWeight: 700 }}>📅 November 2026</span>
+				<span style={{ fontSize: "0.75rem", opacity: 0.6 }}>Week View</span>
+			</div>
+			<div className="lp-mock-cal-grid">
+				<div className="lp-mock-cal-day">
+					<span className="lp-mock-cal-day-label">Mon</span>
+					<div className="lp-mock-cal-event blue">
+						<div style={{ fontWeight: 700 }}>Math II</div>
+						<div style={{ fontSize: "0.75rem", opacity: 0.8 }}>10:00</div>
+					</div>
+				</div>
+				<div className="lp-mock-cal-day">
+					<span className="lp-mock-cal-day-label">Tue</span>
+					<div className="lp-mock-cal-event red">
+						<div style={{ fontWeight: 700 }}>Calculus</div>
+						<div style={{ fontSize: "0.75rem", opacity: 0.8 }}>09:00</div>
+					</div>
+				</div>
+				<div className="lp-mock-cal-day">
+					<span className="lp-mock-cal-day-label">Wed</span>
+					<div className="lp-mock-cal-event green">
+						<div style={{ fontWeight: 700 }}>Group</div>
+						<div style={{ fontSize: "0.75rem", opacity: 0.8 }}>13:00</div>
+					</div>
+				</div>
+				<div className="lp-mock-cal-day">
+					<span className="lp-mock-cal-day-label">Thu</span>
+					<div className="lp-mock-cal-event blue">
+						<div style={{ fontWeight: 700 }}>Math II</div>
+						<div style={{ fontSize: "0.75rem", opacity: 0.8 }}>10:00</div>
+					</div>
+				</div>
+				<div className="lp-mock-cal-day">
+					<span className="lp-mock-cal-day-label">Fri</span>
+					<div className="lp-mock-cal-event purple">
+						<div style={{ fontWeight: 700 }}>Review</div>
+						<div style={{ fontSize: "0.75rem", opacity: 0.8 }}>15:00</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function PomodoroMock() {
+	return (
+		<div className="lp-mock-pomo">
+			<div className="lp-mock-pomo-circle">
+				<div className="lp-mock-pomo-spinner" />
+				<span className="lp-mock-pomo-time">18:42</span>
+				<span className="lp-mock-pomo-status">Focusing</span>
+			</div>
+			<div className="lp-mock-pomo-controls">
+				<span
+					style={{
+						fontSize: "0.8rem",
+						color: "#a1a1aa",
+						fontWeight: 600,
+					}}
+				>
+					💻 Current: Calculus review
+				</span>
+				<div className="lp-mock-pomo-btn-group">
+					<button
+						type="button"
+						className="btn btn-sm"
+						style={{
+							background: "rgba(239, 68, 68, 0.2)",
+							color: "#ef4444",
+							border: "1px solid rgba(239, 68, 68, 0.4)",
+							borderRadius: "var(--radius-md)",
+						}}
+					>
+						⏸ Pause
+					</button>
+					<button
+						type="button"
+						className="btn btn-sm"
+						style={{
+							background: "rgba(255, 255, 255, 0.03)",
+							border: "1px solid rgba(255, 255, 255, 0.08)",
+							color: "#e4e4e7",
+							borderRadius: "var(--radius-md)",
+						}}
+					>
+						Stop
+					</button>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+function ChatMock() {
+	return (
+		<div className="lp-mock-chat">
+			<div className="lp-mock-chat-bubble sent">
+				<div
+					style={{
+						fontWeight: 700,
+						fontSize: "0.75rem",
+						marginBottom: 2,
+						color: "#94a3b8",
+					}}
+				>
+					@alice
+				</div>
+				Did you get the chemistry formula document?
+			</div>
+			<div className="lp-mock-chat-secure-badge">
+				<span>🔒 Secured with Client-Side E2EE Cryptography</span>
+			</div>
+			<div className="lp-mock-chat-bubble received">
+				<div
+					style={{
+						fontWeight: 700,
+						fontSize: "0.75rem",
+						marginBottom: 2,
+						color: "#34d399",
+					}}
+				>
+					@bob
+				</div>
+				Yes, decrypting chemistry_prep.pdf with my private key… ✓
+			</div>
+		</div>
+	);
+}
+
+function AnalyticsMock() {
+	return (
+		<div className="lp-mock-analytics">
+			<div className="lp-mock-analytics-row">
+				<div className="lp-mock-analytics-stat">
+					<span className="lp-mock-analytics-value">24.5h</span>
+					<span className="lp-mock-analytics-label">Study Time</span>
+				</div>
+				<div className="lp-mock-analytics-stat">
+					<span
+						className="lp-mock-analytics-value"
+						style={{ color: "#f59e0b" }}
+					>
+						6d 🔥
+					</span>
+					<span className="lp-mock-analytics-label">Streak</span>
+				</div>
+				<div className="lp-mock-analytics-stat">
+					<span className="lp-mock-analytics-value">5/5</span>
+					<span className="lp-mock-analytics-label">Badges</span>
+				</div>
+			</div>
+			<div className="lp-mock-chart-container">
+				<div className="lp-mock-chart-bar" style={{ height: "40%" }} />
+				<div className="lp-mock-chart-bar" style={{ height: "65%" }} />
+				<div className="lp-mock-chart-bar" style={{ height: "30%" }} />
+				<div className="lp-mock-chart-bar" style={{ height: "80%" }} />
+				<div className="lp-mock-chart-bar" style={{ height: "95%" }} />
+				<div className="lp-mock-chart-bar" style={{ height: "50%" }} />
+			</div>
+		</div>
+	);
+}
+
 interface LandingFeaturesProps {
 	t: TranslationSchema;
 }
@@ -244,30 +411,179 @@ function LandingFeatures({ t }: LandingFeaturesProps) {
 				<p>{t.landingPage.featuresIntro}</p>
 			</div>
 
-			<div className="lp-features-grid">
-				<TiltCard className="lp-feat-card" neonColor="#3b82f6">
-					<div className="lp-feat-icon">📅</div>
-					<h3>{t.landingPage.structuredTimetableTitle}</h3>
-					<p>{t.landingPage.structuredTimetableDesc}</p>
-				</TiltCard>
+			<div className="lp-features-list">
+				{/* 1. Structured Timetable */}
+				<div className="lp-feature-row">
+					<div className="lp-feature-text-col">
+						<span className="lp-feature-num">01</span>
+						<h3>{t.landingPage.structuredTimetableTitle}</h3>
+						<p>{t.landingPage.structuredTimetableDesc}</p>
+						<div className="lp-feature-highlights">
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#3b82f6" }}
+								/>
+								<span>
+									{t.landingPage.mockCalculusExam} &{" "}
+									{t.landingPage.mockChemistryExam} calendars
+								</span>
+							</div>
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#3b82f6" }}
+								/>
+								<span>Drag-and-drop lecture & exam event block scheduling</span>
+							</div>
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#3b82f6" }}
+								/>
+								<span>
+									Real-time instant cloud synchronization across all screens
+								</span>
+							</div>
+						</div>
+					</div>
+					<div className="lp-feature-visual-col">
+						<TiltCard
+							className="lp-feature-visual-card"
+							neonColor="#3b82f6"
+							disableTilt
+						>
+							<TimetableMock />
+						</TiltCard>
+					</div>
+				</div>
 
-				<TiltCard className="lp-feat-card" neonColor="#ef4444">
-					<div className="lp-feat-icon">🍅</div>
-					<h3>{t.pomodoro.title}</h3>
-					<p>{t.landingPage.feature2Desc}</p>
-				</TiltCard>
+				{/* 2. Pomodoro Focus Engine */}
+				<div className="lp-feature-row">
+					<div className="lp-feature-text-col">
+						<span className="lp-feature-num">02</span>
+						<h3>{t.pomodoro.title}</h3>
+						<p>{t.landingPage.feature2Desc}</p>
+						<div className="lp-feature-highlights">
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#ef4444" }}
+								/>
+								<span>Customizable focus & rest interval configurations</span>
+							</div>
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#ef4444" }}
+								/>
+								<span>Directly log focus minutes to study history sheets</span>
+							</div>
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#ef4444" }}
+								/>
+								<span>Ambient notifications & sound cues to keep rhythm</span>
+							</div>
+						</div>
+					</div>
+					<div className="lp-feature-visual-col">
+						<TiltCard
+							className="lp-feature-visual-card"
+							neonColor="#ef4444"
+							disableTilt
+						>
+							<PomodoroMock />
+						</TiltCard>
+					</div>
+				</div>
 
-				<TiltCard className="lp-feat-card" neonColor="#10b981">
-					<div className="lp-feat-icon">🔒</div>
-					<h3>{t.landingPage.encryptedChatTitle}</h3>
-					<p>{t.landingPage.encryptedChatDesc}</p>
-				</TiltCard>
+				{/* 3. Encrypted Chat */}
+				<div className="lp-feature-row">
+					<div className="lp-feature-text-col">
+						<span className="lp-feature-num">03</span>
+						<h3>{t.landingPage.encryptedChatTitle}</h3>
+						<p>{t.landingPage.encryptedChatDesc}</p>
+						<div className="lp-feature-highlights">
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#10b981" }}
+								/>
+								<span>
+									Client-side 2048-bit RSA keys generated in your browser
+								</span>
+							</div>
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#10b981" }}
+								/>
+								<span>
+									Secure key backups with Zero-Knowledge Escrow verification
+								</span>
+							</div>
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#10b981" }}
+								/>
+								<span>Automatic chat message deletion after 72 hours</span>
+							</div>
+						</div>
+					</div>
+					<div className="lp-feature-visual-col">
+						<TiltCard
+							className="lp-feature-visual-card"
+							neonColor="#10b981"
+							disableTilt
+						>
+							<ChatMock />
+						</TiltCard>
+					</div>
+				</div>
 
-				<TiltCard className="lp-feat-card" neonColor="#f59e0b">
-					<div className="lp-feat-icon">📊</div>
-					<h3>{t.landingPage.analyticsTitle}</h3>
-					<p>{t.landingPage.feature4Desc}</p>
-				</TiltCard>
+				{/* 4. Academic Analytics */}
+				<div className="lp-feature-row">
+					<div className="lp-feature-text-col">
+						<span className="lp-feature-num">04</span>
+						<h3>{t.landingPage.analyticsTitle}</h3>
+						<p>{t.landingPage.feature4Desc}</p>
+						<div className="lp-feature-highlights">
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#f59e0b" }}
+								/>
+								<span>Subject-by-subject distribution analytics</span>
+							</div>
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#f59e0b" }}
+								/>
+								<span>Unlockable trophies & motivational badge progress</span>
+							</div>
+							<div className="lp-feature-highlight-item">
+								<span
+									className="lp-feature-highlight-bullet"
+									style={{ background: "#f59e0b" }}
+								/>
+								<span>Weekly study hour progression metrics</span>
+							</div>
+						</div>
+					</div>
+					<div className="lp-feature-visual-col">
+						<TiltCard
+							className="lp-feature-visual-card"
+							neonColor="#f59e0b"
+							disableTilt
+						>
+							<AnalyticsMock />
+						</TiltCard>
+					</div>
+				</div>
 			</div>
 		</section>
 	);
