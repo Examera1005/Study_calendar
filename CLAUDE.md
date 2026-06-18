@@ -12,6 +12,13 @@ Convex agent skills for common tasks can be installed by running
 
 <!-- convex-ai-end -->
 
+## Agent Skills Guidelines
+
+To maintain code simplicity, correct database patterns, and high visual quality, agents must adhere to the following rules regarding skills:
+- **Code Simplicity:** Always use the `ponytail` skill when writing code to prevent over-engineering, bloat, and unnecessary dependencies.
+- **Database & Backend:** Always use the appropriate `convex` skills (e.g., `convex-migration-helper`, `convex-create-component`) when touching the schema, migrations, or database queries.
+- **UI & Styling:** Always use the `design-taste-frontend` (taste) skill for styling and user interface work to ensure custom, high-quality, and modern layouts.
+
 ## Mandatory Code Validation Rule
 
 Before declaring any coding task complete, you MUST execute the non-interactive quality validation script:
