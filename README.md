@@ -89,7 +89,7 @@ graph TD
     PBKDF2 --> AES[Derived AES-256-GCM Key]
     PrivKey[RSA-OAEP-2048 Private Key] --> Export[Export to PKCS#8 Raw Bytes]
     Export & AES --> Encrypt[AES-GCM-256 Encryption]
-    Encrypt --> Ciphertext[Base64 Payload: IV || Ciphertext]
+    Encrypt --> Ciphertext["Base64 Payload: IV || Ciphertext"]
     Ciphertext --> Convex[Convex: userProfiles.encryptedPrivateKey]
     Salt --> ConvexSalt[Convex: userProfiles.userSalt]
 ```
@@ -219,7 +219,7 @@ The database model is defined statically in [convex/schema.ts](file:///home/thel
 2. **Configure Environment Variables**
    Create a `.env.local` file in the root directory:
    ```bash
-   cp .env.local.example .env.local
+   cp .env.example .env.local
    ```
    Provide the credentials for your Convex backend:
    ```env
@@ -265,4 +265,4 @@ All checks must exit with code `0` for code validation to succeed.
 
 ## 📄 License
 
-Proprietary Codebase. All rights reserved.
+MIT License. See [LICENSE](file:///home/thelio/Github/Study_calendar/LICENSE) for details.
