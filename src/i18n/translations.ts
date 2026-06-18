@@ -1191,7 +1191,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			friends: "Amis",
 			subjects: "Matières",
 			settings: "Paramètres",
-			subtitle: "Restez organisé, réussissez vos examens",
+			subtitle: "Restez organisé, réussissez vos études",
 			lightMode: "Mode Clair",
 			darkMode: "Mode Sombre",
 			signOut: "Se déconnecter",
