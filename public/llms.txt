@@ -1,0 +1,156 @@
+# Study Calendar
+> A high-performance, full-stack study productivity application designed to help students organize course materials, track exams with GPA mapping, log study time, schedule time-blocked calendar events, and build motivation through social study leaderboards and end-to-end encrypted messaging.
+
+- [Study Calendar Web App](https://study-calendar.thelio.site): Main web application platform.
+
+## Architecture & Technology Stack
+- **Frontend Core**: React 19, TypeScript 6, Vite 8.
+- **Backend Service**: Convex Cloud (real-time reactive serverless backend with automatic subscription updates).
+- **Styling**: Pure CSS3 / Vanilla CSS (supporting dark-first themes, custom accent colors, glassmorphic styles, and micro-animations).
+- **Security**: Web Crypto API (SubtleCrypto) used for client-side zero-knowledge key derivations and end-to-end message encryption.
+- **Linting & Code Quality**: Biome, Knip, React Doctor.
+
+## Complete Feature Modules
+
+### 📊 Dashboard
+- Real-time study streak calculator (consecutive daily logs).
+- At-a-glance summaries for today's schedule, backlog tasks, upcoming exams, and cumulative study hours.
+- Visual charts mapping weekly and course-based progress.
+
+### 📅 Interactive Calendar
+- A unified monthly calendar layout plotting study logs, calendar events, and task deadlines.
+- Interactive color schemes synchronized dynamically with academic subjects.
+
+### 📝 Exams & Gradebook
+- Grade tracker support with weighted coefficients for course GPA calculations.
+- Integrated friend metadata sharing to import exam information directly from friends.
+
+### 📋 Tasks & Backlog
+- Dynamic Task list bifurcated into:
+  - **Daily Tasks**: Date-specific items.
+  - **General Backlog**: Undated, priority-weighted tasks (Low, Medium, High).
+- Complete drag-and-drop or status toggle support (Todo, In Progress, Completed).
+
+### ⏳ Daily Activity Log
+- Detailed study session tracker to record time spent, logs, and subject categorization.
+
+### 🍅 Pomodoro & Stopwatch
+- Custom study work block intervals and break schedules.
+- Animated progress rings and a floating draggable timer widget.
+- Option to automatically commit timer logs directly to the user's daily study history.
+
+### 👥 Friends & Social Leaderboard
+- User discovery and connections using custom handles (e.g. `@username`).
+- Real-time online/offline presence status tracker.
+- Bilateral friend approvals and peer blocks.
+- Weekly leaderboard summarizing cumulative study hours within the user's network.
+
+### 💬 End-to-End Encrypted (E2EE) Chat
+- High-security direct messaging protocol.
+- Integrates read-receipt tracking and permanent history recovery.
+
+### 🌐 Internationalization (i18n)
+- Dynamic bilingual system supporting English (`en`) and French (`fr`) translations, toggleable in real time.
+
+---
+
+## Technical Architecture & Security Models
+
+### 🔒 End-to-End Encryption (E2EE) Flow
+For peer-to-peer chat security, the client implements standard envelope cryptography using the browser's native `SubtleCrypto` interface:
+1. **Key Distribution**: Users generate and upload an SPKI-serialized RSA-OAEP-2048 public key to their Convex profile.
+2. **Encryption**:
+   - The sender queries the recipient's public key from Convex.
+   - The sender generates a unique ephemeral 256-bit AES symmetric key.
+   - The message body is encrypted with AES-256-GCM.
+   - The ephemeral AES key is wrapped (encrypted) with the recipient's RSA public key.
+3. **Payload**: The client sends a versioned JSON envelope to Convex containing:
+   ```json
+   {
+     "v": 2,
+     "iv": "Base64(96-bit AES Initialization Vector)",
+     "key": "Base64(RSA-Wrapped AES Key)",
+     "data": "Base64(AES-GCM Ciphertext)"
+   }
+   ```
+4. **Decryption**: The recipient downloads the envelope and uses their locally cached RSA-OAEP-2048 private key to unwrap the AES key, which is then used to decrypt the message ciphertext.
+
+### 🔑 Zero-Knowledge Private Key Escrow (ZKE)
+To prevent private key loss due to browser storage resets without compromising safety:
+1. **Backup Flow**:
+   - User inputs a recovery password.
+   - Client generates a cryptographically secure random 16-byte salt.
+   - A 256-bit AES key is derived client-side via PBKDF2-HMAC-SHA256 (600,000 iterations).
+   - The user's RSA private key is exported to raw PKCS#8 bytes and encrypted using AES-GCM-256.
+   - The encrypted private key and the random salt are uploaded to Convex.
+   - *Result*: The plaintext password and derived AES keys never traverse the network.
+2. **Restore Flow**:
+   - The client fetches the user's salt and encrypted private key from Convex.
+   - Prompts the user for their recovery password.
+   - Derives the key using PBKDF2 and the salt, decrypts the PKCS#8 envelope, and restores the RSA private key locally.
+
+---
+
+## Database Schema (Convex)
+Defined in `convex/schema.ts`. Collections include:
+
+- `subjects`: Course mapping configurations.
+  - Fields: `userId`, `name`, `color`, `icon`.
+- `exams`: Grading database and calendar milestones.
+  - Fields: `userId`, `subjectId`, `title`, `date`, `coefficient`, `grade`, `completed`.
+- `dailyLogs`: Logbook records of study sessions.
+  - Fields: `userId`, `date`, `subjectId`, `content`, `duration`.
+- `tasks`: Task management.
+  - Fields: `userId`, `date`, `title`, `completed`, `priority`, `subjectId`, `taskType`.
+- `events`: Calendar schedule items.
+  - Fields: `userId`, `date`, `startTime`, `endTime`, `title`, `subjectId`.
+- `userProfiles`: Directory profile and public keys.
+  - Fields: `userId`, `username`, `publicKey`, `userSalt`, `encryptedPrivateKey`.
+- `friendships`: Bilateral peer relationships.
+  - Fields: `user1`, `user2`, `status`, `senderId`.
+- `messages`: E2EE message buffers.
+  - Fields: `senderId`, `receiverId`, `encryptedBody`, `senderEncryptedBody`, `timestamp`, `read`.
+- `blocks`: Direct block lists.
+  - Fields: `userId`, `blockedUserId`.
+- `userSettings`: UI preferences and dynamic themes.
+  - Fields: `userId`, `theme`, `customizations`.
+- `rateLimits`: Security request limit state.
+  - Fields: `key`, `count`, `resetTime`.
+
+---
+
+## Codebase Directory Structure
+```
+Study_calendar/
+├── convex/                  # Convex backend handlers (queries, mutations, actions, schemas, crons)
+├── public/                  # Static assets (favicons, robots.txt, sitemap.xml, llms.txt)
+└── src/                     # React Vite Single Page App
+    ├── components/          # Subcomponents for Auth, Friends, Chat, Layout, UI
+    ├── i18n/                # Translation dictionary (EN/FR)
+    ├── pages/               # Dashboard, Analytics, Calendar, Exams, Friends, Settings, Subjects, Tasks
+    ├── utils/               # Color shifters, Web Crypto routines, Date trackers
+    └── index.css            # Tokenized CSS variables and base layouts
+```
+
+---
+
+## Developer Guidelines & Code Validation
+AI agents and developers working on this codebase must adhere to the validation pipeline.
+
+1. **Linting & Formatting**:
+   ```bash
+   npx @biomejs/biome check --write .
+   ```
+2. **Dead Code Check**:
+   ```bash
+   npx knip
+   ```
+3. **React Compatibility Check**:
+   ```bash
+   npx react-doctor -y --verbose
+   ```
+4. **All-in-One Validation Script**:
+   ```bash
+   npm run validate
+   ```
+Ensure that all validators pass with zero warnings before final production deployments. For any database schema modifications, refer to `convex/_generated/ai/guidelines.md` for specific rules and conventions.
