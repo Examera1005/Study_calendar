@@ -575,7 +575,6 @@ function LandingFeatures({ t }: LandingFeaturesProps) {
 									className="lp-feature-highlight-bullet"
 									style={{ background: "#10b981" }}
 								/>
-								<span>Automatic chat message deletion after 72 hours</span>
 							</div>
 						</div>
 					</ScrollReveal>
