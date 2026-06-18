@@ -499,6 +499,7 @@ export interface TranslationSchema {
 		feature4Title: string;
 		feature4Desc: string;
 		footerText: string;
+		openSourceBanner: string;
 	};
 	auth: {
 		title: string;
@@ -1104,6 +1105,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 				"Earn trophies as you reach study milestones and monitor subject distributions.",
 			footerText:
 				"Designed to make academic scheduling intuitive and rewarding.",
+			openSourceBanner: "Study Calendar is open source on GitHub",
 		},
 		auth: {
 			title: "Get Started",
@@ -1720,6 +1722,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 				"Remportez des trophées à chaque étape franchie et visualisez votre répartition de travail.",
 			footerText:
 				"Conçu pour rendre l'organisation académique intuitive et gratifiante.",
+			openSourceBanner: "Study Calendar est open source sur GitHub",
 		},
 		auth: {
 			title: "Commencer",
