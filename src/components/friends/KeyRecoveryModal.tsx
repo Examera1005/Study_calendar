@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 import {
-	arrayBufferToBase64Internal,
 	deriveAesKeyFromPassword,
 	restorePrivateKey,
+	storePrivateKey,
 } from "../../utils/crypto";
 import { Modal } from "../ui/Modal";
 
@@ -47,21 +47,16 @@ export function KeyRecoveryModal({
 			// 2. Derive the AES-GCM key from the entered password + stored salt
 			const aesKey = await deriveAesKeyFromPassword(password, salt);
 
-			// 3. Decrypt the escrow payload → re-import as RSA CryptoKey
+			// 3. Decrypt the escrow payload → re-import as RSA CryptoKey (non-extractable)
 			const rsaPrivateKey = await restorePrivateKey(
 				encryptedPrivateKey,
 				aesKey,
 			);
 
-			// 4. Export the recovered RSA key back to PKCS#8 and save to localStorage
-			const pkcs8Buffer = await window.crypto.subtle.exportKey(
-				"pkcs8",
-				rsaPrivateKey,
-			);
-			const pkcs8Base64 = arrayBufferToBase64Internal(pkcs8Buffer);
-			localStorage.setItem("e2ee_private_key", pkcs8Base64);
+			// 4. Save to IndexedDB
+			await storePrivateKey(rsaPrivateKey);
 
-			// 5. Notify the parent — it will re-render with the key in localStorage
+			// 5. Notify the parent — it will re-render
 			onRestored();
 		} catch (err) {
 			const msg = err instanceof Error ? err.message : String(err);

@@ -3,6 +3,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { View } from "../../App";
 import { useLanguage } from "../../hooks/useLanguage";
+import { clearPrivateKey } from "../../utils/crypto";
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -415,8 +416,7 @@ export function Sidebar({
 					type="button"
 					className="btn btn-secondary btn-full btn-sm"
 					onClick={() => {
-						localStorage.removeItem("e2ee_private_key");
-						void signOut();
+						void clearPrivateKey().finally(() => signOut());
 					}}
 					id="sign-out-btn"
 					title={t.sidebar.signOut}

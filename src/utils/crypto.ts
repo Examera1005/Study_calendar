@@ -13,9 +13,6 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 	return window.btoa(binary);
 }
 
-/** Named export of arrayBufferToBase64 for use by other modules (e.g. KeyRecoveryModal). */
-export { arrayBufferToBase64 as arrayBufferToBase64Internal };
-
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
 	const binaryString = window.atob(base64);
 	const len = binaryString.length;
@@ -27,19 +24,101 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
 }
 
 // ─── Key management ─────────────────────────────────────────────────
+// ponytail: simple direct IndexedDB helper instead of loading a wrapper library.
+
+const DB_NAME = "e2ee_db";
+const STORE_NAME = "keys";
+const KEY_NAME = "private_key";
+
+function getDB(): Promise<IDBDatabase> {
+	return new Promise((resolve, reject) => {
+		const request = window.indexedDB.open(DB_NAME, 1);
+		request.onupgradeneeded = () => {
+			request.result.createObjectStore(STORE_NAME);
+		};
+		request.onsuccess = () => resolve(request.result);
+		request.onerror = () => reject(request.error);
+	});
+}
+
+export async function storePrivateKey(key: CryptoKey): Promise<void> {
+	const db = await getDB();
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(STORE_NAME, "readwrite");
+		const store = transaction.objectStore(STORE_NAME);
+		const request = store.put(key, KEY_NAME);
+		request.onsuccess = () => resolve();
+		request.onerror = () => reject(request.error);
+	});
+}
+
+async function getPrivateKey(): Promise<CryptoKey | null> {
+	const db = await getDB();
+	const key = await new Promise<CryptoKey | null>((resolve, reject) => {
+		const transaction = db.transaction(STORE_NAME, "readonly");
+		const store = transaction.objectStore(STORE_NAME);
+		const request = store.get(KEY_NAME);
+		request.onsuccess = () => resolve(request.result || null);
+		request.onerror = () => reject(request.error);
+	});
+
+	if (key) return key;
+
+	// Migration path: if key not in IndexedDB, check localStorage
+	const legacyBase64 = localStorage.getItem("e2ee_private_key");
+	if (legacyBase64) {
+		try {
+			const privBuffer = base64ToArrayBuffer(legacyBase64);
+			const importedKey = await window.crypto.subtle.importKey(
+				"pkcs8",
+				privBuffer,
+				{ name: "RSA-OAEP", hash: "SHA-256" },
+				false, // Make it non-extractable in IndexedDB!
+				["decrypt"],
+			);
+			await storePrivateKey(importedKey);
+			localStorage.removeItem("e2ee_private_key");
+			return importedKey;
+		} catch (error) {
+			console.error("Failed to migrate legacy key from localStorage:", error);
+		}
+	}
+	return null;
+}
+
+async function deletePrivateKey(): Promise<void> {
+	const db = await getDB();
+	return new Promise((resolve, reject) => {
+		const transaction = db.transaction(STORE_NAME, "readwrite");
+		const store = transaction.objectStore(STORE_NAME);
+		const request = store.delete(KEY_NAME);
+		request.onsuccess = () => resolve();
+		request.onerror = () => reject(request.error);
+	});
+}
+
+export async function clearPrivateKey(): Promise<void> {
+	localStorage.removeItem("e2ee_private_key");
+	await deletePrivateKey();
+}
 
 /**
- * Check if the user's private key exists in localStorage.
+ * Check if the user's private key exists.
  */
-export function hasPrivateKey(): boolean {
-	return localStorage.getItem("e2ee_private_key") !== null;
+export async function hasPrivateKey(): Promise<boolean> {
+	const key = await getPrivateKey();
+	return key !== null;
 }
 
 /**
  * Generate an RSA-OAEP-2048 key pair.
- * Saves the private key to localStorage and returns the public key as base64.
+ * Saves the private key to IndexedDB (non-extractable) and returns the public key as base64
+ * along with the extractable private key (for password backup).
  */
-export async function generateAndSaveKeys(): Promise<string> {
+export async function generateAndSaveKeys(): Promise<{
+	publicKeyBase64: string;
+	rsaPrivateKey: CryptoKey;
+}> {
 	const keyPair = await window.crypto.subtle.generateKey(
 		{
 			name: "RSA-OAEP",
@@ -47,24 +126,33 @@ export async function generateAndSaveKeys(): Promise<string> {
 			publicExponent: new Uint8Array([1, 0, 1]),
 			hash: "SHA-256",
 		},
-		true, // extractable
+		true, // extractable (so we can export and ZKE backup)
 		["encrypt", "decrypt"],
 	);
 
-	// Export private key and save to localStorage
+	// Export private key to save as non-extractable in IndexedDB
 	const exportedPrivate = await window.crypto.subtle.exportKey(
 		"pkcs8",
 		keyPair.privateKey,
 	);
-	const privateKeyBase64 = arrayBufferToBase64(exportedPrivate);
-	localStorage.setItem("e2ee_private_key", privateKeyBase64);
+	const nonExtractablePrivateKey = await window.crypto.subtle.importKey(
+		"pkcs8",
+		exportedPrivate,
+		{ name: "RSA-OAEP", hash: "SHA-256" },
+		false, // non-extractable!
+		["decrypt"],
+	);
+	await storePrivateKey(nonExtractablePrivateKey);
 
 	// Export public key to save to Convex
 	const exportedPublic = await window.crypto.subtle.exportKey(
 		"spki",
 		keyPair.publicKey,
 	);
-	return arrayBufferToBase64(exportedPublic);
+	return {
+		publicKeyBase64: arrayBufferToBase64(exportedPublic),
+		rsaPrivateKey: keyPair.privateKey, // return extractable private key for backup
+	};
 }
 
 // ─── Hybrid encrypt: AES-GCM message + RSA-OAEP wrapped key ────────
@@ -143,20 +231,10 @@ export async function decryptMessage(
 	ciphertextPayload: string,
 ): Promise<string> {
 	try {
-		const privateKeyBase64 = localStorage.getItem("e2ee_private_key");
-		if (!privateKeyBase64) {
+		const rsaPrivateKey = await getPrivateKey();
+		if (!rsaPrivateKey) {
 			return "[Private key missing - cannot decrypt]";
 		}
-
-		// Import the user's RSA private key
-		const privBuffer = base64ToArrayBuffer(privateKeyBase64);
-		const rsaPrivateKey = await window.crypto.subtle.importKey(
-			"pkcs8",
-			privBuffer,
-			{ name: "RSA-OAEP", hash: "SHA-256" },
-			false,
-			["decrypt"],
-		);
 
 		// ── Try v2 hybrid format first ──────────────────────────────────
 		let envelope: {
@@ -334,7 +412,7 @@ export async function restorePrivateKey(
 		"pkcs8",
 		pkcs8Buffer,
 		{ name: "RSA-OAEP", hash: "SHA-256" },
-		true, // extractable: must be re-exportable to save back to localStorage
+		false, // non-extractable!
 		["decrypt"],
 	);
 }

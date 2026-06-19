@@ -241,8 +241,8 @@ function useFriendsActions({
 		dispatch({ type: "START_SUBMIT_PROFILE" });
 
 		try {
-			// 1. Generate RSA key pair — private key saved to localStorage by this call
-			const pubKeyBase64 = await generateAndSaveKeys();
+			// 1. Generate RSA key pair — private key saved to IndexedDB by this call
+			const { publicKeyBase64, rsaPrivateKey } = await generateAndSaveKeys();
 
 			// 2. ZKE backup: if a password was provided, encrypt the private key
 			let userSalt: string | undefined;
@@ -263,28 +263,15 @@ function useFriendsActions({
 					saltBytes,
 				);
 
-				// Export the CryptoKey from localStorage so we can encrypt it
-				const privateKeyBase64 = localStorage.getItem("e2ee_private_key") ?? "";
-				const privBuffer = Uint8Array.from(atob(privateKeyBase64), (c) =>
-					c.charCodeAt(0),
-				);
-				const rsaPrivKey = await window.crypto.subtle.importKey(
-					"pkcs8",
-					privBuffer,
-					{ name: "RSA-OAEP", hash: "SHA-256" },
-					true,
-					["decrypt"],
-				);
-
 				// Encrypt the private key → Base64 payload
-				encryptedPrivateKey = await backupPrivateKey(rsaPrivKey, aesKey);
+				encryptedPrivateKey = await backupPrivateKey(rsaPrivateKey, aesKey);
 				userSalt = saltBase64;
 			}
 
 			// 3. Persist to Convex (escrow fields only sent if password was provided)
 			await createProfile({
 				username: state.usernameInput,
-				publicKey: pubKeyBase64,
+				publicKey: publicKeyBase64,
 				userSalt,
 				encryptedPrivateKey,
 			});
@@ -463,29 +450,32 @@ export function FriendsView() {
 	useEffect(() => {
 		let timerId: ReturnType<typeof setTimeout> | undefined;
 
-		if (profile && !hasPrivateKey() && !state.keyRecoveryMode) {
-			if (profile.encryptedPrivateKey && profile.userSalt) {
-				// Escrow data exists → show the password prompt modal
-				dispatch({ type: "SET_KEY_RECOVERY_MODE", payload: true });
-			} else {
-				// No escrow (pre-ZKE profile) → silently regenerate keys
-				(async () => {
-					try {
-						const newPubKey = await generateAndSaveKeys();
-						await createProfile({
-							username: profile.username,
-							publicKey: newPubKey,
-						});
-						dispatch({ type: "SET_KEY_RECOVERED", payload: true });
-						timerId = setTimeout(
-							() => dispatch({ type: "SET_KEY_RECOVERED", payload: false }),
-							8000,
-						);
-					} catch (err) {
-						console.error("Key regeneration failed:", err);
+		if (profile && !state.keyRecoveryMode) {
+			(async () => {
+				const hasKey = await hasPrivateKey();
+				if (!hasKey) {
+					if (profile.encryptedPrivateKey && profile.userSalt) {
+						// Escrow data exists → show the password prompt modal
+						dispatch({ type: "SET_KEY_RECOVERY_MODE", payload: true });
+					} else {
+						// No escrow (pre-ZKE profile) → silently regenerate keys
+						try {
+							const { publicKeyBase64 } = await generateAndSaveKeys();
+							await createProfile({
+								username: profile.username,
+								publicKey: publicKeyBase64,
+							});
+							dispatch({ type: "SET_KEY_RECOVERED", payload: true });
+							timerId = setTimeout(
+								() => dispatch({ type: "SET_KEY_RECOVERED", payload: false }),
+								8000,
+							);
+						} catch (err) {
+							console.error("Key regeneration failed:", err);
+						}
 					}
-				})();
-			}
+				}
+			})();
 		}
 
 		return () => {
@@ -538,10 +528,10 @@ export function FriendsView() {
 					// User chose to ditch old key and generate a fresh pair
 					dispatch({ type: "SET_KEY_RECOVERY_MODE", payload: false });
 					try {
-						const newPubKey = await generateAndSaveKeys();
+						const { publicKeyBase64 } = await generateAndSaveKeys();
 						await createProfile({
 							username: profile.username,
-							publicKey: newPubKey,
+							publicKey: publicKeyBase64,
 						});
 						dispatch({ type: "SET_KEY_RECOVERED", payload: true });
 						setTimeout(
