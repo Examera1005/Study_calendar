@@ -226,7 +226,7 @@ export function Sidebar({
 	const unreadFriendsCount =
 		// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
 		friendships?.accepted?.filter((f: any) => f.unreadCount > 0).length || 0;
-	const { language, setLanguage, t } = useLanguage();
+	const { t } = useLanguage();
 
 	const getLabel = (id: View) => {
 		if (id === "analytics") return t.sidebar.stats;
@@ -319,44 +319,6 @@ export function Sidebar({
 			</nav>
 
 			<div className="sidebar-footer">
-				{/* Language Switcher */}
-				{!sidebarCollapsed && (
-					<div className="toggle-row" style={{ marginBottom: "8px" }}>
-						<button
-							type="button"
-							onClick={() => setLanguage("en")}
-							className={`toggle-btn ${language === "en" ? "active" : ""}`}
-						>
-							🇬🇧 EN
-						</button>
-						<button
-							type="button"
-							onClick={() => setLanguage("fr")}
-							className={`toggle-btn ${language === "fr" ? "active" : ""}`}
-						>
-							🇫🇷 FR
-						</button>
-					</div>
-				)}
-
-				{sidebarCollapsed && (
-					<button
-						type="button"
-						className="theme-toggle-btn"
-						onClick={() => setLanguage(language === "en" ? "fr" : "en")}
-						style={{ marginBottom: "8px", width: "100%", padding: "8px 0" }}
-						title={
-							language === "en"
-								? t.sidebar.switchToFrench
-								: t.sidebar.switchToEnglish
-						}
-					>
-						<span style={{ fontSize: "1rem" }}>
-							{language === "en" ? "🇫🇷" : "🇬🇧"}
-						</span>
-					</button>
-				)}
-
 				<button
 					type="button"
 					className="theme-toggle-btn"
