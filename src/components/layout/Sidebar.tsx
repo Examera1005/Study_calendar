@@ -388,7 +388,7 @@ export function Sidebar({
 						justifyContent: "center",
 						gap: 6,
 						width: "100%",
-						marginTop: 8,
+						marginTop: 2,
 					}}
 				>
 					<span
@@ -418,7 +418,7 @@ export function Sidebar({
 					<div
 						className="sidebar-footer-info"
 						style={{
-							marginTop: 10,
+							marginTop: 1,
 							fontSize: "0.75rem",
 							color: "var(--text-muted)",
 							textAlign: "center",
