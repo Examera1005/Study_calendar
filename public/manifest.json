@@ -1,0 +1,21 @@
+{
+	"short_name": "StudyCal",
+	"name": "Study Calendar",
+	"icons": [
+		{
+			"src": "/favicon.png",
+			"type": "image/png",
+			"sizes": "192x192"
+		},
+		{
+			"src": "/logo.png",
+			"type": "image/png",
+			"sizes": "512x512"
+		}
+	],
+	"start_url": "/",
+	"background_color": "#1a1a1a",
+	"theme_color": "#121212",
+	"display": "standalone",
+	"orientation": "portrait"
+}
