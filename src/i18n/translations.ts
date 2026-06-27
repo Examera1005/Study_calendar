@@ -193,6 +193,17 @@ export interface TranslationSchema {
 		logFirstSession: string;
 		noStudyEntriesForDay: string;
 		addEntryBtn: string;
+		byDateTab: string;
+		allLogsTab: string;
+		searchPlaceholder: string;
+		sortByLabel: string;
+		sortDurationDesc: string;
+		sortDurationAsc: string;
+		sortDateDesc: string;
+		sortDateAsc: string;
+		subjectFilterLabel: string;
+		allSubjectsOption: string;
+		noResults: string;
 	};
 	friends: {
 		title: string;
@@ -735,6 +746,17 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			logFirstSession: "Log your first session",
 			noStudyEntriesForDay: "No study entries for this day",
 			addEntryBtn: "+ Add Entry",
+			byDateTab: "By Date",
+			allLogsTab: "Search & List",
+			searchPlaceholder: "Search logs by content or subject...",
+			sortByLabel: "Sort by",
+			sortDurationDesc: "Longest session",
+			sortDurationAsc: "Shortest session",
+			sortDateDesc: "Newest first",
+			sortDateAsc: "Oldest first",
+			subjectFilterLabel: "Subject",
+			allSubjectsOption: "All Subjects",
+			noResults: "No matching study logs found.",
 		},
 		friends: {
 			title: "Friends & Leaderboard",
@@ -1345,6 +1367,17 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			logFirstSession: "Loguez votre première session",
 			noStudyEntriesForDay: "Aucune session d'étude pour ce jour",
 			addEntryBtn: "+ Ajouter une session",
+			byDateTab: "Par date",
+			allLogsTab: "Recherche & Liste",
+			searchPlaceholder: "Rechercher par contenu ou matière...",
+			sortByLabel: "Trier par",
+			sortDurationDesc: "Session la plus longue",
+			sortDurationAsc: "Session la plus courte",
+			sortDateDesc: "Plus récent",
+			sortDateAsc: "Plus ancien",
+			subjectFilterLabel: "Matière",
+			allSubjectsOption: "Toutes les matières",
+			noResults: "Aucun journal d'étude correspondant trouvé.",
 		},
 		friends: {
 			title: "Amis & Classement",

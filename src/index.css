@@ -4069,3 +4069,40 @@ select option {
 .key-recovery-regenerate-btn {
 	font-size: 0.8rem;
 }
+
+/* ========== DAILY LOG SEARCH & FILTERS ========== */
+.log-filters-container {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 20px;
+	background: var(--bg-surface);
+	padding: 14px;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--border-subtle);
+}
+
+.log-search-wrapper {
+	flex: 2;
+	min-width: 200px;
+	position: relative;
+}
+
+.log-filter-select-wrapper {
+	flex: 1;
+	min-width: 140px;
+}
+
+.log-search-input {
+	padding-left: 36px;
+}
+
+.log-search-icon {
+	position: absolute;
+	left: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: var(--text-muted);
+	font-size: 0.9rem;
+	pointer-events: none;
+}
