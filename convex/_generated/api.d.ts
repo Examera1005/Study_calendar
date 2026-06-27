@@ -8,11 +8,6 @@
  * @module
  */
 
-import type {
-	ApiFromModules,
-	FilterApi,
-	FunctionReference,
-} from "convex/server";
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
 import type * as dailyLogs from "../dailyLogs.js";
@@ -26,19 +21,25 @@ import type * as subjects from "../subjects.js";
 import type * as tasks from "../tasks.js";
 import type * as userSettings from "../userSettings.js";
 
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
+
 declare const fullApi: ApiFromModules<{
-	auth: typeof auth;
-	crons: typeof crons;
-	dailyLogs: typeof dailyLogs;
-	events: typeof events;
-	exams: typeof exams;
-	friends: typeof friends;
-	http: typeof http;
-	migration: typeof migration;
-	rateLimit: typeof rateLimit;
-	subjects: typeof subjects;
-	tasks: typeof tasks;
-	userSettings: typeof userSettings;
+  auth: typeof auth;
+  crons: typeof crons;
+  dailyLogs: typeof dailyLogs;
+  events: typeof events;
+  exams: typeof exams;
+  friends: typeof friends;
+  http: typeof http;
+  migration: typeof migration;
+  rateLimit: typeof rateLimit;
+  subjects: typeof subjects;
+  tasks: typeof tasks;
+  userSettings: typeof userSettings;
 }>;
 
 /**
@@ -50,8 +51,8 @@ declare const fullApi: ApiFromModules<{
  * ```
  */
 export declare const api: FilterApi<
-	typeof fullApi,
-	FunctionReference<any, "public">
+  typeof fullApi,
+  FunctionReference<any, "public">
 >;
 
 /**
@@ -63,8 +64,8 @@ export declare const api: FilterApi<
  * ```
  */
 export declare const internal: FilterApi<
-	typeof fullApi,
-	FunctionReference<any, "internal">
+  typeof fullApi,
+  FunctionReference<any, "internal">
 >;
 
 export declare const components: {};

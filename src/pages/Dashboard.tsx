@@ -337,7 +337,7 @@ export function Dashboard({
 	const todayLogs = useQuery(api.dailyLogs.getByDate, { date: activeDate });
 	const yesterdayLogs = useQuery(api.dailyLogs.getByDate, { date: yesterday });
 	const todayEvents = useQuery(api.events.getByDate, { date: activeDate });
-	const subjects = useQuery(api.subjects.list);
+	const subjects = useQuery(api.subjects.list, {});
 	const allLogs = useQuery(api.dailyLogs.list);
 	const streak = calculateStreak(allLogs || [], activeDate);
 

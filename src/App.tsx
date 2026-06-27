@@ -155,7 +155,7 @@ export default function App() {
 		openId: 0,
 	});
 
-	const subjects = useQuery(api.subjects.list);
+	const subjects = useQuery(api.subjects.list, {});
 	const _createLog = useMutation(api.dailyLogs.create);
 	// biome-ignore lint/suspicious/noExplicitAny: Dynamic Convex API / third-party type
 	const userSettings = useQuery((api as any).userSettings?.get);

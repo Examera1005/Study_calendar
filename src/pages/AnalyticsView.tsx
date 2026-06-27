@@ -17,7 +17,7 @@ type Subject = Doc<"subjects">;
 
 export function AnalyticsView() {
 	const allLogs = useQuery(api.dailyLogs.list) as Log[] | undefined;
-	const subjects = useQuery(api.subjects.list) as Subject[] | undefined;
+	const subjects = useQuery(api.subjects.list, {}) as Subject[] | undefined;
 	const allTasks = useQuery(api.tasks.listAll) as Task[] | undefined;
 	const { t, dateLocale } = useLanguage();
 
