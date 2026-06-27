@@ -467,7 +467,7 @@ export function DailyLogView({
 	const { t, language, dateLocale } = useLanguage();
 	const logs = useQuery(api.dailyLogs.getByDate, { date: selectedDate });
 	const allLogs = useQuery(api.dailyLogs.list);
-	const subjects = useQuery(api.subjects.list);
+	const subjects = useQuery(api.subjects.list, {});
 	const createLog = useMutation(api.dailyLogs.create);
 	const removeLog = useMutation(api.dailyLogs.remove);
 	const updateLog = useMutation(api.dailyLogs.update);

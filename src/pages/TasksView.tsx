@@ -23,7 +23,7 @@ export function TasksView({
 	const { t, language, dateLocale } = useLanguage();
 	const dailyTasks = useQuery(api.tasks.getByDate, { date: selectedDate });
 	const generalTasks = useQuery(api.tasks.listGeneral);
-	const subjects = useQuery(api.subjects.list);
+	const subjects = useQuery(api.subjects.list, {});
 	const updateTask = useMutation(api.tasks.update);
 	const [showAdd, setShowAdd] = useState(false);
 	const [editingTask, setEditingTask] = useState<Doc<"tasks"> | null>(null);

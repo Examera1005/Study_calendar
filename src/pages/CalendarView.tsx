@@ -74,7 +74,7 @@ export function CalendarView({
 	const { t, language, dateLocale } = useLanguage();
 	const [currentMonth, setCurrentMonth] = useState(new Date());
 	const [dialog, dispatchDialog] = useReducer(dialogReducer, { type: "none" });
-	const subjects = useQuery(api.subjects.list);
+	const subjects = useQuery(api.subjects.list, {});
 
 	const monthStart = startOfMonth(currentMonth);
 	const monthEnd = endOfMonth(currentMonth);

@@ -419,7 +419,7 @@ function EditExamModal({
 
 export function ExamsView() {
 	const exams = useQuery(api.exams.list);
-	const subjects = useQuery(api.subjects.list);
+	const subjects = useQuery(api.subjects.list, {});
 	const createExam = useMutation(api.exams.create);
 	const updateExam = useMutation(api.exams.update);
 	const removeExam = useMutation(api.exams.remove);
