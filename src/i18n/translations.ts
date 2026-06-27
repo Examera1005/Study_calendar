@@ -307,6 +307,11 @@ export interface TranslationSchema {
 		confirmDeleteSubject: (name: string) => string;
 		subjectCreatedToast: string;
 		subjectDeletedToast: string;
+		archive: string;
+		unarchive: string;
+		archivedSubjects: string;
+		noArchivedSubjects: string;
+		confirmArchiveSubject: (name: string) => string;
 	};
 	settings: {
 		title: string;
@@ -877,6 +882,12 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 				`Are you sure you want to delete "${name}"? All related study logs, exams, and tasks will lose their subject link.`,
 			subjectCreatedToast: "Subject created successfully",
 			subjectDeletedToast: "Subject deleted successfully",
+			archive: "Archive",
+			unarchive: "Unarchive",
+			archivedSubjects: "Archived Subjects",
+			noArchivedSubjects: "No archived subjects.",
+			confirmArchiveSubject: (name) =>
+				`Archive "${name}"? It will be hidden from dropdowns and analytics. You can unarchive it anytime.`,
 		},
 		settings: {
 			title: "Settings",
@@ -1501,6 +1512,12 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 				`Êtes-vous sûr de vouloir supprimer la matière "${name}" ? Toutes les sessions d'étude, tâches et examens liés perdront leur association.`,
 			subjectCreatedToast: "Matière créée avec succès",
 			subjectDeletedToast: "Matière supprimée avec succès",
+			archive: "Archiver",
+			unarchive: "Désarchiver",
+			archivedSubjects: "Matières archivées",
+			noArchivedSubjects: "Aucune matière archivée.",
+			confirmArchiveSubject: (name) =>
+				`Archiver "${name}" ? Elle sera masquée des menus et des statistiques. Vous pourrez la désarchiver à tout moment.`,
 		},
 		settings: {
 			title: "Paramètres",

@@ -11,6 +11,7 @@ export default defineSchema({
 		name: v.string(),
 		color: v.string(),
 		icon: v.optional(v.string()),
+		archived: v.optional(v.boolean()),
 	}).index("by_userId", ["userId"]),
 
 	// Exams with dates and coefficients

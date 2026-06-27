@@ -3,14 +3,17 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 export const list = query({
-	args: {},
-	handler: async (ctx) => {
+	args: { includeArchived: v.optional(v.boolean()) },
+	handler: async (ctx, args) => {
 		const userId = await getAuthUserId(ctx);
 		if (!userId) return [];
-		return await ctx.db
+		const all = await ctx.db
 			.query("subjects")
 			.withIndex("by_userId", (q) => q.eq("userId", userId))
 			.take(100);
+		// ponytail: filter in-memory, no extra index needed
+		if (args.includeArchived) return all;
+		return all.filter((s) => !s.archived);
 	},
 });
 
@@ -51,6 +54,19 @@ export const update = mutation({
 		if (args.color !== undefined) updates.color = args.color;
 		if (args.icon !== undefined) updates.icon = args.icon;
 		await ctx.db.patch(args.id, updates);
+	},
+});
+
+export const archive = mutation({
+	args: { id: v.id("subjects"), archived: v.boolean() },
+	handler: async (ctx, args) => {
+		const userId = await getAuthUserId(ctx);
+		if (!userId) throw new Error("Not authenticated");
+		const subject = await ctx.db.get(args.id);
+		if (!subject || subject.userId !== userId) {
+			throw new Error("Unauthorized");
+		}
+		await ctx.db.patch(args.id, { archived: args.archived });
 	},
 });
 
