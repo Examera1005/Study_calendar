@@ -1066,9 +1066,9 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			ctaDesc:
 				"Join students using Study Calendar to structure review sessions, track grades, collaborate safely, and build daily habits.",
 			footerConvex: "Real-time database powered by Convex",
-			seoTitle: "Study Calendar — The Premium Planner & Productivity Toolkit",
+			seoTitle: "Study Calendar — Open-Source Secure Planner for Students",
 			seoDesc:
-				"A premium study productivity app. Track exams, calendar schedules, tasks, and daily logs, with Pomodoro timers, statistics, and client-side encrypted friend messaging.",
+				"Open-source secure study planner for students. Track exams, schedules, tasks, daily logs, Pomodoro sessions, analytics, and encrypted friend messaging.",
 			demoStreakTitle: "Study Streak",
 			demoStreakLabel: "Active study streak",
 			demoPomodoroTitle: "Pomodoro & Logging Simulator",
@@ -1699,9 +1699,9 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 				"Rejoignez les étudiants qui utilisent Study Calendar pour organiser leurs révisions, suivre leurs notes et collaborer en toute sécurité.",
 			footerConvex: "Base de données en temps réel propulsée par Convex",
 			seoTitle:
-				"Study Calendar — Le planificateur d'études premium & boîte à outils de productivité",
+				"Study Calendar — Planificateur d'études open source et sécurisé",
 			seoDesc:
-				"Une application d'organisation d'études premium. Suivez les examens, les plannings du calendrier, les tâches et les sessions, avec minuteurs Pomodoro, statistiques et messagerie chiffrée.",
+				"Planificateur d'études open source et sécurisé pour étudiants. Suivez examens, planning, tâches, sessions Pomodoro, statistiques et messagerie chiffrée.",
 			demoStreakTitle: "Série d'études",
 			demoStreakLabel: "Jours consécutifs d'études",
 			demoPomodoroTitle: "Simulateur Pomodoro",
