@@ -1030,7 +1030,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			averageLabel: "Average",
 		},
 		landingPage: {
-			title: "Study Calendar",
+			title: "Study Calendar — Open Source Academic Planner",
 			tagline:
 				"Stay organized, track your study habits, and ace your exams with your friends.",
 			ctaBtn: "Get Started Now",
@@ -1038,7 +1038,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			navFeatures: "Features",
 			navInteractiveDemo: "Interactive Demo",
 			navInteractiveSandbox: "Interactive Sandbox",
-			heroTitleLine1: "The tactile study planner,",
+			heroTitleLine1: "The Open Source study planner,",
 			heroTitleLine2: "built for ",
 			heroTitleAccent: "digital minds.",
 			liveSandboxBtn: "Try Live Sandbox",
@@ -1066,9 +1066,10 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			ctaDesc:
 				"Join students using Study Calendar to structure review sessions, track grades, collaborate safely, and build daily habits.",
 			footerConvex: "Real-time database powered by Convex",
-			seoTitle: "Study Calendar — The Premium Planner & Productivity Toolkit",
+			seoTitle:
+				"Study Calendar — Open Source Academic Planner & Productivity Suite",
 			seoDesc:
-				"A premium study productivity app. Track exams, calendar schedules, tasks, and daily logs, with Pomodoro timers, statistics, and client-side encrypted friend messaging.",
+				"100% Free & Open Source academic productivity app. Track exams, calendar schedules, tasks, and daily logs, with Pomodoro timers, statistics, and client-side encrypted friend messaging.",
 			demoStreakTitle: "Study Streak",
 			demoStreakLabel: "Active study streak",
 			demoPomodoroTitle: "Pomodoro & Logging Simulator",
@@ -1662,7 +1663,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			averageLabel: "Moyenne",
 		},
 		landingPage: {
-			title: "Study Calendar",
+			title: "Study Calendar — Planificateur d'études Open Source",
 			tagline:
 				"Restez organisé, suivez vos habitudes d'étude et réussissez vos examens avec vos amis.",
 			ctaBtn: "Commencer maintenant",
@@ -1670,7 +1671,7 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 			navFeatures: "Fonctionnalités",
 			navInteractiveDemo: "Démo Interactive",
 			navInteractiveSandbox: "Sandbox Interactif",
-			heroTitleLine1: "Le planificateur d'études tactile,",
+			heroTitleLine1: "Le planificateur d'études open source,",
 			heroTitleLine2: "conçu pour ",
 			heroTitleAccent: "les esprits numériques.",
 			liveSandboxBtn: "Tester le Sandbox",
@@ -1699,9 +1700,9 @@ export const translations: Record<"en" | "fr", TranslationSchema> = {
 				"Rejoignez les étudiants qui utilisent Study Calendar pour organiser leurs révisions, suivre leurs notes et collaborer en toute sécurité.",
 			footerConvex: "Base de données en temps réel propulsée par Convex",
 			seoTitle:
-				"Study Calendar — Le planificateur d'études premium & boîte à outils de productivité",
+				"Study Calendar — Planificateur d'études Open Source & Suite de productivité",
 			seoDesc:
-				"Une application d'organisation d'études premium. Suivez les examens, les plannings du calendrier, les tâches et les sessions, avec minuteurs Pomodoro, statistiques et messagerie chiffrée.",
+				"Application d'organisation d'études 100% gratuite et Open Source. Suivez les examens, les plannings du calendrier, les tâches et les sessions, avec minuteurs Pomodoro, statistiques et messagerie chiffrée.",
 			demoStreakTitle: "Série d'études",
 			demoStreakLabel: "Jours consécutifs d'études",
 			demoPomodoroTitle: "Simulateur Pomodoro",
