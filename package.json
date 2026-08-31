@@ -31,7 +31,8 @@
 	},
 	"overrides": {
 		"ws": ">=8.21.3",
-		"postal-mime": ">=2.7.6"
+		"postal-mime": ">=2.7.6",
+		"jose": ">=6.2.10"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
