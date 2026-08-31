@@ -144,20 +144,31 @@ Study_calendar/
 │   ├── exams.ts             # Grade & exam functions
 │   ├── friends.ts           # Social graphs, block lists, and E2EE messaging
 │   ├── http.ts              # External webhook/HTTP routes
+│   ├── migration.ts         # Database migration routines
+│   ├── rateLimit.ts         # Rate limiting mutation & verification
 │   ├── schema.ts            # Definitive Convex database schema
 │   ├── subjects.ts          # Course mapping database actions
-│   └── tasks.ts             # Backlog & daily to-do actions
+│   ├── tasks.ts             # Backlog & daily to-do actions
+│   └── userSettings.ts      # User preferences and customization actions
 ├── src/                     # React Single Page Application (Vite)
 │   ├── components/
-│   │   ├── auth/            # Sign In, Sign Up, and OTP Password Reset UI
+│   │   ├── analytics/       # Chart components, KPI metrics, and achievement badges
+│   │   ├── auth/            # Sign In, Sign Up, Landing Page, and OTP Password Reset UI
+│   │   ├── calendar/        # Monthly calendar grid and day inspection panels
+│   │   ├── dashboard/       # Weekly activity widgets and summary grids
 │   │   ├── friends/         # Direct Messages, Key Escrow Recovery, Leaderboard & Friend Lists
-│   │   ├── layout/          # Premium Navigation bars and theme providers
+│   │   ├── layout/          # Premium Navigation bars, sidebar, and floating timer widget
+│   │   ├── settings/        # Theme customization, handle setup, and blocked users cards
+│   │   ├── study/           # Save study timer session modals
+│   │   ├── tasks/           # Daily tasks, backlog lists, and task management modals
 │   │   └── ui/              # Glassmorphic modals, tooltips, buttons, select inputs, and status badges
+│   ├── hooks/               # Custom React hooks (Language, Pomodoro, Stopwatch)
 │   ├── i18n/
 │   │   └── translations.ts  # Dictionary containing EN and FR keymaps
 │   ├── pages/
 │   │   ├── AnalyticsView.tsx    # Donut statistics, time graphs, and dynamic achievements
 │   │   ├── CalendarView.tsx     # Full Month Grid with unified logs/events
+│   │   ├── DailyLogView.tsx     # Daily activity tracking and session logs
 │   │   ├── Dashboard.tsx        # Overview dashboard widget system
 │   │   ├── ExamsView.tsx        # Grade tracking spreadsheet & imports
 │   │   ├── FriendsView.tsx      # Social hub & encrypted messenger container
@@ -168,6 +179,7 @@ Study_calendar/
 │   ├── utils/
 │   │   ├── colorUtils.ts    # HSL-persisted color shifting utilities
 │   │   ├── crypto.ts        # Core Web Crypto algorithms (AES, PBKDF2, RSA)
+│   │   ├── dateUtils.ts     # Date formatting and timezone helpers
 │   │   └── statsUtils.ts    # Date algorithms for study streaks and achievements
 │   ├── App.tsx              # Application layout router
 │   ├── main.tsx             # Application bootstrap & Convex Client Provider
